@@ -1,0 +1,1350 @@
+gpasm-0.13.7 beta               build/default/production/brtos/OS_RTC.asm7-19-2011  15:07:13          PAGE  1
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+ 
+               00001 ;--------------------------------------------------------
+               00002 ; File Created by SDCC : free open source ANSI-C Compiler
+               00003 ; Version 2.9.0 #5416 (Apr 29 2011) (UNIX)
+               00004 ; This file was generated Tue Jul 19 15:07:13 2011
+               00005 ;--------------------------------------------------------
+               00006 ; PIC16 port for the Microchip 16-bit core micros
+               00007 ;--------------------------------------------------------
+               00008         list    p=18f4520
+               00009 
+               00010         radix dec
+               00011 
+               00012 ;--------------------------------------------------------
+               00013 ; public variables in this module
+               00014 ;--------------------------------------------------------
+               00015         global _OSUpdateTime
+               00016         global _OSUpdateUptime
+               00017         global _OSUpdateDate
+               00018         global _OSResetTime
+               00019         global _OSResetDate
+               00020         global _OSUptime
+               00021         global _OSUpDate
+               00022         global _Hora
+               00023         global _Data
+               00024 
+               00025 ;--------------------------------------------------------
+               00026 ; extern variables in this module
+               00027 ;--------------------------------------------------------
+               00028         extern __gptrget1
+               00029         extern __gptrput1
+               00030         extern __gptrget2
+               00031         extern __gptrput2
+               00032         extern _PORTAbits
+               00033         extern _PORTBbits
+               00034         extern _PORTCbits
+               00035         extern _PORTDbits
+               00036         extern _PORTEbits
+               00037         extern _LATAbits
+               00038         extern _LATBbits
+               00039         extern _LATCbits
+               00040         extern _LATDbits
+               00041         extern _LATEbits
+               00042         extern _DDRAbits
+               00043         extern _TRISAbits
+               00044         extern _DDRBbits
+               00045         extern _TRISBbits
+               00046         extern _DDRCbits
+               00047         extern _TRISCbits
+               00048         extern _DDRDbits
+               00049         extern _TRISDbits
+               00050         extern _DDREbits
+               00051         extern _TRISEbits
+               00052         extern _OSCTUNEbits
+               00053         extern _PIE1bits
+               00054         extern _PIR1bits
+gpasm-0.13.7 beta               build/default/production/brtos/OS_RTC.asm7-19-2011  15:07:13          PAGE  2
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+ 
+               00055         extern _IPR1bits
+               00056         extern _PIE2bits
+               00057         extern _PIR2bits
+               00058         extern _IPR2bits
+               00059         extern _EECON1bits
+               00060         extern _RCSTAbits
+               00061         extern _TXSTAbits
+               00062         extern _T3CONbits
+               00063         extern _CMCONbits
+               00064         extern _CVRCONbits
+               00065         extern _ECCP1ASbits
+               00066         extern _PWM1CONbits
+               00067         extern _BAUDCONbits
+               00068         extern _BAUDCTLbits
+               00069         extern _CCP2CONbits
+               00070         extern _CCP1CONbits
+               00071         extern _ADCON2bits
+               00072         extern _ADCON1bits
+               00073         extern _ADCON0bits
+               00074         extern _SSPCON2bits
+               00075         extern _SSPCON1bits
+               00076         extern _SSPSTATbits
+               00077         extern _T2CONbits
+               00078         extern _T1CONbits
+               00079         extern _RCONbits
+               00080         extern _WDTCONbits
+               00081         extern _HLVDCONbits
+               00082         extern _LVDCONbits
+               00083         extern _OSCCONbits
+               00084         extern _T0CONbits
+               00085         extern _STATUSbits
+               00086         extern _INTCON3bits
+               00087         extern _INTCON2bits
+               00088         extern _INTCONbits
+               00089         extern _STKPTRbits
+               00090         extern _SPvalue
+               00091         extern _BRTOS_Sem_Table
+               00092         extern _BRTOS_Mutex_Table
+               00093         extern _BRTOS_Queue_Table
+               00094         extern _OSReadyList
+               00095         extern _OSBlockedList
+               00096         extern _Tail
+               00097         extern _Head
+               00098         extern _iNesting
+               00099         extern _currentTask
+               00100         extern _SelectedTask
+               00101         extern _ContextTask
+               00102         extern _iStackAddress
+               00103         extern _NumberOfInstalledTasks
+               00104         extern _counter
+               00105         extern _OSDuty
+               00106         extern _PriorityVector
+               00107         extern _OSDutyTmp
+               00108         extern _LastOSDuty
+gpasm-0.13.7 beta               build/default/production/brtos/OS_RTC.asm7-19-2011  15:07:13          PAGE  3
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+ 
+               00109         extern _STACK
+               00110         extern _TaskAlloc
+               00111         extern _QUEUE_STACK
+               00112         extern _iQueueAddress
+               00113         extern _version
+               00114         extern _BufferText
+               00115         extern _StackAddress
+               00116         extern _PORTA
+               00117         extern _PORTB
+               00118         extern _PORTC
+               00119         extern _PORTD
+               00120         extern _PORTE
+               00121         extern _LATA
+               00122         extern _LATB
+               00123         extern _LATC
+               00124         extern _LATD
+               00125         extern _LATE
+               00126         extern _DDRA
+               00127         extern _TRISA
+               00128         extern _DDRB
+               00129         extern _TRISB
+               00130         extern _DDRC
+               00131         extern _TRISC
+               00132         extern _DDRD
+               00133         extern _TRISD
+               00134         extern _DDRE
+               00135         extern _TRISE
+               00136         extern _OSCTUNE
+               00137         extern _PIE1
+               00138         extern _PIR1
+               00139         extern _IPR1
+               00140         extern _PIE2
+               00141         extern _PIR2
+               00142         extern _IPR2
+               00143         extern _EECON1
+               00144         extern _EECON2
+               00145         extern _EEDATA
+               00146         extern _EEADR
+               00147         extern _RCSTA
+               00148         extern _TXSTA
+               00149         extern _TXREG
+               00150         extern _RCREG
+               00151         extern _SPBRG
+               00152         extern _SPBRGH
+               00153         extern _T3CON
+               00154         extern _TMR3L
+               00155         extern _TMR3H
+               00156         extern _CMCON
+               00157         extern _CVRCON
+               00158         extern _ECCP1AS
+               00159         extern _PWM1CON
+               00160         extern _BAUDCON
+               00161         extern _BAUDCTL
+               00162         extern _CCP2CON
+gpasm-0.13.7 beta               build/default/production/brtos/OS_RTC.asm7-19-2011  15:07:13          PAGE  4
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+ 
+               00163         extern _CCPR2
+               00164         extern _CCPR2L
+               00165         extern _CCPR2H
+               00166         extern _CCP1CON
+               00167         extern _CCPR1
+               00168         extern _CCPR1L
+               00169         extern _CCPR1H
+               00170         extern _ADCON2
+               00171         extern _ADCON1
+               00172         extern _ADCON0
+               00173         extern _ADRES
+               00174         extern _ADRESL
+               00175         extern _ADRESH
+               00176         extern _SSPCON2
+               00177         extern _SSPCON1
+               00178         extern _SSPSTAT
+               00179         extern _SSPADD
+               00180         extern _SSPBUF
+               00181         extern _T2CON
+               00182         extern _PR2
+               00183         extern _TMR2
+               00184         extern _T1CON
+               00185         extern _TMR1L
+               00186         extern _TMR1H
+               00187         extern _RCON
+               00188         extern _WDTCON
+               00189         extern _HLVDCON
+               00190         extern _LVDCON
+               00191         extern _OSCCON
+               00192         extern _T0CON
+               00193         extern _TMR0L
+               00194         extern _TMR0H
+               00195         extern _STATUS
+               00196         extern _FSR2L
+               00197         extern _FSR2H
+               00198         extern _PLUSW2
+               00199         extern _PREINC2
+               00200         extern _POSTDEC2
+               00201         extern _POSTINC2
+               00202         extern _INDF2
+               00203         extern _BSR
+               00204         extern _FSR1L
+               00205         extern _FSR1H
+               00206         extern _PLUSW1
+               00207         extern _PREINC1
+               00208         extern _POSTDEC1
+               00209         extern _POSTINC1
+               00210         extern _INDF1
+               00211         extern _WREG
+               00212         extern _FSR0L
+               00213         extern _FSR0H
+               00214         extern _PLUSW0
+               00215         extern _PREINC0
+               00216         extern _POSTDEC0
+gpasm-0.13.7 beta               build/default/production/brtos/OS_RTC.asm7-19-2011  15:07:13          PAGE  5
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+ 
+               00217         extern _POSTINC0
+               00218         extern _INDF0
+               00219         extern _INTCON3
+               00220         extern _INTCON2
+               00221         extern _INTCON
+               00222         extern _PROD
+               00223         extern _PRODL
+               00224         extern _PRODH
+               00225         extern _TABLAT
+               00226         extern _TBLPTR
+               00227         extern _TBLPTRL
+               00228         extern _TBLPTRH
+               00229         extern _TBLPTRU
+               00230         extern _PC
+               00231         extern _PCL
+               00232         extern _PCLATH
+               00233         extern _PCLATU
+               00234         extern _STKPTR
+               00235         extern _TOS
+               00236         extern _TOSL
+               00237         extern _TOSH
+               00238         extern _TOSU
+               00239         extern _PriorityMask
+               00240 ;--------------------------------------------------------
+               00241 ;       Equates to used internal registers
+               00242 ;--------------------------------------------------------
+  00000FD8     00243 STATUS  equ     0xfd8
+  00000FE8     00244 WREG    equ     0xfe8
+  00000FE9     00245 FSR0L   equ     0xfe9
+  00000FE1     00246 FSR1L   equ     0xfe1
+  00000FE2     00247 FSR1H   equ     0xfe2
+  00000FD9     00248 FSR2L   equ     0xfd9
+  00000FDA     00249 FSR2H   equ     0xfda
+  00000FE5     00250 POSTDEC1        equ     0xfe5
+  00000FE4     00251 PREINC1 equ     0xfe4
+  00000FDB     00252 PLUSW2  equ     0xfdb
+  00000FF3     00253 PRODL   equ     0xff3
+  00000FF4     00254 PRODH   equ     0xff4
+               00255 
+               00256 
+               00257 ; Internal registers
+               00258 .registers      udata_ovr       0x0000
+               00259 r0x00   res     1
+               00260 r0x01   res     1
+               00261 r0x02   res     1
+               00262 r0x03   res     1
+               00263 r0x04   res     1
+               00264 r0x05   res     1
+               00265 r0x06   res     1
+               00266 r0x07   res     1
+               00267 r0x08   res     1
+               00268 r0x09   res     1
+               00269 
+               00270 udata_OS_RTC_0  udata
+gpasm-0.13.7 beta               build/default/production/brtos/OS_RTC.asm7-19-2011  15:07:13          PAGE  6
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+ 
+               00271 _Hora   res     3
+               00272 
+               00273 udata_OS_RTC_1  udata
+               00274 _Data   res     4
+               00275 
+               00276 ;--------------------------------------------------------
+               00277 ; global & static initialisations
+               00278 ;--------------------------------------------------------
+               00279 ; I code from now on!
+               00280 ; ; Starting pCode block
+               00281 S_OS_RTC__OSUpDate      code
+0000 00282 _OSUpDate:
+               00283 ;       .line   296; brtos/OS_RTC.c     OSDate* OSUpDate(void)
+0000 CFDA FFE5 00284         MOVFF   FSR2H, POSTDEC1
+0004 CFD9 FFE5 00285         MOVFF   FSR2L, POSTDEC1
+0008 CFE2 FFDA 00286         MOVFF   FSR1H, FSR2H
+000C CFE1 FFD9 00287         MOVFF   FSR1L, FSR2L
+0010 C000 FFE5 00288         MOVFF   r0x00, POSTDEC1
+0014 C000 FFE5 00289         MOVFF   r0x01, POSTDEC1
+0018 C000 FFE5 00290         MOVFF   r0x02, POSTDEC1
+               00291 ;       .line   298; brtos/OS_RTC.c     return &Data;
+001C 0E00      00292         MOVLW   HIGH(_Data)
+001E 6E00      00293         MOVWF   r0x01
+0020 0E00      00294         MOVLW   LOW(_Data)
+0022 6E00      00295         MOVWF   r0x00
+0024 0E80      00296         MOVLW   0x80
+0026 6E00      00297         MOVWF   r0x02
+0028 C000 FFF4 00298         MOVFF   r0x02, PRODH
+002C C000 FFF3 00299         MOVFF   r0x01, PRODL
+0030 5000      00300         MOVF    r0x00, W
+0032 CFE4 F000 00301         MOVFF   PREINC1, r0x02
+0036 CFE4 F000 00302         MOVFF   PREINC1, r0x01
+003A CFE4 F000 00303         MOVFF   PREINC1, r0x00
+003E CFE4 FFD9 00304         MOVFF   PREINC1, FSR2L
+0042 CFE4 FFDA 00305         MOVFF   PREINC1, FSR2H
+0046 0012      00306         RETURN  
+               00307 
+               00308 ; ; Starting pCode block
+               00309 S_OS_RTC__OSUptime      code
+0000 00310 _OSUptime:
+               00311 ;       .line   276; brtos/OS_RTC.c     OSTime* OSUptime(void)
+0000 CFDA FFE5 00312         MOVFF   FSR2H, POSTDEC1
+0004 CFD9 FFE5 00313         MOVFF   FSR2L, POSTDEC1
+0008 CFE2 FFDA 00314         MOVFF   FSR1H, FSR2H
+000C CFE1 FFD9 00315         MOVFF   FSR1L, FSR2L
+0010 C000 FFE5 00316         MOVFF   r0x00, POSTDEC1
+0014 C000 FFE5 00317         MOVFF   r0x01, POSTDEC1
+0018 C000 FFE5 00318         MOVFF   r0x02, POSTDEC1
+               00319 ;       .line   278; brtos/OS_RTC.c     return &Hora;
+001C 0E00      00320         MOVLW   HIGH(_Hora)
+001E 6E00      00321         MOVWF   r0x01
+0020 0E00      00322         MOVLW   LOW(_Hora)
+0022 6E00      00323         MOVWF   r0x00
+0024 0E80      00324         MOVLW   0x80
+gpasm-0.13.7 beta               build/default/production/brtos/OS_RTC.asm7-19-2011  15:07:13          PAGE  7
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+ 
+0026 6E00      00325         MOVWF   r0x02
+0028 C000 FFF4 00326         MOVFF   r0x02, PRODH
+002C C000 FFF3 00327         MOVFF   r0x01, PRODL
+0030 5000      00328         MOVF    r0x00, W
+0032 CFE4 F000 00329         MOVFF   PREINC1, r0x02
+0036 CFE4 F000 00330         MOVFF   PREINC1, r0x01
+003A CFE4 F000 00331         MOVFF   PREINC1, r0x00
+003E CFE4 FFD9 00332         MOVFF   PREINC1, FSR2L
+0042 CFE4 FFDA 00333         MOVFF   PREINC1, FSR2H
+0046 0012      00334         RETURN  
+               00335 
+               00336 ; ; Starting pCode block
+               00337 S_OS_RTC__OSResetDate   code
+0000 00338 _OSResetDate:
+               00339 ;       .line   241; brtos/OS_RTC.c     void OSResetDate(OSDate *Ptr_Dia)
+0000 CFDA FFE5 00340         MOVFF   FSR2H, POSTDEC1
+0004 CFD9 FFE5 00341         MOVFF   FSR2L, POSTDEC1
+0008 CFE2 FFDA 00342         MOVFF   FSR1H, FSR2H
+000C CFE1 FFD9 00343         MOVFF   FSR1L, FSR2L
+0010 C000 FFE5 00344         MOVFF   r0x00, POSTDEC1
+0014 C000 FFE5 00345         MOVFF   r0x01, POSTDEC1
+0018 C000 FFE5 00346         MOVFF   r0x02, POSTDEC1
+001C C000 FFE5 00347         MOVFF   r0x03, POSTDEC1
+0020 C000 FFE5 00348         MOVFF   r0x04, POSTDEC1
+0024 C000 FFE5 00349         MOVFF   r0x05, POSTDEC1
+0028 0E03      00350         MOVLW   0x03
+002A CFDB F000 00351         MOVFF   PLUSW2, r0x00
+002E 0E04      00352         MOVLW   0x04
+0030 CFDB F000 00353         MOVFF   PLUSW2, r0x01
+0034 0E05      00354         MOVLW   0x05
+0036 CFDB F000 00355         MOVFF   PLUSW2, r0x02
+003A 0000      00356         BANKSEL _iNesting
+               00357 ;       .line   246; brtos/OS_RTC.c     if (!iNesting)
+003C 5100      00358         MOVF    _iNesting, W, B
+003E E100      00359         BNZ     _00196_DS_
+               00360 ;       .line   248; brtos/OS_RTC.c     OSEnterCritical();
+0040 9E00      00361         BCF     _INTCONbits, 7
+0042 00362 _00196_DS_:
+               00363 ;       .line   250; brtos/OS_RTC.c     Ptr_Dia->RTC_Day = 0;
+0042 0E00      00364         MOVLW   0x00
+0044 6EE5      00365         MOVWF   POSTDEC1
+0046 C000 FFE9 00366         MOVFF   r0x00, FSR0L
+004A C000 FFF3 00367         MOVFF   r0x01, PRODL
+004E 5000      00368         MOVF    r0x02, W
+0050 EC00 F000 00369         CALL    __gptrput1
+               00370 ;       .line   251; brtos/OS_RTC.c     Ptr_Dia->RTC_Month = 0;
+0054 5000      00371         MOVF    r0x00, W
+0056 0F01      00372         ADDLW   0x01
+0058 6E00      00373         MOVWF   r0x03
+005A 0E00      00374         MOVLW   0x00
+005C 2000      00375         ADDWFC  r0x01, W
+005E 6E00      00376         MOVWF   r0x04
+0060 0E00      00377         MOVLW   0x00
+0062 2000      00378         ADDWFC  r0x02, W
+gpasm-0.13.7 beta               build/default/production/brtos/OS_RTC.asm7-19-2011  15:07:13          PAGE  8
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+ 
+0064 6E00      00379         MOVWF   r0x05
+0066 0E00      00380         MOVLW   0x00
+0068 6EE5      00381         MOVWF   POSTDEC1
+006A C000 FFE9 00382         MOVFF   r0x03, FSR0L
+006E C000 FFF3 00383         MOVFF   r0x04, PRODL
+0072 5000      00384         MOVF    r0x05, W
+0074 EC00 F000 00385         CALL    __gptrput1
+               00386 ;       .line   252; brtos/OS_RTC.c     Ptr_Dia->RTC_Year = 0;
+0078 0E02      00387         MOVLW   0x02
+007A 2600      00388         ADDWF   r0x00, F
+007C 0E00      00389         MOVLW   0x00
+007E 2200      00390         ADDWFC  r0x01, F
+0080 0E00      00391         MOVLW   0x00
+0082 2200      00392         ADDWFC  r0x02, F
+0084 0E00      00393         MOVLW   0x00
+0086 6EE5      00394         MOVWF   POSTDEC1
+0088 0E00      00395         MOVLW   0x00
+008A 6EF4      00396         MOVWF   PRODH
+008C C000 FFE9 00397         MOVFF   r0x00, FSR0L
+0090 C000 FFF3 00398         MOVFF   r0x01, PRODL
+0094 5000      00399         MOVF    r0x02, W
+0096 EC00 F000 00400         CALL    __gptrput2
+009A 0000      00401         BANKSEL _iNesting
+               00402 ;       .line   255; brtos/OS_RTC.c     if (!iNesting)
+009C 5100      00403         MOVF    _iNesting, W, B
+009E E100      00404         BNZ     _00199_DS_
+               00405 ;       .line   257; brtos/OS_RTC.c     OSExitCritical();
+00A0 8E00      00406         BSF     _INTCONbits, 7
+00A2 00407 _00199_DS_:
+00A2 CFE4 F000 00408         MOVFF   PREINC1, r0x05
+00A6 CFE4 F000 00409         MOVFF   PREINC1, r0x04
+00AA CFE4 F000 00410         MOVFF   PREINC1, r0x03
+00AE CFE4 F000 00411         MOVFF   PREINC1, r0x02
+00B2 CFE4 F000 00412         MOVFF   PREINC1, r0x01
+00B6 CFE4 F000 00413         MOVFF   PREINC1, r0x00
+00BA CFE4 FFD9 00414         MOVFF   PREINC1, FSR2L
+00BE CFE4 FFDA 00415         MOVFF   PREINC1, FSR2H
+00C2 0012      00416         RETURN  
+               00417 
+               00418 ; ; Starting pCode block
+               00419 S_OS_RTC__OSResetTime   code
+0000 00420 _OSResetTime:
+               00421 ;       .line   206; brtos/OS_RTC.c     void OSResetTime(OSTime *Ptr_Hora)
+0000 CFDA FFE5 00422         MOVFF   FSR2H, POSTDEC1
+0004 CFD9 FFE5 00423         MOVFF   FSR2L, POSTDEC1
+0008 CFE2 FFDA 00424         MOVFF   FSR1H, FSR2H
+000C CFE1 FFD9 00425         MOVFF   FSR1L, FSR2L
+0010 C000 FFE5 00426         MOVFF   r0x00, POSTDEC1
+0014 C000 FFE5 00427         MOVFF   r0x01, POSTDEC1
+0018 C000 FFE5 00428         MOVFF   r0x02, POSTDEC1
+001C C000 FFE5 00429         MOVFF   r0x03, POSTDEC1
+0020 C000 FFE5 00430         MOVFF   r0x04, POSTDEC1
+0024 C000 FFE5 00431         MOVFF   r0x05, POSTDEC1
+0028 0E03      00432         MOVLW   0x03
+gpasm-0.13.7 beta               build/default/production/brtos/OS_RTC.asm7-19-2011  15:07:13          PAGE  9
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+ 
+002A CFDB F000 00433         MOVFF   PLUSW2, r0x00
+002E 0E04      00434         MOVLW   0x04
+0030 CFDB F000 00435         MOVFF   PLUSW2, r0x01
+0034 0E05      00436         MOVLW   0x05
+0036 CFDB F000 00437         MOVFF   PLUSW2, r0x02
+003A 0000      00438         BANKSEL _iNesting
+               00439 ;       .line   211; brtos/OS_RTC.c     if (!iNesting)
+003C 5100      00440         MOVF    _iNesting, W, B
+003E E100      00441         BNZ     _00187_DS_
+               00442 ;       .line   213; brtos/OS_RTC.c     OSEnterCritical();
+0040 9E00      00443         BCF     _INTCONbits, 7
+0042 00444 _00187_DS_:
+               00445 ;       .line   215; brtos/OS_RTC.c     (Ptr_Hora->RTC_Second) = 0;
+0042 0E00      00446         MOVLW   0x00
+0044 6EE5      00447         MOVWF   POSTDEC1
+0046 C000 FFE9 00448         MOVFF   r0x00, FSR0L
+004A C000 FFF3 00449         MOVFF   r0x01, PRODL
+004E 5000      00450         MOVF    r0x02, W
+0050 EC00 F000 00451         CALL    __gptrput1
+               00452 ;       .line   216; brtos/OS_RTC.c     (Ptr_Hora->RTC_Minute) = 0;
+0054 5000      00453         MOVF    r0x00, W
+0056 0F01      00454         ADDLW   0x01
+0058 6E00      00455         MOVWF   r0x03
+005A 0E00      00456         MOVLW   0x00
+005C 2000      00457         ADDWFC  r0x01, W
+005E 6E00      00458         MOVWF   r0x04
+0060 0E00      00459         MOVLW   0x00
+0062 2000      00460         ADDWFC  r0x02, W
+0064 6E00      00461         MOVWF   r0x05
+0066 0E00      00462         MOVLW   0x00
+0068 6EE5      00463         MOVWF   POSTDEC1
+006A C000 FFE9 00464         MOVFF   r0x03, FSR0L
+006E C000 FFF3 00465         MOVFF   r0x04, PRODL
+0072 5000      00466         MOVF    r0x05, W
+0074 EC00 F000 00467         CALL    __gptrput1
+               00468 ;       .line   217; brtos/OS_RTC.c     (Ptr_Hora->RTC_Hour) = 0;
+0078 0E02      00469         MOVLW   0x02
+007A 2600      00470         ADDWF   r0x00, F
+007C 0E00      00471         MOVLW   0x00
+007E 2200      00472         ADDWFC  r0x01, F
+0080 0E00      00473         MOVLW   0x00
+0082 2200      00474         ADDWFC  r0x02, F
+0084 0E00      00475         MOVLW   0x00
+0086 6EE5      00476         MOVWF   POSTDEC1
+0088 C000 FFE9 00477         MOVFF   r0x00, FSR0L
+008C C000 FFF3 00478         MOVFF   r0x01, PRODL
+0090 5000      00479         MOVF    r0x02, W
+0092 EC00 F000 00480         CALL    __gptrput1
+0096 0000      00481         BANKSEL _iNesting
+               00482 ;       .line   220; brtos/OS_RTC.c     if (!iNesting)
+0098 5100      00483         MOVF    _iNesting, W, B
+009A E100      00484         BNZ     _00190_DS_
+               00485 ;       .line   222; brtos/OS_RTC.c     OSExitCritical();
+009C 8E00      00486         BSF     _INTCONbits, 7
+gpasm-0.13.7 beta               build/default/production/brtos/OS_RTC.asm7-19-2011  15:07:13          PAGE 10
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+ 
+009E 00487 _00190_DS_:
+009E CFE4 F000 00488         MOVFF   PREINC1, r0x05
+00A2 CFE4 F000 00489         MOVFF   PREINC1, r0x04
+00A6 CFE4 F000 00490         MOVFF   PREINC1, r0x03
+00AA CFE4 F000 00491         MOVFF   PREINC1, r0x02
+00AE CFE4 F000 00492         MOVFF   PREINC1, r0x01
+00B2 CFE4 F000 00493         MOVFF   PREINC1, r0x00
+00B6 CFE4 FFD9 00494         MOVFF   PREINC1, FSR2L
+00BA CFE4 FFDA 00495         MOVFF   PREINC1, FSR2H
+00BE 0012      00496         RETURN  
+               00497 
+               00498 ; ; Starting pCode block
+               00499 S_OS_RTC__OSUpdateDate  code
+0000 00500 _OSUpdateDate:
+               00501 ;       .line   157; brtos/OS_RTC.c     void OSUpdateDate(OSDate *Ptr_Dia)
+0000 CFDA FFE5 00502         MOVFF   FSR2H, POSTDEC1
+0004 CFD9 FFE5 00503         MOVFF   FSR2L, POSTDEC1
+0008 CFE2 FFDA 00504         MOVFF   FSR1H, FSR2H
+000C CFE1 FFD9 00505         MOVFF   FSR1L, FSR2L
+0010 C000 FFE5 00506         MOVFF   r0x00, POSTDEC1
+0014 C000 FFE5 00507         MOVFF   r0x01, POSTDEC1
+0018 C000 FFE5 00508         MOVFF   r0x02, POSTDEC1
+001C C000 FFE5 00509         MOVFF   r0x03, POSTDEC1
+0020 C000 FFE5 00510         MOVFF   r0x04, POSTDEC1
+0024 C000 FFE5 00511         MOVFF   r0x05, POSTDEC1
+0028 C000 FFE5 00512         MOVFF   r0x06, POSTDEC1
+002C 0E03      00513         MOVLW   0x03
+002E CFDB F000 00514         MOVFF   PLUSW2, r0x00
+0032 0E04      00515         MOVLW   0x04
+0034 CFDB F000 00516         MOVFF   PLUSW2, r0x01
+0038 0E05      00517         MOVLW   0x05
+003A CFDB F000 00518         MOVFF   PLUSW2, r0x02
+003E 0000      00519         BANKSEL _iNesting
+               00520 ;       .line   162; brtos/OS_RTC.c     if (!iNesting)
+0040 5100      00521         MOVF    _iNesting, W, B
+0042 E100      00522         BNZ     _00160_DS_
+               00523 ;       .line   164; brtos/OS_RTC.c     OSEnterCritical();
+0044 9E00      00524         BCF     _INTCONbits, 7
+0046 00525 _00160_DS_:
+               00526 ;       .line   166; brtos/OS_RTC.c     Ptr_Dia -> RTC_Day++;    
+0046 C000 FFE9 00527         MOVFF   r0x00, FSR0L
+004A C000 FFF3 00528         MOVFF   r0x01, PRODL
+004E 5000      00529         MOVF    r0x02, W
+0050 EC00 F000 00530         CALL    __gptrget1
+0054 6E00      00531         MOVWF   r0x03
+0056 2A00      00532         INCF    r0x03, F
+0058 C000 FFE5 00533         MOVFF   r0x03, POSTDEC1
+005C C000 FFE9 00534         MOVFF   r0x00, FSR0L
+0060 C000 FFF3 00535         MOVFF   r0x01, PRODL
+0064 5000      00536         MOVF    r0x02, W
+0066 EC00 F000 00537         CALL    __gptrput1
+               00538 ;       .line   168; brtos/OS_RTC.c     if (Ptr_Dia -> RTC_Day == 30){ 
+006A 5000      00539         MOVF    r0x03, W
+006C 0A1E      00540         XORLW   0x1e
+gpasm-0.13.7 beta               build/default/production/brtos/OS_RTC.asm7-19-2011  15:07:13          PAGE 11
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+ 
+006E E000      00541         BZ      _00177_DS_
+0070 D000      00542         BRA     _00166_DS_
+0072 00543 _00177_DS_:
+               00544 ;       .line   171; brtos/OS_RTC.c     Ptr_Dia -> RTC_Day = 0;
+0072 0E00      00545         MOVLW   0x00
+0074 6EE5      00546         MOVWF   POSTDEC1
+0076 C000 FFE9 00547         MOVFF   r0x00, FSR0L
+007A C000 FFF3 00548         MOVFF   r0x01, PRODL
+007E 5000      00549         MOVF    r0x02, W
+0080 EC00 F000 00550         CALL    __gptrput1
+               00551 ;       .line   172; brtos/OS_RTC.c     Ptr_Dia -> RTC_Month++;
+0084 5000      00552         MOVF    r0x00, W
+0086 0F01      00553         ADDLW   0x01
+0088 6E00      00554         MOVWF   r0x03
+008A 0E00      00555         MOVLW   0x00
+008C 2000      00556         ADDWFC  r0x01, W
+008E 6E00      00557         MOVWF   r0x04
+0090 0E00      00558         MOVLW   0x00
+0092 2000      00559         ADDWFC  r0x02, W
+0094 6E00      00560         MOVWF   r0x05
+0096 C000 FFE9 00561         MOVFF   r0x03, FSR0L
+009A C000 FFF3 00562         MOVFF   r0x04, PRODL
+009E 5000      00563         MOVF    r0x05, W
+00A0 EC00 F000 00564         CALL    __gptrget1
+00A4 6E00      00565         MOVWF   r0x06
+00A6 2A00      00566         INCF    r0x06, F
+00A8 C000 FFE5 00567         MOVFF   r0x06, POSTDEC1
+00AC C000 FFE9 00568         MOVFF   r0x03, FSR0L
+00B0 C000 FFF3 00569         MOVFF   r0x04, PRODL
+00B4 5000      00570         MOVF    r0x05, W
+00B6 EC00 F000 00571         CALL    __gptrput1
+               00572 ;       .line   174; brtos/OS_RTC.c     if (Ptr_Dia -> RTC_Month == 12){
+00BA 5000      00573         MOVF    r0x06, W
+00BC 0A0C      00574         XORLW   0x0c
+00BE E100      00575         BNZ     _00166_DS_
+               00576 ;       .line   176; brtos/OS_RTC.c     Ptr_Dia -> RTC_Month = 0;
+00C0 0E00      00577         MOVLW   0x00
+00C2 6EE5      00578         MOVWF   POSTDEC1
+00C4 C000 FFE9 00579         MOVFF   r0x03, FSR0L
+00C8 C000 FFF3 00580         MOVFF   r0x04, PRODL
+00CC 5000      00581         MOVF    r0x05, W
+00CE EC00 F000 00582         CALL    __gptrput1
+               00583 ;       .line   177; brtos/OS_RTC.c     Ptr_Dia -> RTC_Year++;
+00D2 0E02      00584         MOVLW   0x02
+00D4 2600      00585         ADDWF   r0x00, F
+00D6 0E00      00586         MOVLW   0x00
+00D8 2200      00587         ADDWFC  r0x01, F
+00DA 0E00      00588         MOVLW   0x00
+00DC 2200      00589         ADDWFC  r0x02, F
+00DE C000 FFE9 00590         MOVFF   r0x00, FSR0L
+00E2 C000 FFF3 00591         MOVFF   r0x01, PRODL
+00E6 5000      00592         MOVF    r0x02, W
+00E8 EC00 F000 00593         CALL    __gptrget2
+00EC 6E00      00594         MOVWF   r0x03
+gpasm-0.13.7 beta               build/default/production/brtos/OS_RTC.asm7-19-2011  15:07:13          PAGE 12
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+ 
+00EE CFF3 F000 00595         MOVFF   PRODL, r0x04
+00F2 2A00      00596         INCF    r0x03, F
+00F4 B0D8      00597         BTFSC   STATUS, 0
+00F6 2A00      00598         INCF    r0x04, F
+00F8 C000 FFE5 00599         MOVFF   r0x03, POSTDEC1
+00FC C000 FFF4 00600         MOVFF   r0x04, PRODH
+0100 C000 FFE9 00601         MOVFF   r0x00, FSR0L
+0104 C000 FFF3 00602         MOVFF   r0x01, PRODL
+0108 5000      00603         MOVF    r0x02, W
+010A EC00 F000 00604         CALL    __gptrput2
+               00605 ;       .line   179; brtos/OS_RTC.c     if (Ptr_Dia -> RTC_Year == 9999){    // ano m�ximo 9999    
+010E 5000      00606         MOVF    r0x03, W
+0110 0A0F      00607         XORLW   0x0f
+0112 E100      00608         BNZ     _00180_DS_
+0114 5000      00609         MOVF    r0x04, W
+0116 0A27      00610         XORLW   0x27
+0118 E000      00611         BZ      _00181_DS_
+011A 00612 _00180_DS_:
+011A D000      00613         BRA     _00166_DS_
+011C 00614 _00181_DS_:
+               00615 ;       .line   181; brtos/OS_RTC.c     Ptr_Dia -> RTC_Year = 0;
+011C 0E00      00616         MOVLW   0x00
+011E 6EE5      00617         MOVWF   POSTDEC1
+0120 0E00      00618         MOVLW   0x00
+0122 6EF4      00619         MOVWF   PRODH
+0124 C000 FFE9 00620         MOVFF   r0x00, FSR0L
+0128 C000 FFF3 00621         MOVFF   r0x01, PRODL
+012C 5000      00622         MOVF    r0x02, W
+012E EC00 F000 00623         CALL    __gptrput2
+0132 00624 _00166_DS_:
+0132 0000      00625         BANKSEL _iNesting
+               00626 ;       .line   185; brtos/OS_RTC.c     if (!iNesting)
+0134 5100      00627         MOVF    _iNesting, W, B
+0136 E100      00628         BNZ     _00169_DS_
+               00629 ;       .line   187; brtos/OS_RTC.c     OSExitCritical();
+0138 8E00      00630         BSF     _INTCONbits, 7
+013A 00631 _00169_DS_:
+013A CFE4 F000 00632         MOVFF   PREINC1, r0x06
+013E CFE4 F000 00633         MOVFF   PREINC1, r0x05
+0142 CFE4 F000 00634         MOVFF   PREINC1, r0x04
+0146 CFE4 F000 00635         MOVFF   PREINC1, r0x03
+014A CFE4 F000 00636         MOVFF   PREINC1, r0x02
+014E CFE4 F000 00637         MOVFF   PREINC1, r0x01
+0152 CFE4 F000 00638         MOVFF   PREINC1, r0x00
+0156 CFE4 FFD9 00639         MOVFF   PREINC1, FSR2L
+015A CFE4 FFDA 00640         MOVFF   PREINC1, FSR2H
+015E 0012      00641         RETURN  
+               00642 
+               00643 ; ; Starting pCode block
+               00644 S_OS_RTC__OSUpdateUptime        code
+0000 00645 _OSUpdateUptime:
+               00646 ;       .line   108; brtos/OS_RTC.c     void OSUpdateUptime(OSTime *Ptr_Hora,OSDate *Ptr_Dia)
+0000 CFDA FFE5 00647         MOVFF   FSR2H, POSTDEC1
+0004 CFD9 FFE5 00648         MOVFF   FSR2L, POSTDEC1
+gpasm-0.13.7 beta               build/default/production/brtos/OS_RTC.asm7-19-2011  15:07:13          PAGE 13
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+ 
+0008 CFE2 FFDA 00649         MOVFF   FSR1H, FSR2H
+000C CFE1 FFD9 00650         MOVFF   FSR1L, FSR2L
+0010 C000 FFE5 00651         MOVFF   r0x00, POSTDEC1
+0014 C000 FFE5 00652         MOVFF   r0x01, POSTDEC1
+0018 C000 FFE5 00653         MOVFF   r0x02, POSTDEC1
+001C C000 FFE5 00654         MOVFF   r0x03, POSTDEC1
+0020 C000 FFE5 00655         MOVFF   r0x04, POSTDEC1
+0024 C000 FFE5 00656         MOVFF   r0x05, POSTDEC1
+0028 C000 FFE5 00657         MOVFF   r0x06, POSTDEC1
+002C C000 FFE5 00658         MOVFF   r0x07, POSTDEC1
+0030 C000 FFE5 00659         MOVFF   r0x08, POSTDEC1
+0034 C000 FFE5 00660         MOVFF   r0x09, POSTDEC1
+0038 0E03      00661         MOVLW   0x03
+003A CFDB F000 00662         MOVFF   PLUSW2, r0x00
+003E 0E04      00663         MOVLW   0x04
+0040 CFDB F000 00664         MOVFF   PLUSW2, r0x01
+0044 0E05      00665         MOVLW   0x05
+0046 CFDB F000 00666         MOVFF   PLUSW2, r0x02
+004A 0E06      00667         MOVLW   0x06
+004C CFDB F000 00668         MOVFF   PLUSW2, r0x03
+0050 0E07      00669         MOVLW   0x07
+0052 CFDB F000 00670         MOVFF   PLUSW2, r0x04
+0056 0E08      00671         MOVLW   0x08
+0058 CFDB F000 00672         MOVFF   PLUSW2, r0x05
+005C 0000      00673         BANKSEL _iNesting
+               00674 ;       .line   113; brtos/OS_RTC.c     if (!iNesting)
+005E 5100      00675         MOVF    _iNesting, W, B
+0060 E100      00676         BNZ     _00133_DS_
+               00677 ;       .line   115; brtos/OS_RTC.c     OSEnterCritical();
+0062 9E00      00678         BCF     _INTCONbits, 7
+0064 00679 _00133_DS_:
+               00680 ;       .line   117; brtos/OS_RTC.c     Ptr_Hora -> RTC_Second++;
+0064 C000 FFE9 00681         MOVFF   r0x00, FSR0L
+0068 C000 FFF3 00682         MOVFF   r0x01, PRODL
+006C 5000      00683         MOVF    r0x02, W
+006E EC00 F000 00684         CALL    __gptrget1
+0072 6E00      00685         MOVWF   r0x06
+0074 2A00      00686         INCF    r0x06, F
+0076 C000 FFE5 00687         MOVFF   r0x06, POSTDEC1
+007A C000 FFE9 00688         MOVFF   r0x00, FSR0L
+007E C000 FFF3 00689         MOVFF   r0x01, PRODL
+0082 5000      00690         MOVF    r0x02, W
+0084 EC00 F000 00691         CALL    __gptrput1
+               00692 ;       .line   119; brtos/OS_RTC.c     if (Ptr_Hora -> RTC_Second == 60){
+0088 5000      00693         MOVF    r0x06, W
+008A 0A3C      00694         XORLW   0x3c
+008C E000      00695         BZ      _00150_DS_
+008E D000      00696         BRA     _00139_DS_
+0090 00697 _00150_DS_:
+               00698 ;       .line   121; brtos/OS_RTC.c     Ptr_Hora -> RTC_Second = 0;
+0090 0E00      00699         MOVLW   0x00
+0092 6EE5      00700         MOVWF   POSTDEC1
+0094 C000 FFE9 00701         MOVFF   r0x00, FSR0L
+0098 C000 FFF3 00702         MOVFF   r0x01, PRODL
+gpasm-0.13.7 beta               build/default/production/brtos/OS_RTC.asm7-19-2011  15:07:13          PAGE 14
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+ 
+009C 5000      00703         MOVF    r0x02, W
+009E EC00 F000 00704         CALL    __gptrput1
+               00705 ;       .line   122; brtos/OS_RTC.c     Ptr_Hora -> RTC_Minute++;
+00A2 5000      00706         MOVF    r0x00, W
+00A4 0F01      00707         ADDLW   0x01
+00A6 6E00      00708         MOVWF   r0x06
+00A8 0E00      00709         MOVLW   0x00
+00AA 2000      00710         ADDWFC  r0x01, W
+00AC 6E00      00711         MOVWF   r0x07
+00AE 0E00      00712         MOVLW   0x00
+00B0 2000      00713         ADDWFC  r0x02, W
+00B2 6E00      00714         MOVWF   r0x08
+00B4 C000 FFE9 00715         MOVFF   r0x06, FSR0L
+00B8 C000 FFF3 00716         MOVFF   r0x07, PRODL
+00BC 5000      00717         MOVF    r0x08, W
+00BE EC00 F000 00718         CALL    __gptrget1
+00C2 6E00      00719         MOVWF   r0x09
+00C4 2A00      00720         INCF    r0x09, F
+00C6 C000 FFE5 00721         MOVFF   r0x09, POSTDEC1
+00CA C000 FFE9 00722         MOVFF   r0x06, FSR0L
+00CE C000 FFF3 00723         MOVFF   r0x07, PRODL
+00D2 5000      00724         MOVF    r0x08, W
+00D4 EC00 F000 00725         CALL    __gptrput1
+               00726 ;       .line   124; brtos/OS_RTC.c     if (Ptr_Hora -> RTC_Minute == 60){
+00D8 5000      00727         MOVF    r0x09, W
+00DA 0A3C      00728         XORLW   0x3c
+00DC E000      00729         BZ      _00152_DS_
+00DE D000      00730         BRA     _00139_DS_
+00E0 00731 _00152_DS_:
+               00732 ;       .line   126; brtos/OS_RTC.c     Ptr_Hora -> RTC_Minute = 0;
+00E0 0E00      00733         MOVLW   0x00
+00E2 6EE5      00734         MOVWF   POSTDEC1
+00E4 C000 FFE9 00735         MOVFF   r0x06, FSR0L
+00E8 C000 FFF3 00736         MOVFF   r0x07, PRODL
+00EC 5000      00737         MOVF    r0x08, W
+00EE EC00 F000 00738         CALL    __gptrput1
+               00739 ;       .line   127; brtos/OS_RTC.c     Ptr_Hora -> RTC_Hour++;
+00F2 0E02      00740         MOVLW   0x02
+00F4 2600      00741         ADDWF   r0x00, F
+00F6 0E00      00742         MOVLW   0x00
+00F8 2200      00743         ADDWFC  r0x01, F
+00FA 0E00      00744         MOVLW   0x00
+00FC 2200      00745         ADDWFC  r0x02, F
+00FE C000 FFE9 00746         MOVFF   r0x00, FSR0L
+0102 C000 FFF3 00747         MOVFF   r0x01, PRODL
+0106 5000      00748         MOVF    r0x02, W
+0108 EC00 F000 00749         CALL    __gptrget1
+010C 6E00      00750         MOVWF   r0x06
+010E 2A00      00751         INCF    r0x06, F
+0110 C000 FFE5 00752         MOVFF   r0x06, POSTDEC1
+0114 C000 FFE9 00753         MOVFF   r0x00, FSR0L
+0118 C000 FFF3 00754         MOVFF   r0x01, PRODL
+011C 5000      00755         MOVF    r0x02, W
+011E EC00 F000 00756         CALL    __gptrput1
+gpasm-0.13.7 beta               build/default/production/brtos/OS_RTC.asm7-19-2011  15:07:13          PAGE 15
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+ 
+               00757 ;       .line   129; brtos/OS_RTC.c     if (Ptr_Hora -> RTC_Hour == 24){
+0122 5000      00758         MOVF    r0x06, W
+0124 0A18      00759         XORLW   0x18
+0126 E100      00760         BNZ     _00139_DS_
+               00761 ;       .line   131; brtos/OS_RTC.c     Ptr_Hora -> RTC_Hour = 0;
+0128 0E00      00762         MOVLW   0x00
+012A 6EE5      00763         MOVWF   POSTDEC1
+012C C000 FFE9 00764         MOVFF   r0x00, FSR0L
+0130 C000 FFF3 00765         MOVFF   r0x01, PRODL
+0134 5000      00766         MOVF    r0x02, W
+0136 EC00 F000 00767         CALL    __gptrput1
+               00768 ;       .line   132; brtos/OS_RTC.c     Ptr_Dia -> RTC_Day++;
+013A C000 FFE9 00769         MOVFF   r0x03, FSR0L
+013E C000 FFF3 00770         MOVFF   r0x04, PRODL
+0142 5000      00771         MOVF    r0x05, W
+0144 EC00 F000 00772         CALL    __gptrget1
+0148 6E00      00773         MOVWF   r0x00
+014A 2A00      00774         INCF    r0x00, F
+014C C000 FFE5 00775         MOVFF   r0x00, POSTDEC1
+0150 C000 FFE9 00776         MOVFF   r0x03, FSR0L
+0154 C000 FFF3 00777         MOVFF   r0x04, PRODL
+0158 5000      00778         MOVF    r0x05, W
+015A EC00 F000 00779         CALL    __gptrput1
+015E 00780 _00139_DS_:
+015E 0000      00781         BANKSEL _iNesting
+               00782 ;       .line   137; brtos/OS_RTC.c     if (!iNesting)
+0160 5100      00783         MOVF    _iNesting, W, B
+0162 E100      00784         BNZ     _00142_DS_
+               00785 ;       .line   139; brtos/OS_RTC.c     OSExitCritical();
+0164 8E00      00786         BSF     _INTCONbits, 7
+0166 00787 _00142_DS_:
+0166 CFE4 F000 00788         MOVFF   PREINC1, r0x09
+016A CFE4 F000 00789         MOVFF   PREINC1, r0x08
+016E CFE4 F000 00790         MOVFF   PREINC1, r0x07
+0172 CFE4 F000 00791         MOVFF   PREINC1, r0x06
+0176 CFE4 F000 00792         MOVFF   PREINC1, r0x05
+017A CFE4 F000 00793         MOVFF   PREINC1, r0x04
+017E CFE4 F000 00794         MOVFF   PREINC1, r0x03
+0182 CFE4 F000 00795         MOVFF   PREINC1, r0x02
+0186 CFE4 F000 00796         MOVFF   PREINC1, r0x01
+018A CFE4 F000 00797         MOVFF   PREINC1, r0x00
+018E CFE4 FFD9 00798         MOVFF   PREINC1, FSR2L
+0192 CFE4 FFDA 00799         MOVFF   PREINC1, FSR2H
+0196 0012      00800         RETURN  
+               00801 
+               00802 ; ; Starting pCode block
+               00803 S_OS_RTC__OSUpdateTime  code
+0000 00804 _OSUpdateTime:
+               00805 ;       .line   59; brtos/OS_RTC.c      void OSUpdateTime(OSTime *Ptr_Hora)
+0000 CFDA FFE5 00806         MOVFF   FSR2H, POSTDEC1
+0004 CFD9 FFE5 00807         MOVFF   FSR2L, POSTDEC1
+0008 CFE2 FFDA 00808         MOVFF   FSR1H, FSR2H
+000C CFE1 FFD9 00809         MOVFF   FSR1L, FSR2L
+0010 C000 FFE5 00810         MOVFF   r0x00, POSTDEC1
+gpasm-0.13.7 beta               build/default/production/brtos/OS_RTC.asm7-19-2011  15:07:13          PAGE 16
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+ 
+0014 C000 FFE5 00811         MOVFF   r0x01, POSTDEC1
+0018 C000 FFE5 00812         MOVFF   r0x02, POSTDEC1
+001C C000 FFE5 00813         MOVFF   r0x03, POSTDEC1
+0020 C000 FFE5 00814         MOVFF   r0x04, POSTDEC1
+0024 C000 FFE5 00815         MOVFF   r0x05, POSTDEC1
+0028 C000 FFE5 00816         MOVFF   r0x06, POSTDEC1
+002C 0E03      00817         MOVLW   0x03
+002E CFDB F000 00818         MOVFF   PLUSW2, r0x00
+0032 0E04      00819         MOVLW   0x04
+0034 CFDB F000 00820         MOVFF   PLUSW2, r0x01
+0038 0E05      00821         MOVLW   0x05
+003A CFDB F000 00822         MOVFF   PLUSW2, r0x02
+003E 0000      00823         BANKSEL _iNesting
+               00824 ;       .line   64; brtos/OS_RTC.c      if (!iNesting)
+0040 5100      00825         MOVF    _iNesting, W, B
+0042 E100      00826         BNZ     _00106_DS_
+               00827 ;       .line   66; brtos/OS_RTC.c      OSEnterCritical();
+0044 9E00      00828         BCF     _INTCONbits, 7
+0046 00829 _00106_DS_:
+               00830 ;       .line   68; brtos/OS_RTC.c      Ptr_Hora -> RTC_Second++;
+0046 C000 FFE9 00831         MOVFF   r0x00, FSR0L
+004A C000 FFF3 00832         MOVFF   r0x01, PRODL
+004E 5000      00833         MOVF    r0x02, W
+0050 EC00 F000 00834         CALL    __gptrget1
+0054 6E00      00835         MOVWF   r0x03
+0056 2A00      00836         INCF    r0x03, F
+0058 C000 FFE5 00837         MOVFF   r0x03, POSTDEC1
+005C C000 FFE9 00838         MOVFF   r0x00, FSR0L
+0060 C000 FFF3 00839         MOVFF   r0x01, PRODL
+0064 5000      00840         MOVF    r0x02, W
+0066 EC00 F000 00841         CALL    __gptrput1
+               00842 ;       .line   70; brtos/OS_RTC.c      if (Ptr_Hora -> RTC_Second == 60){
+006A 5000      00843         MOVF    r0x03, W
+006C 0A3C      00844         XORLW   0x3c
+006E E000      00845         BZ      _00123_DS_
+0070 D000      00846         BRA     _00112_DS_
+0072 00847 _00123_DS_:
+               00848 ;       .line   72; brtos/OS_RTC.c      Ptr_Hora -> RTC_Second = 0;
+0072 0E00      00849         MOVLW   0x00
+0074 6EE5      00850         MOVWF   POSTDEC1
+0076 C000 FFE9 00851         MOVFF   r0x00, FSR0L
+007A C000 FFF3 00852         MOVFF   r0x01, PRODL
+007E 5000      00853         MOVF    r0x02, W
+0080 EC00 F000 00854         CALL    __gptrput1
+               00855 ;       .line   73; brtos/OS_RTC.c      Ptr_Hora -> RTC_Minute++;
+0084 5000      00856         MOVF    r0x00, W
+0086 0F01      00857         ADDLW   0x01
+0088 6E00      00858         MOVWF   r0x03
+008A 0E00      00859         MOVLW   0x00
+008C 2000      00860         ADDWFC  r0x01, W
+008E 6E00      00861         MOVWF   r0x04
+0090 0E00      00862         MOVLW   0x00
+0092 2000      00863         ADDWFC  r0x02, W
+0094 6E00      00864         MOVWF   r0x05
+gpasm-0.13.7 beta               build/default/production/brtos/OS_RTC.asm7-19-2011  15:07:13          PAGE 17
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+ 
+0096 C000 FFE9 00865         MOVFF   r0x03, FSR0L
+009A C000 FFF3 00866         MOVFF   r0x04, PRODL
+009E 5000      00867         MOVF    r0x05, W
+00A0 EC00 F000 00868         CALL    __gptrget1
+00A4 6E00      00869         MOVWF   r0x06
+00A6 2A00      00870         INCF    r0x06, F
+00A8 C000 FFE5 00871         MOVFF   r0x06, POSTDEC1
+00AC C000 FFE9 00872         MOVFF   r0x03, FSR0L
+00B0 C000 FFF3 00873         MOVFF   r0x04, PRODL
+00B4 5000      00874         MOVF    r0x05, W
+00B6 EC00 F000 00875         CALL    __gptrput1
+               00876 ;       .line   75; brtos/OS_RTC.c      if (Ptr_Hora -> RTC_Minute == 60){
+00BA 5000      00877         MOVF    r0x06, W
+00BC 0A3C      00878         XORLW   0x3c
+00BE E100      00879         BNZ     _00112_DS_
+               00880 ;       .line   77; brtos/OS_RTC.c      Ptr_Hora -> RTC_Minute = 0;
+00C0 0E00      00881         MOVLW   0x00
+00C2 6EE5      00882         MOVWF   POSTDEC1
+00C4 C000 FFE9 00883         MOVFF   r0x03, FSR0L
+00C8 C000 FFF3 00884         MOVFF   r0x04, PRODL
+00CC 5000      00885         MOVF    r0x05, W
+00CE EC00 F000 00886         CALL    __gptrput1
+               00887 ;       .line   78; brtos/OS_RTC.c      Ptr_Hora -> RTC_Hour++;
+00D2 0E02      00888         MOVLW   0x02
+00D4 2600      00889         ADDWF   r0x00, F
+00D6 0E00      00890         MOVLW   0x00
+00D8 2200      00891         ADDWFC  r0x01, F
+00DA 0E00      00892         MOVLW   0x00
+00DC 2200      00893         ADDWFC  r0x02, F
+00DE C000 FFE9 00894         MOVFF   r0x00, FSR0L
+00E2 C000 FFF3 00895         MOVFF   r0x01, PRODL
+00E6 5000      00896         MOVF    r0x02, W
+00E8 EC00 F000 00897         CALL    __gptrget1
+00EC 6E00      00898         MOVWF   r0x03
+00EE 2A00      00899         INCF    r0x03, F
+00F0 C000 FFE5 00900         MOVFF   r0x03, POSTDEC1
+00F4 C000 FFE9 00901         MOVFF   r0x00, FSR0L
+00F8 C000 FFF3 00902         MOVFF   r0x01, PRODL
+00FC 5000      00903         MOVF    r0x02, W
+00FE EC00 F000 00904         CALL    __gptrput1
+               00905 ;       .line   80; brtos/OS_RTC.c      if (Ptr_Hora -> RTC_Hour == 24){
+0102 5000      00906         MOVF    r0x03, W
+0104 0A18      00907         XORLW   0x18
+0106 E100      00908         BNZ     _00112_DS_
+               00909 ;       .line   82; brtos/OS_RTC.c      Ptr_Hora -> RTC_Hour = 0;
+0108 0E00      00910         MOVLW   0x00
+010A 6EE5      00911         MOVWF   POSTDEC1
+010C C000 FFE9 00912         MOVFF   r0x00, FSR0L
+0110 C000 FFF3 00913         MOVFF   r0x01, PRODL
+0114 5000      00914         MOVF    r0x02, W
+0116 EC00 F000 00915         CALL    __gptrput1
+011A 00916 _00112_DS_:
+011A 0000      00917         BANKSEL _iNesting
+               00918 ;       .line   87; brtos/OS_RTC.c      if (!iNesting)
+gpasm-0.13.7 beta               build/default/production/brtos/OS_RTC.asm7-19-2011  15:07:13          PAGE 18
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+ 
+011C 5100      00919         MOVF    _iNesting, W, B
+011E E100      00920         BNZ     _00115_DS_
+               00921 ;       .line   89; brtos/OS_RTC.c      OSExitCritical();
+0120 8E00      00922         BSF     _INTCONbits, 7
+0122 00923 _00115_DS_:
+0122 CFE4 F000 00924         MOVFF   PREINC1, r0x06
+0126 CFE4 F000 00925         MOVFF   PREINC1, r0x05
+012A CFE4 F000 00926         MOVFF   PREINC1, r0x04
+012E CFE4 F000 00927         MOVFF   PREINC1, r0x03
+0132 CFE4 F000 00928         MOVFF   PREINC1, r0x02
+0136 CFE4 F000 00929         MOVFF   PREINC1, r0x01
+013A CFE4 F000 00930         MOVFF   PREINC1, r0x00
+013E CFE4 FFD9 00931         MOVFF   PREINC1, FSR2L
+0142 CFE4 FFDA 00932         MOVFF   PREINC1, FSR2H
+0146 0012      00933         RETURN  
+               00934 
+               00935 
+               00936 
+               00937 ; Statistics:
+               00938 ; code size:     1620 (0x0654) bytes ( 1.24%)
+               00939 ;                 810 (0x032a) words
+               00940 ; udata size:       7 (0x0007) bytes ( 0.55%)
+               00941 ; access size:     10 (0x000a) bytes
+               00942 
+               00943 
+gpasm-0.13.7 beta               build/default/production/brtos/OS_RTC.asm7-19-2011  15:07:13          PAGE 19
+
+
+SYMBOL TABLE
+  LABEL                             VALUE 
+
+FSR0L                             00000FE9
+FSR1H                             00000FE2
+FSR1L                             00000FE1
+FSR2H                             00000FDA
+FSR2L                             00000FD9
+PLUSW2                            00000FDB
+POSTDEC1                          00000FE5
+PREINC1                           00000FE4
+PRODH                             00000FF4
+PRODL                             00000FF3
+STATUS                            00000FD8
+WREG                              00000FE8
+_00106_DS_                        00000046
+_00112_DS_                        0000011A
+_00115_DS_                        00000122
+_00123_DS_                        00000072
+_00133_DS_                        00000064
+_00139_DS_                        0000015E
+_00142_DS_                        00000166
+_00150_DS_                        00000090
+_00152_DS_                        000000E0
+_00160_DS_                        00000046
+_00166_DS_                        00000132
+_00169_DS_                        0000013A
+_00177_DS_                        00000072
+_00180_DS_                        0000011A
+_00181_DS_                        0000011C
+_00187_DS_                        00000042
+_00190_DS_                        0000009E
+_00196_DS_                        00000042
+_00199_DS_                        000000A2
+_ADCON0                           00000000
+_ADCON0bits                       00000000
+_ADCON1                           00000000
+_ADCON1bits                       00000000
+_ADCON2                           00000000
+_ADCON2bits                       00000000
+_ADRES                            00000000
+_ADRESH                           00000000
+_ADRESL                           00000000
+_BAUDCON                          00000000
+_BAUDCONbits                      00000000
+_BAUDCTL                          00000000
+_BAUDCTLbits                      00000000
+_BRTOS_Mutex_Table                00000000
+_BRTOS_Queue_Table                00000000
+_BRTOS_Sem_Table                  00000000
+_BSR                              00000000
+_BufferText                       00000000
+_CCP1CON                          00000000
+_CCP1CONbits                      00000000
+_CCP2CON                          00000000
+_CCP2CONbits                      00000000
+gpasm-0.13.7 beta               build/default/production/brtos/OS_RTC.asm7-19-2011  15:07:13          PAGE 20
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+ 
+_CCPR1                            00000000
+_CCPR1H                           00000000
+_CCPR1L                           00000000
+_CCPR2                            00000000
+_CCPR2H                           00000000
+_CCPR2L                           00000000
+_CMCON                            00000000
+_CMCONbits                        00000000
+_CVRCON                           00000000
+_CVRCONbits                       00000000
+_ContextTask                      00000000
+_DDRA                             00000000
+_DDRAbits                         00000000
+_DDRB                             00000000
+_DDRBbits                         00000000
+_DDRC                             00000000
+_DDRCbits                         00000000
+_DDRD                             00000000
+_DDRDbits                         00000000
+_DDRE                             00000000
+_DDREbits                         00000000
+_Data                             00000000
+_ECCP1AS                          00000000
+_ECCP1ASbits                      00000000
+_EEADR                            00000000
+_EECON1                           00000000
+_EECON1bits                       00000000
+_EECON2                           00000000
+_EEDATA                           00000000
+_FSR0H                            00000000
+_FSR0L                            00000000
+_FSR1H                            00000000
+_FSR1L                            00000000
+_FSR2H                            00000000
+_FSR2L                            00000000
+_HLVDCON                          00000000
+_HLVDCONbits                      00000000
+_Head                             00000000
+_Hora                             00000000
+_INDF0                            00000000
+_INDF1                            00000000
+_INDF2                            00000000
+_INTCON                           00000000
+_INTCON2                          00000000
+_INTCON2bits                      00000000
+_INTCON3                          00000000
+_INTCON3bits                      00000000
+_INTCONbits                       00000000
+_IPR1                             00000000
+_IPR1bits                         00000000
+_IPR2                             00000000
+_IPR2bits                         00000000
+_LATA                             00000000
+_LATAbits                         00000000
+gpasm-0.13.7 beta               build/default/production/brtos/OS_RTC.asm7-19-2011  15:07:13          PAGE 21
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+ 
+_LATB                             00000000
+_LATBbits                         00000000
+_LATC                             00000000
+_LATCbits                         00000000
+_LATD                             00000000
+_LATDbits                         00000000
+_LATE                             00000000
+_LATEbits                         00000000
+_LVDCON                           00000000
+_LVDCONbits                       00000000
+_LastOSDuty                       00000000
+_NumberOfInstalledTasks           00000000
+_OSBlockedList                    00000000
+_OSCCON                           00000000
+_OSCCONbits                       00000000
+_OSCTUNE                          00000000
+_OSCTUNEbits                      00000000
+_OSDuty                           00000000
+_OSDutyTmp                        00000000
+_OSReadyList                      00000000
+_OSResetDate                      00000000
+_OSResetTime                      00000000
+_OSUpDate                         00000000
+_OSUpdateDate                     00000000
+_OSUpdateTime                     00000000
+_OSUpdateUptime                   00000000
+_OSUptime                         00000000
+_PC                               00000000
+_PCL                              00000000
+_PCLATH                           00000000
+_PCLATU                           00000000
+_PIE1                             00000000
+_PIE1bits                         00000000
+_PIE2                             00000000
+_PIE2bits                         00000000
+_PIR1                             00000000
+_PIR1bits                         00000000
+_PIR2                             00000000
+_PIR2bits                         00000000
+_PLUSW0                           00000000
+_PLUSW1                           00000000
+_PLUSW2                           00000000
+_PORTA                            00000000
+_PORTAbits                        00000000
+_PORTB                            00000000
+_PORTBbits                        00000000
+_PORTC                            00000000
+_PORTCbits                        00000000
+_PORTD                            00000000
+_PORTDbits                        00000000
+_PORTE                            00000000
+_PORTEbits                        00000000
+_POSTDEC0                         00000000
+_POSTDEC1                         00000000
+gpasm-0.13.7 beta               build/default/production/brtos/OS_RTC.asm7-19-2011  15:07:13          PAGE 22
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+ 
+_POSTDEC2                         00000000
+_POSTINC0                         00000000
+_POSTINC1                         00000000
+_POSTINC2                         00000000
+_PR2                              00000000
+_PREINC0                          00000000
+_PREINC1                          00000000
+_PREINC2                          00000000
+_PROD                             00000000
+_PRODH                            00000000
+_PRODL                            00000000
+_PWM1CON                          00000000
+_PWM1CONbits                      00000000
+_PriorityMask                     00000000
+_PriorityVector                   00000000
+_QUEUE_STACK                      00000000
+_RCON                             00000000
+_RCONbits                         00000000
+_RCREG                            00000000
+_RCSTA                            00000000
+_RCSTAbits                        00000000
+_SPBRG                            00000000
+_SPBRGH                           00000000
+_SPvalue                          00000000
+_SSPADD                           00000000
+_SSPBUF                           00000000
+_SSPCON1                          00000000
+_SSPCON1bits                      00000000
+_SSPCON2                          00000000
+_SSPCON2bits                      00000000
+_SSPSTAT                          00000000
+_SSPSTATbits                      00000000
+_STACK                            00000000
+_STATUS                           00000000
+_STATUSbits                       00000000
+_STKPTR                           00000000
+_STKPTRbits                       00000000
+_SelectedTask                     00000000
+_StackAddress                     00000000
+_T0CON                            00000000
+_T0CONbits                        00000000
+_T1CON                            00000000
+_T1CONbits                        00000000
+_T2CON                            00000000
+_T2CONbits                        00000000
+_T3CON                            00000000
+_T3CONbits                        00000000
+_TABLAT                           00000000
+_TBLPTR                           00000000
+_TBLPTRH                          00000000
+_TBLPTRL                          00000000
+_TBLPTRU                          00000000
+_TMR0H                            00000000
+_TMR0L                            00000000
+gpasm-0.13.7 beta               build/default/production/brtos/OS_RTC.asm7-19-2011  15:07:13          PAGE 23
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+ 
+_TMR1H                            00000000
+_TMR1L                            00000000
+_TMR2                             00000000
+_TMR3H                            00000000
+_TMR3L                            00000000
+_TOS                              00000000
+_TOSH                             00000000
+_TOSL                             00000000
+_TOSU                             00000000
+_TRISA                            00000000
+_TRISAbits                        00000000
+_TRISB                            00000000
+_TRISBbits                        00000000
+_TRISC                            00000000
+_TRISCbits                        00000000
+_TRISD                            00000000
+_TRISDbits                        00000000
+_TRISE                            00000000
+_TRISEbits                        00000000
+_TXREG                            00000000
+_TXSTA                            00000000
+_TXSTAbits                        00000000
+_Tail                             00000000
+_TaskAlloc                        00000000
+_WDTCON                           00000000
+_WDTCONbits                       00000000
+_WREG                             00000000
+__18F4520                         00000001
+__gptrget1                        00000000
+__gptrget2                        00000000
+__gptrput1                        00000000
+__gptrput2                        00000000
+_counter                          00000000
+_currentTask                      00000000
+_iNesting                         00000000
+_iQueueAddress                    00000000
+_iStackAddress                    00000000
+_version                          00000000
+r0x00                             00000000
+r0x01                             00000001
+r0x02                             00000002
+r0x03                             00000003
+r0x04                             00000004
+r0x05                             00000005
+r0x06                             00000006
+r0x07                             00000007
+r0x08                             00000008
+r0x09                             00000009
+
+
+Errors   :       0
+Warnings :       0 reported,       0 suppressed
+Messages :       0 reported,       0 suppressed
+

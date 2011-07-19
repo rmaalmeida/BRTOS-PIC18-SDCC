@@ -1,0 +1,1826 @@
+gpasm-0.13.7 beta               build/default/production/hal/HAL.asm7-19-2011  15:07:13          PAGE  1
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+ 
+               00001 ;--------------------------------------------------------
+               00002 ; File Created by SDCC : free open source ANSI-C Compiler
+               00003 ; Version 2.9.0 #5416 (Apr 29 2011) (UNIX)
+               00004 ; This file was generated Tue Jul 19 15:07:13 2011
+               00005 ;--------------------------------------------------------
+               00006 ; PIC16 port for the Microchip 16-bit core micros
+               00007 ;--------------------------------------------------------
+               00008         list    p=18f4520
+               00009 
+               00010         radix dec
+               00011 
+               00012 ;--------------------------------------------------------
+               00013 ; public variables in this module
+               00014 ;--------------------------------------------------------
+               00015         global _TickTimerSetup
+               00016         global _SwitchContext
+               00017         global _CreateVirtualStack
+               00018         global _TickTimerHandler
+               00019         global _SPvalue
+               00020         global _HighInterrupt
+               00021 
+               00022 ;--------------------------------------------------------
+               00023 ; extern variables in this module
+               00024 ;--------------------------------------------------------
+               00025         extern __gptrput1
+               00026         extern _PORTAbits
+               00027         extern _PORTBbits
+               00028         extern _PORTCbits
+               00029         extern _PORTDbits
+               00030         extern _PORTEbits
+               00031         extern _LATAbits
+               00032         extern _LATBbits
+               00033         extern _LATCbits
+               00034         extern _LATDbits
+               00035         extern _LATEbits
+               00036         extern _DDRAbits
+               00037         extern _TRISAbits
+               00038         extern _DDRBbits
+               00039         extern _TRISBbits
+               00040         extern _DDRCbits
+               00041         extern _TRISCbits
+               00042         extern _DDRDbits
+               00043         extern _TRISDbits
+               00044         extern _DDREbits
+               00045         extern _TRISEbits
+               00046         extern _OSCTUNEbits
+               00047         extern _PIE1bits
+               00048         extern _PIR1bits
+               00049         extern _IPR1bits
+               00050         extern _PIE2bits
+               00051         extern _PIR2bits
+               00052         extern _IPR2bits
+               00053         extern _EECON1bits
+               00054         extern _RCSTAbits
+gpasm-0.13.7 beta               build/default/production/hal/HAL.asm7-19-2011  15:07:13          PAGE  2
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+ 
+               00055         extern _TXSTAbits
+               00056         extern _T3CONbits
+               00057         extern _CMCONbits
+               00058         extern _CVRCONbits
+               00059         extern _ECCP1ASbits
+               00060         extern _PWM1CONbits
+               00061         extern _BAUDCONbits
+               00062         extern _BAUDCTLbits
+               00063         extern _CCP2CONbits
+               00064         extern _CCP1CONbits
+               00065         extern _ADCON2bits
+               00066         extern _ADCON1bits
+               00067         extern _ADCON0bits
+               00068         extern _SSPCON2bits
+               00069         extern _SSPCON1bits
+               00070         extern _SSPSTATbits
+               00071         extern _T2CONbits
+               00072         extern _T1CONbits
+               00073         extern _RCONbits
+               00074         extern _WDTCONbits
+               00075         extern _HLVDCONbits
+               00076         extern _LVDCONbits
+               00077         extern _OSCCONbits
+               00078         extern _T0CONbits
+               00079         extern _STATUSbits
+               00080         extern _INTCON3bits
+               00081         extern _INTCON2bits
+               00082         extern _INTCONbits
+               00083         extern _STKPTRbits
+               00084         extern _Hora
+               00085         extern _Data
+               00086         extern _BRTOS_Sem_Table
+               00087         extern _BRTOS_Mutex_Table
+               00088         extern _BRTOS_Queue_Table
+               00089         extern _OSReadyList
+               00090         extern _OSBlockedList
+               00091         extern _Tail
+               00092         extern _Head
+               00093         extern _iNesting
+               00094         extern _currentTask
+               00095         extern _SelectedTask
+               00096         extern _ContextTask
+               00097         extern _iStackAddress
+               00098         extern _NumberOfInstalledTasks
+               00099         extern _counter
+               00100         extern _OSDuty
+               00101         extern _PriorityVector
+               00102         extern _OSDutyTmp
+               00103         extern _LastOSDuty
+               00104         extern _STACK
+               00105         extern _TaskAlloc
+               00106         extern _QUEUE_STACK
+               00107         extern _iQueueAddress
+               00108         extern _version
+gpasm-0.13.7 beta               build/default/production/hal/HAL.asm7-19-2011  15:07:13          PAGE  3
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+ 
+               00109         extern _BufferText
+               00110         extern _StackAddress
+               00111         extern _PORTA
+               00112         extern _PORTB
+               00113         extern _PORTC
+               00114         extern _PORTD
+               00115         extern _PORTE
+               00116         extern _LATA
+               00117         extern _LATB
+               00118         extern _LATC
+               00119         extern _LATD
+               00120         extern _LATE
+               00121         extern _DDRA
+               00122         extern _TRISA
+               00123         extern _DDRB
+               00124         extern _TRISB
+               00125         extern _DDRC
+               00126         extern _TRISC
+               00127         extern _DDRD
+               00128         extern _TRISD
+               00129         extern _DDRE
+               00130         extern _TRISE
+               00131         extern _OSCTUNE
+               00132         extern _PIE1
+               00133         extern _PIR1
+               00134         extern _IPR1
+               00135         extern _PIE2
+               00136         extern _PIR2
+               00137         extern _IPR2
+               00138         extern _EECON1
+               00139         extern _EECON2
+               00140         extern _EEDATA
+               00141         extern _EEADR
+               00142         extern _RCSTA
+               00143         extern _TXSTA
+               00144         extern _TXREG
+               00145         extern _RCREG
+               00146         extern _SPBRG
+               00147         extern _SPBRGH
+               00148         extern _T3CON
+               00149         extern _TMR3L
+               00150         extern _TMR3H
+               00151         extern _CMCON
+               00152         extern _CVRCON
+               00153         extern _ECCP1AS
+               00154         extern _PWM1CON
+               00155         extern _BAUDCON
+               00156         extern _BAUDCTL
+               00157         extern _CCP2CON
+               00158         extern _CCPR2
+               00159         extern _CCPR2L
+               00160         extern _CCPR2H
+               00161         extern _CCP1CON
+               00162         extern _CCPR1
+gpasm-0.13.7 beta               build/default/production/hal/HAL.asm7-19-2011  15:07:13          PAGE  4
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+ 
+               00163         extern _CCPR1L
+               00164         extern _CCPR1H
+               00165         extern _ADCON2
+               00166         extern _ADCON1
+               00167         extern _ADCON0
+               00168         extern _ADRES
+               00169         extern _ADRESL
+               00170         extern _ADRESH
+               00171         extern _SSPCON2
+               00172         extern _SSPCON1
+               00173         extern _SSPSTAT
+               00174         extern _SSPADD
+               00175         extern _SSPBUF
+               00176         extern _T2CON
+               00177         extern _PR2
+               00178         extern _TMR2
+               00179         extern _T1CON
+               00180         extern _TMR1L
+               00181         extern _TMR1H
+               00182         extern _RCON
+               00183         extern _WDTCON
+               00184         extern _HLVDCON
+               00185         extern _LVDCON
+               00186         extern _OSCCON
+               00187         extern _T0CON
+               00188         extern _TMR0L
+               00189         extern _TMR0H
+               00190         extern _STATUS
+               00191         extern _FSR2L
+               00192         extern _FSR2H
+               00193         extern _PLUSW2
+               00194         extern _PREINC2
+               00195         extern _POSTDEC2
+               00196         extern _POSTINC2
+               00197         extern _INDF2
+               00198         extern _BSR
+               00199         extern _FSR1L
+               00200         extern _FSR1H
+               00201         extern _PLUSW1
+               00202         extern _PREINC1
+               00203         extern _POSTDEC1
+               00204         extern _POSTINC1
+               00205         extern _INDF1
+               00206         extern _WREG
+               00207         extern _FSR0L
+               00208         extern _FSR0H
+               00209         extern _PLUSW0
+               00210         extern _PREINC0
+               00211         extern _POSTDEC0
+               00212         extern _POSTINC0
+               00213         extern _INDF0
+               00214         extern _INTCON3
+               00215         extern _INTCON2
+               00216         extern _INTCON
+gpasm-0.13.7 beta               build/default/production/hal/HAL.asm7-19-2011  15:07:13          PAGE  5
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+ 
+               00217         extern _PROD
+               00218         extern _PRODL
+               00219         extern _PRODH
+               00220         extern _TABLAT
+               00221         extern _TBLPTR
+               00222         extern _TBLPTRL
+               00223         extern _TBLPTRH
+               00224         extern _TBLPTRU
+               00225         extern _PC
+               00226         extern _PCL
+               00227         extern _PCLATH
+               00228         extern _PCLATU
+               00229         extern _STKPTR
+               00230         extern _TOS
+               00231         extern _TOSL
+               00232         extern _TOSH
+               00233         extern _TOSU
+               00234         extern _OS_TICK_HANDLER
+               00235         extern _OSSchedule
+               00236         extern _PriorityMask
+               00237 ;--------------------------------------------------------
+               00238 ;       Equates to used internal registers
+               00239 ;--------------------------------------------------------
+  00000FD8     00240 STATUS  equ     0xfd8
+  00000FE8     00241 WREG    equ     0xfe8
+  00000FE9     00242 FSR0L   equ     0xfe9
+  00000FEA     00243 FSR0H   equ     0xfea
+  00000FE1     00244 FSR1L   equ     0xfe1
+  00000FE2     00245 FSR1H   equ     0xfe2
+  00000FD9     00246 FSR2L   equ     0xfd9
+  00000FDA     00247 FSR2H   equ     0xfda
+  00000FEF     00248 INDF0   equ     0xfef
+  00000FEE     00249 POSTINC0        equ     0xfee
+  00000FE5     00250 POSTDEC1        equ     0xfe5
+  00000FE4     00251 PREINC1 equ     0xfe4
+  00000FDB     00252 PLUSW2  equ     0xfdb
+  00000FF3     00253 PRODL   equ     0xff3
+               00254 
+               00255 
+               00256         idata
+               00257 _SPvalue        db      0x00, 0x00
+               00258 
+               00259 
+               00260 ; Internal registers
+               00261 .registers      udata_ovr       0x0000
+               00262 r0x00   res     1
+               00263 r0x01   res     1
+               00264 r0x02   res     1
+               00265 r0x03   res     1
+               00266 r0x04   res     1
+               00267 r0x05   res     1
+               00268 r0x06   res     1
+               00269 r0x07   res     1
+               00270 
+gpasm-0.13.7 beta               build/default/production/hal/HAL.asm7-19-2011  15:07:13          PAGE  6
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+ 
+               00271 ;--------------------------------------------------------
+               00272 ; global & static initialisations
+               00273 ;--------------------------------------------------------
+               00274 ; I code from now on!
+               00275 ; ; Starting pCode block
+               00276 S_HAL__TickTimerHandler code
+0000 00277 _TickTimerHandler:
+               00278 ;       .line   228; hal/HAL.c  void TickTimerHandler(void)
+0000 CFDA FFE5 00279         MOVFF   FSR2H, POSTDEC1
+0004 CFD9 FFE5 00280         MOVFF   FSR2L, POSTDEC1
+0008 CFE2 FFDA 00281         MOVFF   FSR1H, FSR2H
+000C CFE1 FFD9 00282         MOVFF   FSR1L, FSR2L
+0010 C000 FFE5 00283         MOVFF   r0x00, POSTDEC1
+0014 C000 FFE5 00284         MOVFF   r0x01, POSTDEC1
+0018 C000 FFE4 00285         MOVFF _STATUS, PREINC1 
+001C C000 FFE4 00286         MOVFF _WREG, PREINC1 
+0020 C000 FFE4 00287         MOVFF _BSR, PREINC1 
+0024 C000 FFE4 00288         MOVFF _FSR2H, PREINC1 
+0028 C000 F000 00289         MOVFF _FSR1H, _FSR2H 
+002C C000 FFE4 00290         MOVFF _FSR2L, PREINC1 
+0030 C000 FFE4 00291         MOVFF _FSR0L, PREINC1 
+0034 C000 FFE4 00292         MOVFF _FSR0H, PREINC1 
+0038 C000 FFE4 00293         MOVFF _TABLAT, PREINC1 
+003C C000 FFE4 00294         MOVFF _TBLPTRL, PREINC1 
+0040 C000 FFE4 00295         MOVFF _TBLPTRH, PREINC1 
+0044 C000 FFE4 00296         MOVFF _TBLPTRU, PREINC1 
+0048 C000 FFE4 00297         MOVFF _PRODL, PREINC1 
+004C C000 FFE4 00298         MOVFF _PRODH, PREINC1 
+0050 C000 FFE4 00299         MOVFF _PCLATH, PREINC1 
+0054 C000 FFE4 00300         MOVFF _PCLATU, PREINC1 
+0058 0000      00301         BANKSEL _iNesting
+               00302 ;       .line   235; hal/HAL.c  OS_INT_ENTER();
+005A 2B00      00303         INCF    _iNesting, F, B
+               00304 ;       .line   238; hal/HAL.c  TICKTIMER_INT_HANDLER;
+005C 9400      00305         BCF     _PIR1bits, 2
+005E 0000      00306         BANKSEL _counter
+               00307 ;       .line   240; hal/HAL.c  counter++;
+0060 2B00      00308         INCF    _counter, F, B
+0062 E300      00309         BNC     _10147_DS_
+0064 0000      00310         BANKSEL (_counter + 1)
+0066 2B00      00311         INCF    (_counter + 1), F, B
+0068 00312 _10147_DS_:
+0068 0000      00313         BANKSEL _counter
+               00314 ;       .line   241; hal/HAL.c  if (counter == TickCountOverFlow) counter = 0;
+006A 5100      00315         MOVF    _counter, W, B
+006C E100      00316         BNZ     _00168_DS_
+006E 0000      00317         BANKSEL (_counter + 1)
+0070 5100      00318         MOVF    (_counter + 1), W, B
+0072 0AFA      00319         XORLW   0xfa
+0074 E000      00320         BZ      _00169_DS_
+0076 00321 _00168_DS_:
+0076 D000      00322         BRA     _00148_DS_
+0078 00323 _00169_DS_:
+0078 0000      00324         BANKSEL _counter
+gpasm-0.13.7 beta               build/default/production/hal/HAL.asm7-19-2011  15:07:13          PAGE  7
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+ 
+007A 6B00      00325         CLRF    _counter, B
+007C 0000      00326         BANKSEL (_counter + 1)
+007E 6B00      00327         CLRF    (_counter + 1), B
+0080 00328 _00148_DS_:
+               00329 ;       .line   261; hal/HAL.c  OS_TICK_HANDLER();
+0080 EC00 F000 00330         CALL    _OS_TICK_HANDLER
+0084 0000      00331         BANKSEL _iNesting
+               00332 ;       .line   266; hal/HAL.c  OS_INT_EXIT();  
+0086 0700      00333         DECF    _iNesting, F, B
+0088 0000      00334         BANKSEL _iNesting
+008A 5100      00335         MOVF    _iNesting, W, B
+008C A4D8      00336         BTFSS   STATUS, 2
+008E D000      00337         BRA     _00158_DS_
+0090 EC00 F000 00338         CALL    _OSSchedule
+0094 0000      00339         BANKSEL _SelectedTask
+0096 6F00      00340         MOVWF   _SelectedTask, B
+0098 0000      00341         BANKSEL _currentTask
+009A 5100      00342         MOVF    _currentTask, W, B
+009C 0000      00343         BANKSEL _SelectedTask
+009E 1900      00344         XORWF   _SelectedTask, W, B
+00A0 E100      00345         BNZ     _00171_DS_
+00A2 D000      00346         BRA     _00158_DS_
+00A4 00347 _00170_DS_:
+00A4 00348 _00171_DS_:
+00A4 C000 F000 00349         MOVFF _STKPTR, _FSR0L 
+00A8 00350 _00149_DS_:
+00A8 5000      00351         MOVF    _STKPTR, W
+00AA E000      00352         BZ      _00151_DS_
+00AC C000 F000 00353         MOVFF _TOSL, _PREINC1 
+00B0 C000 F000 00354         MOVFF _TOSH, _PREINC1 
+00B4 C000 F000 00355         MOVFF _TOSU, _PREINC1 
+00B8 0006      00356         POP 
+00BA D000      00357         BRA     _00149_DS_
+00BC 00358 _00151_DS_:
+00BC C000 F000 00359         MOVFF _FSR0L, _PREINC1 
+00C0 5200      00360         MOVF _PREINC1, 1, 0 
+00C2 C000 F000 00361         MOVFF _FSR1L, _SPvalue 
+00C6 C000 F000 00362         MOVFF _FSR1H, _SPvalue+1 
+               00363 ; ;multiply lit val:0x10 by variable _currentTask and store in r0x00
+               00364 ; ;Unrolled 8 X 8 multiplication
+               00365 ; ;FIXME: the function does not support result==WREG
+00CA 0000      00366         BANKSEL _currentTask
+00CC 5100      00367         MOVF    _currentTask, W, B
+00CE 0D10      00368         MULLW   0x10
+00D0 CFF3 F000 00369         MOVFF   PRODL, r0x00
+00D4 6A00      00370         CLRF    r0x01
+00D6 0E00      00371         MOVLW   LOW(_ContextTask)
+00D8 2600      00372         ADDWF   r0x00, F
+00DA 0E00      00373         MOVLW   HIGH(_ContextTask)
+00DC 2200      00374         ADDWFC  r0x01, F
+00DE 0E03      00375         MOVLW   0x03
+00E0 2600      00376         ADDWF   r0x00, F
+00E2 B0D8      00377         BTFSC   STATUS, 0
+00E4 2A00      00378         INCF    r0x01, F
+gpasm-0.13.7 beta               build/default/production/hal/HAL.asm7-19-2011  15:07:13          PAGE  8
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+ 
+00E6 C000 FFE9 00379         MOVFF   r0x00, FSR0L
+00EA C000 FFEA 00380         MOVFF   r0x01, FSR0H
+00EE C000 FFEE 00381         MOVFF   _SPvalue, POSTINC0
+00F2 C000 FFEF 00382         MOVFF   (_SPvalue + 1), INDF0
+00F6 C000 F000 00383         MOVFF   _SelectedTask, _currentTask
+               00384 ; ;multiply lit val:0x10 by variable _currentTask and store in r0x00
+               00385 ; ;Unrolled 8 X 8 multiplication
+               00386 ; ;FIXME: the function does not support result==WREG
+00FA 0000      00387         BANKSEL _currentTask
+00FC 5100      00388         MOVF    _currentTask, W, B
+00FE 0D10      00389         MULLW   0x10
+0100 CFF3 F000 00390         MOVFF   PRODL, r0x00
+0104 6A00      00391         CLRF    r0x01
+0106 0E00      00392         MOVLW   LOW(_ContextTask)
+0108 2600      00393         ADDWF   r0x00, F
+010A 0E00      00394         MOVLW   HIGH(_ContextTask)
+010C 2200      00395         ADDWFC  r0x01, F
+010E 0E03      00396         MOVLW   0x03
+0110 2600      00397         ADDWF   r0x00, F
+0112 B0D8      00398         BTFSC   STATUS, 0
+0114 2A00      00399         INCF    r0x01, F
+0116 C000 FFE9 00400         MOVFF   r0x00, FSR0L
+011A C000 FFEA 00401         MOVFF   r0x01, FSR0H
+011E CFEE F000 00402         MOVFF   POSTINC0, _SPvalue
+0122 CFEF F000 00403         MOVFF   INDF0, (_SPvalue + 1)
+0126 C000 F000 00404         MOVFF _SPvalue, _FSR1L 
+012A C000 F000 00405         MOVFF _SPvalue+1, _FSR1H 
+012E C000 F000 00406         MOVFF _POSTDEC1, _FSR0L 
+0132 C000 F000 00407         MOVFF _POSTDEC1, _FSR0L 
+0136 6A00      00408         CLRF    _STKPTR
+0138 00409 _00152_DS_:
+0138 5000      00410         MOVF    _FSR0L, W
+013A 5C00      00411         SUBWF   _STKPTR, W
+013C E200      00412         BC      _00158_DS_
+013E 0005      00413         PUSH 
+0140 5000      00414         MOVF _POSTDEC1, 0, 0 
+0142 6E00      00415         MOVWF _TOSU, 0 
+0144 5000      00416         MOVF _POSTDEC1, 0, 0 
+0146 6E00      00417         MOVWF _TOSH, 0 
+0148 5000      00418         MOVF _POSTDEC1, 0, 0 
+014A 6E00      00419         MOVWF _TOSL, 0 
+014C D000      00420         BRA     _00152_DS_
+014E 00421 _00158_DS_:
+014E CFE5 F000 00422         MOVFF POSTDEC1, _PCLATU 
+0152 CFE5 F000 00423         MOVFF POSTDEC1, _PCLATH 
+0156 CFE5 F000 00424         MOVFF POSTDEC1, _PRODH 
+015A CFE5 F000 00425         MOVFF POSTDEC1, _PRODL 
+015E CFE5 F000 00426         MOVFF POSTDEC1, _TBLPTRU 
+0162 CFE5 F000 00427         MOVFF POSTDEC1, _TBLPTRH 
+0166 CFE5 F000 00428         MOVFF POSTDEC1, _TBLPTRL 
+016A CFE5 F000 00429         MOVFF POSTDEC1, _TABLAT 
+016E CFE5 F000 00430         MOVFF POSTDEC1, _FSR0H 
+0172 CFE5 F000 00431         MOVFF POSTDEC1, _FSR0L 
+0176 CFE5 F000 00432         MOVFF POSTDEC1, _FSR2L 
+gpasm-0.13.7 beta               build/default/production/hal/HAL.asm7-19-2011  15:07:13          PAGE  9
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+ 
+017A CFE5 F000 00433         MOVFF POSTDEC1, _FSR2H 
+017E C000 F000 00434         MOVFF _FSR2H, _FSR1H 
+0182 CFE5 F000 00435         MOVFF POSTDEC1, _BSR 
+0186 CFE5 F000 00436         MOVFF POSTDEC1, _WREG 
+018A CFE5 F000 00437         MOVFF POSTDEC1, _STATUS 
+018E 0010      00438         RETFIE 0 
+0190 CFE4 F000 00439         MOVFF   PREINC1, r0x01
+0194 CFE4 F000 00440         MOVFF   PREINC1, r0x00
+0198 CFE4 FFD9 00441         MOVFF   PREINC1, FSR2L
+019C CFE4 FFDA 00442         MOVFF   PREINC1, FSR2H
+01A0 0012      00443         RETURN  
+               00444 
+               00445 ; ; Starting pCode block
+               00446 S_HAL__HighInterrupt    code
+0000 00447 _HighInterrupt:
+               00448 ;       .line   204; hal/HAL.c  void HighInterrupt( void )
+0000 CFDA FFE5 00449         MOVFF   FSR2H, POSTDEC1
+0004 CFD9 FFE5 00450         MOVFF   FSR2L, POSTDEC1
+0008 CFE2 FFDA 00451         MOVFF   FSR1H, FSR2H
+000C CFE1 FFD9 00452         MOVFF   FSR1L, FSR2L
+               00453 ;       .line   207; hal/HAL.c  if( PIR1bits.CCP1IF )
+0010 A400      00454         BTFSS   _PIR1bits, 2
+0012 D000      00455         BRA     _00141_DS_
+0014 EF00 F000 00456         goto _TickTimerHandler 
+               00457 ; ;;!!! pic16_aopOp:1071 called for a spillLocation -- assigning WREG instead --- CHECK
+0018 00458 _00141_DS_:
+               00459 ;       .line   213; hal/HAL.c  if( PIR1bits.RCIF )
+0018 6AE8      00460         CLRF    WREG
+001A BA00      00461         BTFSC   _PIR1bits, 5
+001C 2AE8      00462         INCF    WREG, F
+               00463 ; ;;!!! pic16_aopOp:1071 called for a spillLocation -- assigning WREG instead --- CHECK
+               00464 ;       .line   219; hal/HAL.c  if( PIR1bits.TXIF )
+001E 6AE8      00465         CLRF    WREG
+0020 B800      00466         BTFSC   _PIR1bits, 4
+0022 2AE8      00467         INCF    WREG, F
+0024 CFE4 FFD9 00468         MOVFF   PREINC1, FSR2L
+0028 CFE4 FFDA 00469         MOVFF   PREINC1, FSR2H
+002C 0012      00470         RETURN  
+               00471 
+               00472 ; ; Starting pCode block
+               00473 S_HAL__CreateVirtualStack       code
+0000 00474 _CreateVirtualStack:
+               00475 ;       .line   119; hal/HAL.c  void CreateVirtualStack(FctPtr function, INT16U NUMBER_OF_STACKED_BYTES)
+0000 CFDA FFE5 00476         MOVFF   FSR2H, POSTDEC1
+0004 CFD9 FFE5 00477         MOVFF   FSR2L, POSTDEC1
+0008 CFE2 FFDA 00478         MOVFF   FSR1H, FSR2H
+000C CFE1 FFD9 00479         MOVFF   FSR1L, FSR2L
+0010 C000 FFE5 00480         MOVFF   r0x00, POSTDEC1
+0014 C000 FFE5 00481         MOVFF   r0x01, POSTDEC1
+0018 C000 FFE5 00482         MOVFF   r0x02, POSTDEC1
+001C C000 FFE5 00483         MOVFF   r0x03, POSTDEC1
+0020 C000 FFE5 00484         MOVFF   r0x04, POSTDEC1
+0024 C000 FFE5 00485         MOVFF   r0x05, POSTDEC1
+0028 C000 FFE5 00486         MOVFF   r0x06, POSTDEC1
+gpasm-0.13.7 beta               build/default/production/hal/HAL.asm7-19-2011  15:07:13          PAGE 10
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+ 
+002C C000 FFE5 00487         MOVFF   r0x07, POSTDEC1
+0030 0E03      00488         MOVLW   0x03
+0032 CFDB F000 00489         MOVFF   PLUSW2, r0x00
+0036 0E04      00490         MOVLW   0x04
+0038 CFDB F000 00491         MOVFF   PLUSW2, r0x01
+003C 0E05      00492         MOVLW   0x05
+003E CFDB F000 00493         MOVFF   PLUSW2, r0x02
+               00494 ;       .line   122; hal/HAL.c  INT8U *stk = &STACK[iStackAddress];
+0042 0E00      00495         MOVLW   LOW(_STACK)
+0044 0000      00496         BANKSEL _iStackAddress
+0046 2500      00497         ADDWF   _iStackAddress, W, B
+0048 6E00      00498         MOVWF   r0x03
+004A 0E00      00499         MOVLW   HIGH(_STACK)
+004C 0000      00500         BANKSEL (_iStackAddress + 1)
+004E 2100      00501         ADDWFC  (_iStackAddress + 1), W, B
+0050 6E00      00502         MOVWF   r0x04
+0052 5000      00503         MOVF    r0x04, W
+0054 6E00      00504         MOVWF   r0x06
+0056 5000      00505         MOVF    r0x03, W
+0058 6E00      00506         MOVWF   r0x05
+005A 0E80      00507         MOVLW   0x80
+005C 6E00      00508         MOVWF   r0x07
+               00509 ;       .line   125; hal/HAL.c  address = address >> 8;
+005E 5000      00510         MOVF    r0x04, W
+0060 6E00      00511         MOVWF   r0x03
+0062 6A00      00512         CLRF    r0x04
+               00513 ;       .line   126; hal/HAL.c  *stk++  = 0xF1;                     // <-- FSR1 Pointer position on function call.
+0064 0EF1      00514         MOVLW   0xf1
+0066 6EE5      00515         MOVWF   POSTDEC1
+0068 C000 FFE9 00516         MOVFF   r0x05, FSR0L
+006C C000 FFF3 00517         MOVFF   r0x06, PRODL
+0070 5000      00518         MOVF    r0x07, W
+0072 EC00 F000 00519         CALL    __gptrput1
+0076 2A00      00520         INCF    r0x05, F
+0078 B0D8      00521         BTFSC   STATUS, 0
+007A 2A00      00522         INCF    r0x06, F
+007C B0D8      00523         BTFSC   STATUS, 0
+007E 2A00      00524         INCF    r0x07, F
+               00525 ;       .line   127; hal/HAL.c  *stk++  = 0xA5;                     // STATUS register
+0080 0EA5      00526         MOVLW   0xa5
+0082 6EE5      00527         MOVWF   POSTDEC1
+0084 C000 FFE9 00528         MOVFF   r0x05, FSR0L
+0088 C000 FFF3 00529         MOVFF   r0x06, PRODL
+008C 5000      00530         MOVF    r0x07, W
+008E EC00 F000 00531         CALL    __gptrput1
+0092 2A00      00532         INCF    r0x05, F
+0094 B0D8      00533         BTFSC   STATUS, 0
+0096 2A00      00534         INCF    r0x06, F
+0098 B0D8      00535         BTFSC   STATUS, 0
+009A 2A00      00536         INCF    r0x07, F
+               00537 ;       .line   128; hal/HAL.c  *stk++  = 0x00;                     // W register 
+009C 0E00      00538         MOVLW   0x00
+009E 6EE5      00539         MOVWF   POSTDEC1
+00A0 C000 FFE9 00540         MOVFF   r0x05, FSR0L
+gpasm-0.13.7 beta               build/default/production/hal/HAL.asm7-19-2011  15:07:13          PAGE 11
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+ 
+00A4 C000 FFF3 00541         MOVFF   r0x06, PRODL
+00A8 5000      00542         MOVF    r0x07, W
+00AA EC00 F000 00543         CALL    __gptrput1
+00AE 2A00      00544         INCF    r0x05, F
+00B0 B0D8      00545         BTFSC   STATUS, 0
+00B2 2A00      00546         INCF    r0x06, F
+00B4 B0D8      00547         BTFSC   STATUS, 0
+00B6 2A00      00548         INCF    r0x07, F
+               00549 ;       .line   129; hal/HAL.c  *stk++  = 0xB0;                     // BSR register
+00B8 0EB0      00550         MOVLW   0xb0
+00BA 6EE5      00551         MOVWF   POSTDEC1
+00BC C000 FFE9 00552         MOVFF   r0x05, FSR0L
+00C0 C000 FFF3 00553         MOVFF   r0x06, PRODL
+00C4 5000      00554         MOVF    r0x07, W
+00C6 EC00 F000 00555         CALL    __gptrput1
+00CA 2A00      00556         INCF    r0x05, F
+00CC B0D8      00557         BTFSC   STATUS, 0
+00CE 2A00      00558         INCF    r0x06, F
+00D0 B0D8      00559         BTFSC   STATUS, 0
+00D2 2A00      00560         INCF    r0x07, F
+               00561 ;       .line   130; hal/HAL.c  *stk++  = (INT8U)address;           // FSR2H register
+00D4 C000 FFE5 00562         MOVFF   r0x03, POSTDEC1
+00D8 C000 FFE9 00563         MOVFF   r0x05, FSR0L
+00DC C000 FFF3 00564         MOVFF   r0x06, PRODL
+00E0 5000      00565         MOVF    r0x07, W
+00E2 EC00 F000 00566         CALL    __gptrput1
+00E6 2A00      00567         INCF    r0x05, F
+00E8 B0D8      00568         BTFSC   STATUS, 0
+00EA 2A00      00569         INCF    r0x06, F
+00EC B0D8      00570         BTFSC   STATUS, 0
+00EE 2A00      00571         INCF    r0x07, F
+               00572 ;       .line   131; hal/HAL.c  *stk++  = 0xF2;                     // FSR2L register
+00F0 0EF2      00573         MOVLW   0xf2
+00F2 6EE5      00574         MOVWF   POSTDEC1
+00F4 C000 FFE9 00575         MOVFF   r0x05, FSR0L
+00F8 C000 FFF3 00576         MOVFF   r0x06, PRODL
+00FC 5000      00577         MOVF    r0x07, W
+00FE EC00 F000 00578         CALL    __gptrput1
+0102 2A00      00579         INCF    r0x05, F
+0104 B0D8      00580         BTFSC   STATUS, 0
+0106 2A00      00581         INCF    r0x06, F
+0108 B0D8      00582         BTFSC   STATUS, 0
+010A 2A00      00583         INCF    r0x07, F
+               00584 ;       .line   132; hal/HAL.c  *stk++  = 0xF0;                     // FSR0L register
+010C 0EF0      00585         MOVLW   0xf0
+010E 6EE5      00586         MOVWF   POSTDEC1
+0110 C000 FFE9 00587         MOVFF   r0x05, FSR0L
+0114 C000 FFF3 00588         MOVFF   r0x06, PRODL
+0118 5000      00589         MOVF    r0x07, W
+011A EC00 F000 00590         CALL    __gptrput1
+011E 2A00      00591         INCF    r0x05, F
+0120 B0D8      00592         BTFSC   STATUS, 0
+0122 2A00      00593         INCF    r0x06, F
+0124 B0D8      00594         BTFSC   STATUS, 0
+gpasm-0.13.7 beta               build/default/production/hal/HAL.asm7-19-2011  15:07:13          PAGE 12
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+ 
+0126 2A00      00595         INCF    r0x07, F
+               00596 ;       .line   133; hal/HAL.c  *stk++  = 0xF0;                     // FSR0H register
+0128 0EF0      00597         MOVLW   0xf0
+012A 6EE5      00598         MOVWF   POSTDEC1
+012C C000 FFE9 00599         MOVFF   r0x05, FSR0L
+0130 C000 FFF3 00600         MOVFF   r0x06, PRODL
+0134 5000      00601         MOVF    r0x07, W
+0136 EC00 F000 00602         CALL    __gptrput1
+013A 2A00      00603         INCF    r0x05, F
+013C B0D8      00604         BTFSC   STATUS, 0
+013E 2A00      00605         INCF    r0x06, F
+0140 B0D8      00606         BTFSC   STATUS, 0
+0142 2A00      00607         INCF    r0x07, F
+               00608 ;       .line   134; hal/HAL.c  *stk++  = 0xB2;                     // TABLAT
+0144 0EB2      00609         MOVLW   0xb2
+0146 6EE5      00610         MOVWF   POSTDEC1
+0148 C000 FFE9 00611         MOVFF   r0x05, FSR0L
+014C C000 FFF3 00612         MOVFF   r0x06, PRODL
+0150 5000      00613         MOVF    r0x07, W
+0152 EC00 F000 00614         CALL    __gptrput1
+0156 2A00      00615         INCF    r0x05, F
+0158 B0D8      00616         BTFSC   STATUS, 0
+015A 2A00      00617         INCF    r0x06, F
+015C B0D8      00618         BTFSC   STATUS, 0
+015E 2A00      00619         INCF    r0x07, F
+               00620 ;       .line   135; hal/HAL.c  *stk++  = 0xB3;                     // TBLPTRL Prog Mem Table Pointer Low
+0160 0EB3      00621         MOVLW   0xb3
+0162 6EE5      00622         MOVWF   POSTDEC1
+0164 C000 FFE9 00623         MOVFF   r0x05, FSR0L
+0168 C000 FFF3 00624         MOVFF   r0x06, PRODL
+016C 5000      00625         MOVF    r0x07, W
+016E EC00 F000 00626         CALL    __gptrput1
+0172 2A00      00627         INCF    r0x05, F
+0174 B0D8      00628         BTFSC   STATUS, 0
+0176 2A00      00629         INCF    r0x06, F
+0178 B0D8      00630         BTFSC   STATUS, 0
+017A 2A00      00631         INCF    r0x07, F
+               00632 ;       .line   136; hal/HAL.c  *stk++  = 0xB4;                     // TBLPTRH Prog Mem Table Pointer High
+017C 0EB4      00633         MOVLW   0xb4
+017E 6EE5      00634         MOVWF   POSTDEC1
+0180 C000 FFE9 00635         MOVFF   r0x05, FSR0L
+0184 C000 FFF3 00636         MOVFF   r0x06, PRODL
+0188 5000      00637         MOVF    r0x07, W
+018A EC00 F000 00638         CALL    __gptrput1
+018E 2A00      00639         INCF    r0x05, F
+0190 B0D8      00640         BTFSC   STATUS, 0
+0192 2A00      00641         INCF    r0x06, F
+0194 B0D8      00642         BTFSC   STATUS, 0
+0196 2A00      00643         INCF    r0x07, F
+               00644 ;       .line   137; hal/HAL.c  *stk++  = 0xB5;                     // TBLPTRU Prog Mem Table Pointer Upper
+0198 0EB5      00645         MOVLW   0xb5
+019A 6EE5      00646         MOVWF   POSTDEC1
+019C C000 FFE9 00647         MOVFF   r0x05, FSR0L
+01A0 C000 FFF3 00648         MOVFF   r0x06, PRODL
+gpasm-0.13.7 beta               build/default/production/hal/HAL.asm7-19-2011  15:07:13          PAGE 13
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+ 
+01A4 5000      00649         MOVF    r0x07, W
+01A6 EC00 F000 00650         CALL    __gptrput1
+01AA 2A00      00651         INCF    r0x05, F
+01AC B0D8      00652         BTFSC   STATUS, 0
+01AE 2A00      00653         INCF    r0x06, F
+01B0 B0D8      00654         BTFSC   STATUS, 0
+01B2 2A00      00655         INCF    r0x07, F
+               00656 ;       .line   138; hal/HAL.c  *stk++  = 0xD0;                     // PRODL Product Reg low
+01B4 0ED0      00657         MOVLW   0xd0
+01B6 6EE5      00658         MOVWF   POSTDEC1
+01B8 C000 FFE9 00659         MOVFF   r0x05, FSR0L
+01BC C000 FFF3 00660         MOVFF   r0x06, PRODL
+01C0 5000      00661         MOVF    r0x07, W
+01C2 EC00 F000 00662         CALL    __gptrput1
+01C6 2A00      00663         INCF    r0x05, F
+01C8 B0D8      00664         BTFSC   STATUS, 0
+01CA 2A00      00665         INCF    r0x06, F
+01CC B0D8      00666         BTFSC   STATUS, 0
+01CE 2A00      00667         INCF    r0x07, F
+               00668 ;       .line   139; hal/HAL.c  *stk++  = 0xD1;                     // PRODH Product Reg high
+01D0 0ED1      00669         MOVLW   0xd1
+01D2 6EE5      00670         MOVWF   POSTDEC1
+01D4 C000 FFE9 00671         MOVFF   r0x05, FSR0L
+01D8 C000 FFF3 00672         MOVFF   r0x06, PRODL
+01DC 5000      00673         MOVF    r0x07, W
+01DE EC00 F000 00674         CALL    __gptrput1
+01E2 2A00      00675         INCF    r0x05, F
+01E4 B0D8      00676         BTFSC   STATUS, 0
+01E6 2A00      00677         INCF    r0x06, F
+01E8 B0D8      00678         BTFSC   STATUS, 0
+01EA 2A00      00679         INCF    r0x07, F
+               00680 ;       .line   140; hal/HAL.c  *stk++  = 0xA3;                        // AARGB3
+01EC 0EA3      00681         MOVLW   0xa3
+01EE 6EE5      00682         MOVWF   POSTDEC1
+01F0 C000 FFE9 00683         MOVFF   r0x05, FSR0L
+01F4 C000 FFF3 00684         MOVFF   r0x06, PRODL
+01F8 5000      00685         MOVF    r0x07, W
+01FA EC00 F000 00686         CALL    __gptrput1
+01FE 2A00      00687         INCF    r0x05, F
+0200 B0D8      00688         BTFSC   STATUS, 0
+0202 2A00      00689         INCF    r0x06, F
+0204 B0D8      00690         BTFSC   STATUS, 0
+0206 2A00      00691         INCF    r0x07, F
+               00692 ;       .line   141; hal/HAL.c  *stk++  = 0xA2;                        // AARGB2
+0208 0EA2      00693         MOVLW   0xa2
+020A 6EE5      00694         MOVWF   POSTDEC1
+020C C000 FFE9 00695         MOVFF   r0x05, FSR0L
+0210 C000 FFF3 00696         MOVFF   r0x06, PRODL
+0214 5000      00697         MOVF    r0x07, W
+0216 EC00 F000 00698         CALL    __gptrput1
+021A 2A00      00699         INCF    r0x05, F
+021C B0D8      00700         BTFSC   STATUS, 0
+021E 2A00      00701         INCF    r0x06, F
+0220 B0D8      00702         BTFSC   STATUS, 0
+gpasm-0.13.7 beta               build/default/production/hal/HAL.asm7-19-2011  15:07:13          PAGE 14
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+ 
+0222 2A00      00703         INCF    r0x07, F
+               00704 ;       .line   142; hal/HAL.c  *stk++  = 0xA1;                        // AARGB1
+0224 0EA1      00705         MOVLW   0xa1
+0226 6EE5      00706         MOVWF   POSTDEC1
+0228 C000 FFE9 00707         MOVFF   r0x05, FSR0L
+022C C000 FFF3 00708         MOVFF   r0x06, PRODL
+0230 5000      00709         MOVF    r0x07, W
+0232 EC00 F000 00710         CALL    __gptrput1
+0236 2A00      00711         INCF    r0x05, F
+0238 B0D8      00712         BTFSC   STATUS, 0
+023A 2A00      00713         INCF    r0x06, F
+023C B0D8      00714         BTFSC   STATUS, 0
+023E 2A00      00715         INCF    r0x07, F
+               00716 ;       .line   143; hal/HAL.c  *stk++  = 0xA0;                        // AARGB0
+0240 0EA0      00717         MOVLW   0xa0
+0242 6EE5      00718         MOVWF   POSTDEC1
+0244 C000 FFE9 00719         MOVFF   r0x05, FSR0L
+0248 C000 FFF3 00720         MOVFF   r0x06, PRODL
+024C 5000      00721         MOVF    r0x07, W
+024E EC00 F000 00722         CALL    __gptrput1
+0252 2A00      00723         INCF    r0x05, F
+0254 B0D8      00724         BTFSC   STATUS, 0
+0256 2A00      00725         INCF    r0x06, F
+0258 B0D8      00726         BTFSC   STATUS, 0
+025A 2A00      00727         INCF    r0x07, F
+               00728 ;       .line   144; hal/HAL.c  *stk++  = 0xB3;                        // BARGB3
+025C 0EB3      00729         MOVLW   0xb3
+025E 6EE5      00730         MOVWF   POSTDEC1
+0260 C000 FFE9 00731         MOVFF   r0x05, FSR0L
+0264 C000 FFF3 00732         MOVFF   r0x06, PRODL
+0268 5000      00733         MOVF    r0x07, W
+026A EC00 F000 00734         CALL    __gptrput1
+026E 2A00      00735         INCF    r0x05, F
+0270 B0D8      00736         BTFSC   STATUS, 0
+0272 2A00      00737         INCF    r0x06, F
+0274 B0D8      00738         BTFSC   STATUS, 0
+0276 2A00      00739         INCF    r0x07, F
+               00740 ;       .line   145; hal/HAL.c  *stk++  = 0xB2;                        // BARGB2 
+0278 0EB2      00741         MOVLW   0xb2
+027A 6EE5      00742         MOVWF   POSTDEC1
+027C C000 FFE9 00743         MOVFF   r0x05, FSR0L
+0280 C000 FFF3 00744         MOVFF   r0x06, PRODL
+0284 5000      00745         MOVF    r0x07, W
+0286 EC00 F000 00746         CALL    __gptrput1
+028A 2A00      00747         INCF    r0x05, F
+028C B0D8      00748         BTFSC   STATUS, 0
+028E 2A00      00749         INCF    r0x06, F
+0290 B0D8      00750         BTFSC   STATUS, 0
+0292 2A00      00751         INCF    r0x07, F
+               00752 ;       .line   146; hal/HAL.c  *stk++  = 0xB1;                        // BARGB1
+0294 0EB1      00753         MOVLW   0xb1
+0296 6EE5      00754         MOVWF   POSTDEC1
+0298 C000 FFE9 00755         MOVFF   r0x05, FSR0L
+029C C000 FFF3 00756         MOVFF   r0x06, PRODL
+gpasm-0.13.7 beta               build/default/production/hal/HAL.asm7-19-2011  15:07:13          PAGE 15
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+ 
+02A0 5000      00757         MOVF    r0x07, W
+02A2 EC00 F000 00758         CALL    __gptrput1
+02A6 2A00      00759         INCF    r0x05, F
+02A8 B0D8      00760         BTFSC   STATUS, 0
+02AA 2A00      00761         INCF    r0x06, F
+02AC B0D8      00762         BTFSC   STATUS, 0
+02AE 2A00      00763         INCF    r0x07, F
+               00764 ;       .line   147; hal/HAL.c  *stk++  = 0xB0;                        // BARGB0
+02B0 0EB0      00765         MOVLW   0xb0
+02B2 6EE5      00766         MOVWF   POSTDEC1
+02B4 C000 FFE9 00767         MOVFF   r0x05, FSR0L
+02B8 C000 FFF3 00768         MOVFF   r0x06, PRODL
+02BC 5000      00769         MOVF    r0x07, W
+02BE EC00 F000 00770         CALL    __gptrput1
+02C2 2A00      00771         INCF    r0x05, F
+02C4 B0D8      00772         BTFSC   STATUS, 0
+02C6 2A00      00773         INCF    r0x06, F
+02C8 B0D8      00774         BTFSC   STATUS, 0
+02CA 2A00      00775         INCF    r0x07, F
+               00776 ;       .line   148; hal/HAL.c  *stk++  = 0xE3;                        // REMB3
+02CC 0EE3      00777         MOVLW   0xe3
+02CE 6EE5      00778         MOVWF   POSTDEC1
+02D0 C000 FFE9 00779         MOVFF   r0x05, FSR0L
+02D4 C000 FFF3 00780         MOVFF   r0x06, PRODL
+02D8 5000      00781         MOVF    r0x07, W
+02DA EC00 F000 00782         CALL    __gptrput1
+02DE 2A00      00783         INCF    r0x05, F
+02E0 B0D8      00784         BTFSC   STATUS, 0
+02E2 2A00      00785         INCF    r0x06, F
+02E4 B0D8      00786         BTFSC   STATUS, 0
+02E6 2A00      00787         INCF    r0x07, F
+               00788 ;       .line   149; hal/HAL.c  *stk++  = 0xE2;                        // REMB2 
+02E8 0EE2      00789         MOVLW   0xe2
+02EA 6EE5      00790         MOVWF   POSTDEC1
+02EC C000 FFE9 00791         MOVFF   r0x05, FSR0L
+02F0 C000 FFF3 00792         MOVFF   r0x06, PRODL
+02F4 5000      00793         MOVF    r0x07, W
+02F6 EC00 F000 00794         CALL    __gptrput1
+02FA 2A00      00795         INCF    r0x05, F
+02FC B0D8      00796         BTFSC   STATUS, 0
+02FE 2A00      00797         INCF    r0x06, F
+0300 B0D8      00798         BTFSC   STATUS, 0
+0302 2A00      00799         INCF    r0x07, F
+               00800 ;       .line   150; hal/HAL.c  *stk++  = 0xE1;                        // REMB1
+0304 0EE1      00801         MOVLW   0xe1
+0306 6EE5      00802         MOVWF   POSTDEC1
+0308 C000 FFE9 00803         MOVFF   r0x05, FSR0L
+030C C000 FFF3 00804         MOVFF   r0x06, PRODL
+0310 5000      00805         MOVF    r0x07, W
+0312 EC00 F000 00806         CALL    __gptrput1
+0316 2A00      00807         INCF    r0x05, F
+0318 B0D8      00808         BTFSC   STATUS, 0
+031A 2A00      00809         INCF    r0x06, F
+031C B0D8      00810         BTFSC   STATUS, 0
+gpasm-0.13.7 beta               build/default/production/hal/HAL.asm7-19-2011  15:07:13          PAGE 16
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+ 
+031E 2A00      00811         INCF    r0x07, F
+               00812 ;       .line   151; hal/HAL.c  *stk++  = 0xE0;                        // REMB0 
+0320 0EE0      00813         MOVLW   0xe0
+0322 6EE5      00814         MOVWF   POSTDEC1
+0324 C000 FFE9 00815         MOVFF   r0x05, FSR0L
+0328 C000 FFF3 00816         MOVFF   r0x06, PRODL
+032C 5000      00817         MOVF    r0x07, W
+032E EC00 F000 00818         CALL    __gptrput1
+0332 2A00      00819         INCF    r0x05, F
+0334 B0D8      00820         BTFSC   STATUS, 0
+0336 2A00      00821         INCF    r0x06, F
+0338 B0D8      00822         BTFSC   STATUS, 0
+033A 2A00      00823         INCF    r0x07, F
+               00824 ;       .line   152; hal/HAL.c  *stk++  = 0xFB;                        // __FPFLAGS
+033C 0EFB      00825         MOVLW   0xfb
+033E 6EE5      00826         MOVWF   POSTDEC1
+0340 C000 FFE9 00827         MOVFF   r0x05, FSR0L
+0344 C000 FFF3 00828         MOVFF   r0x06, PRODL
+0348 5000      00829         MOVF    r0x07, W
+034A EC00 F000 00830         CALL    __gptrput1
+034E 2A00      00831         INCF    r0x05, F
+0350 B0D8      00832         BTFSC   STATUS, 0
+0352 2A00      00833         INCF    r0x06, F
+0354 B0D8      00834         BTFSC   STATUS, 0
+0356 2A00      00835         INCF    r0x07, F
+               00836 ;       .line   153; hal/HAL.c  *stk++  = 0xFF;                        // SIGN
+0358 0EFF      00837         MOVLW   0xff
+035A 6EE5      00838         MOVWF   POSTDEC1
+035C C000 FFE9 00839         MOVFF   r0x05, FSR0L
+0360 C000 FFF3 00840         MOVFF   r0x06, PRODL
+0364 5000      00841         MOVF    r0x07, W
+0366 EC00 F000 00842         CALL    __gptrput1
+036A 2A00      00843         INCF    r0x05, F
+036C B0D8      00844         BTFSC   STATUS, 0
+036E 2A00      00845         INCF    r0x06, F
+0370 B0D8      00846         BTFSC   STATUS, 0
+0372 2A00      00847         INCF    r0x07, F
+               00848 ;       .line   154; hal/HAL.c  *stk++  = 0xAE;                        // __AEXP
+0374 0EAE      00849         MOVLW   0xae
+0376 6EE5      00850         MOVWF   POSTDEC1
+0378 C000 FFE9 00851         MOVFF   r0x05, FSR0L
+037C C000 FFF3 00852         MOVFF   r0x06, PRODL
+0380 5000      00853         MOVF    r0x07, W
+0382 EC00 F000 00854         CALL    __gptrput1
+0386 2A00      00855         INCF    r0x05, F
+0388 B0D8      00856         BTFSC   STATUS, 0
+038A 2A00      00857         INCF    r0x06, F
+038C B0D8      00858         BTFSC   STATUS, 0
+038E 2A00      00859         INCF    r0x07, F
+               00860 ;       .line   155; hal/HAL.c  *stk++  = 0xBE;                        // __BEXP
+0390 0EBE      00861         MOVLW   0xbe
+0392 6EE5      00862         MOVWF   POSTDEC1
+0394 C000 FFE9 00863         MOVFF   r0x05, FSR0L
+0398 C000 FFF3 00864         MOVFF   r0x06, PRODL
+gpasm-0.13.7 beta               build/default/production/hal/HAL.asm7-19-2011  15:07:13          PAGE 17
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+ 
+039C 5000      00865         MOVF    r0x07, W
+039E EC00 F000 00866         CALL    __gptrput1
+03A2 2A00      00867         INCF    r0x05, F
+03A4 B0D8      00868         BTFSC   STATUS, 0
+03A6 2A00      00869         INCF    r0x06, F
+03A8 B0D8      00870         BTFSC   STATUS, 0
+03AA 2A00      00871         INCF    r0x07, F
+               00872 ;       .line   156; hal/HAL.c  *stk++  = 0xD3;                        // __TEMPB3
+03AC 0ED3      00873         MOVLW   0xd3
+03AE 6EE5      00874         MOVWF   POSTDEC1
+03B0 C000 FFE9 00875         MOVFF   r0x05, FSR0L
+03B4 C000 FFF3 00876         MOVFF   r0x06, PRODL
+03B8 5000      00877         MOVF    r0x07, W
+03BA EC00 F000 00878         CALL    __gptrput1
+03BE 2A00      00879         INCF    r0x05, F
+03C0 B0D8      00880         BTFSC   STATUS, 0
+03C2 2A00      00881         INCF    r0x06, F
+03C4 B0D8      00882         BTFSC   STATUS, 0
+03C6 2A00      00883         INCF    r0x07, F
+               00884 ;       .line   157; hal/HAL.c  *stk++  = 0xD2;                        // __TEMPB2
+03C8 0ED2      00885         MOVLW   0xd2
+03CA 6EE5      00886         MOVWF   POSTDEC1
+03CC C000 FFE9 00887         MOVFF   r0x05, FSR0L
+03D0 C000 FFF3 00888         MOVFF   r0x06, PRODL
+03D4 5000      00889         MOVF    r0x07, W
+03D6 EC00 F000 00890         CALL    __gptrput1
+03DA 2A00      00891         INCF    r0x05, F
+03DC B0D8      00892         BTFSC   STATUS, 0
+03DE 2A00      00893         INCF    r0x06, F
+03E0 B0D8      00894         BTFSC   STATUS, 0
+03E2 2A00      00895         INCF    r0x07, F
+               00896 ;       .line   158; hal/HAL.c  *stk++  = 0xD1;                        // __TEMPB1
+03E4 0ED1      00897         MOVLW   0xd1
+03E6 6EE5      00898         MOVWF   POSTDEC1
+03E8 C000 FFE9 00899         MOVFF   r0x05, FSR0L
+03EC C000 FFF3 00900         MOVFF   r0x06, PRODL
+03F0 5000      00901         MOVF    r0x07, W
+03F2 EC00 F000 00902         CALL    __gptrput1
+03F6 2A00      00903         INCF    r0x05, F
+03F8 B0D8      00904         BTFSC   STATUS, 0
+03FA 2A00      00905         INCF    r0x06, F
+03FC B0D8      00906         BTFSC   STATUS, 0
+03FE 2A00      00907         INCF    r0x07, F
+               00908 ;       .line   159; hal/HAL.c  *stk++  = 0xD0;                        // __TEMPB0
+0400 0ED0      00909         MOVLW   0xd0
+0402 6EE5      00910         MOVWF   POSTDEC1
+0404 C000 FFE9 00911         MOVFF   r0x05, FSR0L
+0408 C000 FFF3 00912         MOVFF   r0x06, PRODL
+040C 5000      00913         MOVF    r0x07, W
+040E EC00 F000 00914         CALL    __gptrput1
+0412 2A00      00915         INCF    r0x05, F
+0414 B0D8      00916         BTFSC   STATUS, 0
+0416 2A00      00917         INCF    r0x06, F
+0418 B0D8      00918         BTFSC   STATUS, 0
+gpasm-0.13.7 beta               build/default/production/hal/HAL.asm7-19-2011  15:07:13          PAGE 18
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+ 
+041A 2A00      00919         INCF    r0x07, F
+               00920 ;       .line   160; hal/HAL.c  *stk++  = 0x10;                        // __tmp_0
+041C 0E10      00921         MOVLW   0x10
+041E 6EE5      00922         MOVWF   POSTDEC1
+0420 C000 FFE9 00923         MOVFF   r0x05, FSR0L
+0424 C000 FFF3 00924         MOVFF   r0x06, PRODL
+0428 5000      00925         MOVF    r0x07, W
+042A EC00 F000 00926         CALL    __gptrput1
+042E 2A00      00927         INCF    r0x05, F
+0430 B0D8      00928         BTFSC   STATUS, 0
+0432 2A00      00929         INCF    r0x06, F
+0434 B0D8      00930         BTFSC   STATUS, 0
+0436 2A00      00931         INCF    r0x07, F
+               00932 ;       .line   161; hal/HAL.c  *stk++  = 0x10;                        // __tmp_0
+0438 0E10      00933         MOVLW   0x10
+043A 6EE5      00934         MOVWF   POSTDEC1
+043C C000 FFE9 00935         MOVFF   r0x05, FSR0L
+0440 C000 FFF3 00936         MOVFF   r0x06, PRODL
+0444 5000      00937         MOVF    r0x07, W
+0446 EC00 F000 00938         CALL    __gptrput1
+044A 2A00      00939         INCF    r0x05, F
+044C B0D8      00940         BTFSC   STATUS, 0
+044E 2A00      00941         INCF    r0x06, F
+0450 B0D8      00942         BTFSC   STATUS, 0
+0452 2A00      00943         INCF    r0x07, F
+               00944 ;       .line   162; hal/HAL.c  *stk++  = 0x10;                        // __tmp_0
+0454 0E10      00945         MOVLW   0x10
+0456 6EE5      00946         MOVWF   POSTDEC1
+0458 C000 FFE9 00947         MOVFF   r0x05, FSR0L
+045C C000 FFF3 00948         MOVFF   r0x06, PRODL
+0460 5000      00949         MOVF    r0x07, W
+0462 EC00 F000 00950         CALL    __gptrput1
+0466 2A00      00951         INCF    r0x05, F
+0468 B0D8      00952         BTFSC   STATUS, 0
+046A 2A00      00953         INCF    r0x06, F
+046C B0D8      00954         BTFSC   STATUS, 0
+046E 2A00      00955         INCF    r0x07, F
+               00956 ;       .line   163; hal/HAL.c  *stk++  = 0x10;                        // __tmp_0
+0470 0E10      00957         MOVLW   0x10
+0472 6EE5      00958         MOVWF   POSTDEC1
+0474 C000 FFE9 00959         MOVFF   r0x05, FSR0L
+0478 C000 FFF3 00960         MOVFF   r0x06, PRODL
+047C 5000      00961         MOVF    r0x07, W
+047E EC00 F000 00962         CALL    __gptrput1
+0482 2A00      00963         INCF    r0x05, F
+0484 B0D8      00964         BTFSC   STATUS, 0
+0486 2A00      00965         INCF    r0x06, F
+0488 B0D8      00966         BTFSC   STATUS, 0
+048A 2A00      00967         INCF    r0x07, F
+               00968 ;       .line   164; hal/HAL.c  *stk++  = 0x10;                        // __tmp_0
+048C 0E10      00969         MOVLW   0x10
+048E 6EE5      00970         MOVWF   POSTDEC1
+0490 C000 FFE9 00971         MOVFF   r0x05, FSR0L
+0494 C000 FFF3 00972         MOVFF   r0x06, PRODL
+gpasm-0.13.7 beta               build/default/production/hal/HAL.asm7-19-2011  15:07:13          PAGE 19
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+ 
+0498 5000      00973         MOVF    r0x07, W
+049A EC00 F000 00974         CALL    __gptrput1
+049E 2A00      00975         INCF    r0x05, F
+04A0 B0D8      00976         BTFSC   STATUS, 0
+04A2 2A00      00977         INCF    r0x06, F
+04A4 B0D8      00978         BTFSC   STATUS, 0
+04A6 2A00      00979         INCF    r0x07, F
+               00980 ;       .line   165; hal/HAL.c  *stk++  = 0x10;                        // __tmp_0
+04A8 0E10      00981         MOVLW   0x10
+04AA 6EE5      00982         MOVWF   POSTDEC1
+04AC C000 FFE9 00983         MOVFF   r0x05, FSR0L
+04B0 C000 FFF3 00984         MOVFF   r0x06, PRODL
+04B4 5000      00985         MOVF    r0x07, W
+04B6 EC00 F000 00986         CALL    __gptrput1
+04BA 2A00      00987         INCF    r0x05, F
+04BC B0D8      00988         BTFSC   STATUS, 0
+04BE 2A00      00989         INCF    r0x06, F
+04C0 B0D8      00990         BTFSC   STATUS, 0
+04C2 2A00      00991         INCF    r0x07, F
+               00992 ;       .line   166; hal/HAL.c  *stk++  = 0x10;                        // __tmp_0
+04C4 0E10      00993         MOVLW   0x10
+04C6 6EE5      00994         MOVWF   POSTDEC1
+04C8 C000 FFE9 00995         MOVFF   r0x05, FSR0L
+04CC C000 FFF3 00996         MOVFF   r0x06, PRODL
+04D0 5000      00997         MOVF    r0x07, W
+04D2 EC00 F000 00998         CALL    __gptrput1
+04D6 2A00      00999         INCF    r0x05, F
+04D8 B0D8      01000         BTFSC   STATUS, 0
+04DA 2A00      01001         INCF    r0x06, F
+04DC B0D8      01002         BTFSC   STATUS, 0
+04DE 2A00      01003         INCF    r0x07, F
+               01004 ;       .line   167; hal/HAL.c  *stk++  = 0x10;                        // __tmp_0
+04E0 0E10      01005         MOVLW   0x10
+04E2 6EE5      01006         MOVWF   POSTDEC1
+04E4 C000 FFE9 01007         MOVFF   r0x05, FSR0L
+04E8 C000 FFF3 01008         MOVFF   r0x06, PRODL
+04EC 5000      01009         MOVF    r0x07, W
+04EE EC00 F000 01010         CALL    __gptrput1
+04F2 2A00      01011         INCF    r0x05, F
+04F4 B0D8      01012         BTFSC   STATUS, 0
+04F6 2A00      01013         INCF    r0x06, F
+04F8 B0D8      01014         BTFSC   STATUS, 0
+04FA 2A00      01015         INCF    r0x07, F
+               01016 ;       .line   168; hal/HAL.c  *stk++  = 0x10;                        // __tmp_0
+04FC 0E10      01017         MOVLW   0x10
+04FE 6EE5      01018         MOVWF   POSTDEC1
+0500 C000 FFE9 01019         MOVFF   r0x05, FSR0L
+0504 C000 FFF3 01020         MOVFF   r0x06, PRODL
+0508 5000      01021         MOVF    r0x07, W
+050A EC00 F000 01022         CALL    __gptrput1
+050E 2A00      01023         INCF    r0x05, F
+0510 B0D8      01024         BTFSC   STATUS, 0
+0512 2A00      01025         INCF    r0x06, F
+0514 B0D8      01026         BTFSC   STATUS, 0
+gpasm-0.13.7 beta               build/default/production/hal/HAL.asm7-19-2011  15:07:13          PAGE 20
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+ 
+0516 2A00      01027         INCF    r0x07, F
+               01028 ;       .line   169; hal/HAL.c  *stk++  = 0x10;                        // __tmp_0
+0518 0E10      01029         MOVLW   0x10
+051A 6EE5      01030         MOVWF   POSTDEC1
+051C C000 FFE9 01031         MOVFF   r0x05, FSR0L
+0520 C000 FFF3 01032         MOVFF   r0x06, PRODL
+0524 5000      01033         MOVF    r0x07, W
+0526 EC00 F000 01034         CALL    __gptrput1
+052A 2A00      01035         INCF    r0x05, F
+052C B0D8      01036         BTFSC   STATUS, 0
+052E 2A00      01037         INCF    r0x06, F
+0530 B0D8      01038         BTFSC   STATUS, 0
+0532 2A00      01039         INCF    r0x07, F
+               01040 ;       .line   170; hal/HAL.c  *stk++  = 0x10;                        // __tmp_0
+0534 0E10      01041         MOVLW   0x10
+0536 6EE5      01042         MOVWF   POSTDEC1
+0538 C000 FFE9 01043         MOVFF   r0x05, FSR0L
+053C C000 FFF3 01044         MOVFF   r0x06, PRODL
+0540 5000      01045         MOVF    r0x07, W
+0542 EC00 F000 01046         CALL    __gptrput1
+0546 2A00      01047         INCF    r0x05, F
+0548 B0D8      01048         BTFSC   STATUS, 0
+054A 2A00      01049         INCF    r0x06, F
+054C B0D8      01050         BTFSC   STATUS, 0
+054E 2A00      01051         INCF    r0x07, F
+               01052 ;       .line   171; hal/HAL.c  *stk++  = 0x10;                        // __tmp_0
+0550 0E10      01053         MOVLW   0x10
+0552 6EE5      01054         MOVWF   POSTDEC1
+0554 C000 FFE9 01055         MOVFF   r0x05, FSR0L
+0558 C000 FFF3 01056         MOVFF   r0x06, PRODL
+055C 5000      01057         MOVF    r0x07, W
+055E EC00 F000 01058         CALL    __gptrput1
+0562 2A00      01059         INCF    r0x05, F
+0564 B0D8      01060         BTFSC   STATUS, 0
+0566 2A00      01061         INCF    r0x06, F
+0568 B0D8      01062         BTFSC   STATUS, 0
+056A 2A00      01063         INCF    r0x07, F
+               01064 ;       .line   172; hal/HAL.c  *stk++  = 0x10;                        // __tmp_0
+056C 0E10      01065         MOVLW   0x10
+056E 6EE5      01066         MOVWF   POSTDEC1
+0570 C000 FFE9 01067         MOVFF   r0x05, FSR0L
+0574 C000 FFF3 01068         MOVFF   r0x06, PRODL
+0578 5000      01069         MOVF    r0x07, W
+057A EC00 F000 01070         CALL    __gptrput1
+057E 2A00      01071         INCF    r0x05, F
+0580 B0D8      01072         BTFSC   STATUS, 0
+0582 2A00      01073         INCF    r0x06, F
+0584 B0D8      01074         BTFSC   STATUS, 0
+0586 2A00      01075         INCF    r0x07, F
+               01076 ;       .line   173; hal/HAL.c  *stk++  = 0x10;                        // __tmp_0
+0588 0E10      01077         MOVLW   0x10
+058A 6EE5      01078         MOVWF   POSTDEC1
+058C C000 FFE9 01079         MOVFF   r0x05, FSR0L
+0590 C000 FFF3 01080         MOVFF   r0x06, PRODL
+gpasm-0.13.7 beta               build/default/production/hal/HAL.asm7-19-2011  15:07:13          PAGE 21
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+ 
+0594 5000      01081         MOVF    r0x07, W
+0596 EC00 F000 01082         CALL    __gptrput1
+059A 2A00      01083         INCF    r0x05, F
+059C B0D8      01084         BTFSC   STATUS, 0
+059E 2A00      01085         INCF    r0x06, F
+05A0 B0D8      01086         BTFSC   STATUS, 0
+05A2 2A00      01087         INCF    r0x07, F
+               01088 ;       .line   174; hal/HAL.c  *stk++  = 0x10;                        // __tmp_0
+05A4 0E10      01089         MOVLW   0x10
+05A6 6EE5      01090         MOVWF   POSTDEC1
+05A8 C000 FFE9 01091         MOVFF   r0x05, FSR0L
+05AC C000 FFF3 01092         MOVFF   r0x06, PRODL
+05B0 5000      01093         MOVF    r0x07, W
+05B2 EC00 F000 01094         CALL    __gptrput1
+05B6 2A00      01095         INCF    r0x05, F
+05B8 B0D8      01096         BTFSC   STATUS, 0
+05BA 2A00      01097         INCF    r0x06, F
+05BC B0D8      01098         BTFSC   STATUS, 0
+05BE 2A00      01099         INCF    r0x07, F
+               01100 ;       .line   175; hal/HAL.c  *stk++  = 0x10;                        // __tmp_0
+05C0 0E10      01101         MOVLW   0x10
+05C2 6EE5      01102         MOVWF   POSTDEC1
+05C4 C000 FFE9 01103         MOVFF   r0x05, FSR0L
+05C8 C000 FFF3 01104         MOVFF   r0x06, PRODL
+05CC 5000      01105         MOVF    r0x07, W
+05CE EC00 F000 01106         CALL    __gptrput1
+05D2 2A00      01107         INCF    r0x05, F
+05D4 B0D8      01108         BTFSC   STATUS, 0
+05D6 2A00      01109         INCF    r0x06, F
+05D8 B0D8      01110         BTFSC   STATUS, 0
+05DA 2A00      01111         INCF    r0x07, F
+               01112 ;       .line   176; hal/HAL.c  *stk++  = 0xC1;                        // PCLATH
+05DC 0EC1      01113         MOVLW   0xc1
+05DE 6EE5      01114         MOVWF   POSTDEC1
+05E0 C000 FFE9 01115         MOVFF   r0x05, FSR0L
+05E4 C000 FFF3 01116         MOVFF   r0x06, PRODL
+05E8 5000      01117         MOVF    r0x07, W
+05EA EC00 F000 01118         CALL    __gptrput1
+05EE 2A00      01119         INCF    r0x05, F
+05F0 B0D8      01120         BTFSC   STATUS, 0
+05F2 2A00      01121         INCF    r0x06, F
+05F4 B0D8      01122         BTFSC   STATUS, 0
+05F6 2A00      01123         INCF    r0x07, F
+               01124 ;       .line   177; hal/HAL.c  *stk++  = 0xC2;                        // PCLATU
+05F8 0EC2      01125         MOVLW   0xc2
+05FA 6EE5      01126         MOVWF   POSTDEC1
+05FC C000 FFE9 01127         MOVFF   r0x05, FSR0L
+0600 C000 FFF3 01128         MOVFF   r0x06, PRODL
+0604 5000      01129         MOVF    r0x07, W
+0606 EC00 F000 01130         CALL    __gptrput1
+060A 2A00      01131         INCF    r0x05, F
+060C B0D8      01132         BTFSC   STATUS, 0
+060E 2A00      01133         INCF    r0x06, F
+0610 B0D8      01134         BTFSC   STATUS, 0
+gpasm-0.13.7 beta               build/default/production/hal/HAL.asm7-19-2011  15:07:13          PAGE 22
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+ 
+0612 2A00      01135         INCF    r0x07, F
+               01136 ;       .line   180; hal/HAL.c  *stk++  = (INT8U)((INT16U)(function)) & 0x00FF;     // TOSL
+0614 5000      01137         MOVF    r0x00, W
+0616 6E00      01138         MOVWF   r0x02
+0618 C000 FFE5 01139         MOVFF   r0x02, POSTDEC1
+061C C000 FFE9 01140         MOVFF   r0x05, FSR0L
+0620 C000 FFF3 01141         MOVFF   r0x06, PRODL
+0624 5000      01142         MOVF    r0x07, W
+0626 EC00 F000 01143         CALL    __gptrput1
+062A 2A00      01144         INCF    r0x05, F
+062C B0D8      01145         BTFSC   STATUS, 0
+062E 2A00      01146         INCF    r0x06, F
+0630 B0D8      01147         BTFSC   STATUS, 0
+0632 2A00      01148         INCF    r0x07, F
+               01149 ;       .line   181; hal/HAL.c  *stk++  = (INT8U)((INT16U)(function) >> 8);         // TOSH
+0634 5000      01150         MOVF    r0x01, W
+0636 6E00      01151         MOVWF   r0x00
+0638 6A00      01152         CLRF    r0x01
+063A C000 FFE5 01153         MOVFF   r0x00, POSTDEC1
+063E C000 FFE9 01154         MOVFF   r0x05, FSR0L
+0642 C000 FFF3 01155         MOVFF   r0x06, PRODL
+0646 5000      01156         MOVF    r0x07, W
+0648 EC00 F000 01157         CALL    __gptrput1
+064C 2A00      01158         INCF    r0x05, F
+064E B0D8      01159         BTFSC   STATUS, 0
+0650 2A00      01160         INCF    r0x06, F
+0652 B0D8      01161         BTFSC   STATUS, 0
+0654 2A00      01162         INCF    r0x07, F
+               01163 ;       .line   182; hal/HAL.c  *stk++  = (INT8U)0;                                // TOSU
+0656 0E00      01164         MOVLW   0x00
+0658 6EE5      01165         MOVWF   POSTDEC1
+065A C000 FFE9 01166         MOVFF   r0x05, FSR0L
+065E C000 FFF3 01167         MOVFF   r0x06, PRODL
+0662 5000      01168         MOVF    r0x07, W
+0664 EC00 F000 01169         CALL    __gptrput1
+0668 2A00      01170         INCF    r0x05, F
+066A B0D8      01171         BTFSC   STATUS, 0
+066C 2A00      01172         INCF    r0x06, F
+066E B0D8      01173         BTFSC   STATUS, 0
+0670 2A00      01174         INCF    r0x07, F
+               01175 ;       .line   184; hal/HAL.c  *stk++  = 0x01;                     // size of return stack - one level deep only
+0672 0E01      01176         MOVLW   0x01
+0674 6EE5      01177         MOVWF   POSTDEC1
+0676 C000 FFE9 01178         MOVFF   r0x05, FSR0L
+067A C000 FFF3 01179         MOVFF   r0x06, PRODL
+067E 5000      01180         MOVF    r0x07, W
+0680 EC00 F000 01181         CALL    __gptrput1
+0684 CFE4 F000 01182         MOVFF   PREINC1, r0x07
+0688 CFE4 F000 01183         MOVFF   PREINC1, r0x06
+068C CFE4 F000 01184         MOVFF   PREINC1, r0x05
+0690 CFE4 F000 01185         MOVFF   PREINC1, r0x04
+0694 CFE4 F000 01186         MOVFF   PREINC1, r0x03
+0698 CFE4 F000 01187         MOVFF   PREINC1, r0x02
+069C CFE4 F000 01188         MOVFF   PREINC1, r0x01
+gpasm-0.13.7 beta               build/default/production/hal/HAL.asm7-19-2011  15:07:13          PAGE 23
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+ 
+06A0 CFE4 F000 01189         MOVFF   PREINC1, r0x00
+06A4 CFE4 FFD9 01190         MOVFF   PREINC1, FSR2L
+06A8 CFE4 FFDA 01191         MOVFF   PREINC1, FSR2H
+06AC 0012      01192         RETURN  
+               01193 
+               01194 ; ; Starting pCode block
+               01195 S_HAL__SwitchContext    code
+0000 01196 _SwitchContext:
+               01197 ;       .line   82; hal/HAL.c   void SwitchContext(void)
+0000 CFDA FFE5 01198         MOVFF   FSR2H, POSTDEC1
+0004 CFD9 FFE5 01199         MOVFF   FSR2L, POSTDEC1
+0008 CFE2 FFDA 01200         MOVFF   FSR1H, FSR2H
+000C CFE1 FFD9 01201         MOVFF   FSR1L, FSR2L
+0010 C000 FFE5 01202         MOVFF   r0x00, POSTDEC1
+0014 C000 FFE5 01203         MOVFF   r0x01, POSTDEC1
+0018 C000 FFE4 01204         MOVFF _STATUS, PREINC1 
+001C C000 FFE4 01205         MOVFF _WREG, PREINC1 
+0020 C000 FFE4 01206         MOVFF _BSR, PREINC1 
+0024 C000 FFE4 01207         MOVFF _FSR2H, PREINC1 
+0028 C000 F000 01208         MOVFF _FSR1H, _FSR2H 
+002C C000 FFE4 01209         MOVFF _FSR2L, PREINC1 
+0030 C000 FFE4 01210         MOVFF _FSR0L, PREINC1 
+0034 C000 FFE4 01211         MOVFF _FSR0H, PREINC1 
+0038 C000 FFE4 01212         MOVFF _TABLAT, PREINC1 
+003C C000 FFE4 01213         MOVFF _TBLPTRL, PREINC1 
+0040 C000 FFE4 01214         MOVFF _TBLPTRH, PREINC1 
+0044 C000 FFE4 01215         MOVFF _TBLPTRU, PREINC1 
+0048 C000 FFE4 01216         MOVFF _PRODL, PREINC1 
+004C C000 FFE4 01217         MOVFF _PRODH, PREINC1 
+0050 C000 FFE4 01218         MOVFF _PCLATH, PREINC1 
+0054 C000 FFE4 01219         MOVFF _PCLATU, PREINC1 
+0058 0000      01220         BANKSEL _iNesting
+               01221 ;       .line   88; hal/HAL.c   OS_INT_ENTER();
+005A 2B00      01222         INCF    _iNesting, F, B
+005C 0000      01223         BANKSEL _iNesting
+               01224 ;       .line   95; hal/HAL.c   OS_INT_EXIT();
+005E 0700      01225         DECF    _iNesting, F, B
+0060 0000      01226         BANKSEL _iNesting
+0062 5100      01227         MOVF    _iNesting, W, B
+0064 A4D8      01228         BTFSS   STATUS, 2
+0066 D000      01229         BRA     _00119_DS_
+0068 EC00 F000 01230         CALL    _OSSchedule
+006C 0000      01231         BANKSEL _SelectedTask
+006E 6F00      01232         MOVWF   _SelectedTask, B
+0070 0000      01233         BANKSEL _currentTask
+0072 5100      01234         MOVF    _currentTask, W, B
+0074 0000      01235         BANKSEL _SelectedTask
+0076 1900      01236         XORWF   _SelectedTask, W, B
+0078 E100      01237         BNZ     _00129_DS_
+007A D000      01238         BRA     _00119_DS_
+007C 01239 _00128_DS_:
+007C 01240 _00129_DS_:
+007C C000 F000 01241         MOVFF _STKPTR, _FSR0L 
+0080 01242 _00110_DS_:
+gpasm-0.13.7 beta               build/default/production/hal/HAL.asm7-19-2011  15:07:13          PAGE 24
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+ 
+0080 5000      01243         MOVF    _STKPTR, W
+0082 E000      01244         BZ      _00112_DS_
+0084 C000 F000 01245         MOVFF _TOSL, _PREINC1 
+0088 C000 F000 01246         MOVFF _TOSH, _PREINC1 
+008C C000 F000 01247         MOVFF _TOSU, _PREINC1 
+0090 0006      01248         POP 
+0092 D000      01249         BRA     _00110_DS_
+0094 01250 _00112_DS_:
+0094 C000 F000 01251         MOVFF _FSR0L, _PREINC1 
+0098 5200      01252         MOVF _PREINC1, 1, 0 
+009A C000 F000 01253         MOVFF _FSR1L, _SPvalue 
+009E C000 F000 01254         MOVFF _FSR1H, _SPvalue+1 
+               01255 ; ;multiply lit val:0x10 by variable _currentTask and store in r0x00
+               01256 ; ;Unrolled 8 X 8 multiplication
+               01257 ; ;FIXME: the function does not support result==WREG
+00A2 0000      01258         BANKSEL _currentTask
+00A4 5100      01259         MOVF    _currentTask, W, B
+00A6 0D10      01260         MULLW   0x10
+00A8 CFF3 F000 01261         MOVFF   PRODL, r0x00
+00AC 6A00      01262         CLRF    r0x01
+00AE 0E00      01263         MOVLW   LOW(_ContextTask)
+00B0 2600      01264         ADDWF   r0x00, F
+00B2 0E00      01265         MOVLW   HIGH(_ContextTask)
+00B4 2200      01266         ADDWFC  r0x01, F
+00B6 0E03      01267         MOVLW   0x03
+00B8 2600      01268         ADDWF   r0x00, F
+00BA B0D8      01269         BTFSC   STATUS, 0
+00BC 2A00      01270         INCF    r0x01, F
+00BE C000 FFE9 01271         MOVFF   r0x00, FSR0L
+00C2 C000 FFEA 01272         MOVFF   r0x01, FSR0H
+00C6 C000 FFEE 01273         MOVFF   _SPvalue, POSTINC0
+00CA C000 FFEF 01274         MOVFF   (_SPvalue + 1), INDF0
+00CE C000 F000 01275         MOVFF   _SelectedTask, _currentTask
+               01276 ; ;multiply lit val:0x10 by variable _currentTask and store in r0x00
+               01277 ; ;Unrolled 8 X 8 multiplication
+               01278 ; ;FIXME: the function does not support result==WREG
+00D2 0000      01279         BANKSEL _currentTask
+00D4 5100      01280         MOVF    _currentTask, W, B
+00D6 0D10      01281         MULLW   0x10
+00D8 CFF3 F000 01282         MOVFF   PRODL, r0x00
+00DC 6A00      01283         CLRF    r0x01
+00DE 0E00      01284         MOVLW   LOW(_ContextTask)
+00E0 2600      01285         ADDWF   r0x00, F
+00E2 0E00      01286         MOVLW   HIGH(_ContextTask)
+00E4 2200      01287         ADDWFC  r0x01, F
+00E6 0E03      01288         MOVLW   0x03
+00E8 2600      01289         ADDWF   r0x00, F
+00EA B0D8      01290         BTFSC   STATUS, 0
+00EC 2A00      01291         INCF    r0x01, F
+00EE C000 FFE9 01292         MOVFF   r0x00, FSR0L
+00F2 C000 FFEA 01293         MOVFF   r0x01, FSR0H
+00F6 CFEE F000 01294         MOVFF   POSTINC0, _SPvalue
+00FA CFEF F000 01295         MOVFF   INDF0, (_SPvalue + 1)
+00FE C000 F000 01296         MOVFF _SPvalue, _FSR1L 
+gpasm-0.13.7 beta               build/default/production/hal/HAL.asm7-19-2011  15:07:13          PAGE 25
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+ 
+0102 C000 F000 01297         MOVFF _SPvalue+1, _FSR1H 
+0106 C000 F000 01298         MOVFF _POSTDEC1, _FSR0L 
+010A C000 F000 01299         MOVFF _POSTDEC1, _FSR0L 
+010E 6A00      01300         CLRF    _STKPTR
+0110 01301 _00113_DS_:
+0110 5000      01302         MOVF    _FSR0L, W
+0112 5C00      01303         SUBWF   _STKPTR, W
+0114 E200      01304         BC      _00119_DS_
+0116 0005      01305         PUSH 
+0118 5000      01306         MOVF _POSTDEC1, 0, 0 
+011A 6E00      01307         MOVWF _TOSU, 0 
+011C 5000      01308         MOVF _POSTDEC1, 0, 0 
+011E 6E00      01309         MOVWF _TOSH, 0 
+0120 5000      01310         MOVF _POSTDEC1, 0, 0 
+0122 6E00      01311         MOVWF _TOSL, 0 
+0124 D000      01312         BRA     _00113_DS_
+0126 01313 _00119_DS_:
+0126 CFE5 F000 01314         MOVFF POSTDEC1, _PCLATU 
+012A CFE5 F000 01315         MOVFF POSTDEC1, _PCLATH 
+012E CFE5 F000 01316         MOVFF POSTDEC1, _PRODH 
+0132 CFE5 F000 01317         MOVFF POSTDEC1, _PRODL 
+0136 CFE5 F000 01318         MOVFF POSTDEC1, _TBLPTRU 
+013A CFE5 F000 01319         MOVFF POSTDEC1, _TBLPTRH 
+013E CFE5 F000 01320         MOVFF POSTDEC1, _TBLPTRL 
+0142 CFE5 F000 01321         MOVFF POSTDEC1, _TABLAT 
+0146 CFE5 F000 01322         MOVFF POSTDEC1, _FSR0H 
+014A CFE5 F000 01323         MOVFF POSTDEC1, _FSR0L 
+014E CFE5 F000 01324         MOVFF POSTDEC1, _FSR2L 
+0152 CFE5 F000 01325         MOVFF POSTDEC1, _FSR2H 
+0156 C000 F000 01326         MOVFF _FSR2H, _FSR1H 
+015A CFE5 F000 01327         MOVFF POSTDEC1, _BSR 
+015E CFE5 F000 01328         MOVFF POSTDEC1, _WREG 
+0162 CFE5 F000 01329         MOVFF POSTDEC1, _STATUS 
+0166 0010      01330         RETFIE 0 
+0168 CFE4 F000 01331         MOVFF   PREINC1, r0x01
+016C CFE4 F000 01332         MOVFF   PREINC1, r0x00
+0170 CFE4 FFD9 01333         MOVFF   PREINC1, FSR2L
+0174 CFE4 FFDA 01334         MOVFF   PREINC1, FSR2H
+0178 0012      01335         RETURN  
+               01336 
+               01337 ; ; Starting pCode block
+               01338 S_HAL__TickTimerSetup   code
+0000 01339 _TickTimerSetup:
+               01340 ;       .line   20; hal/HAL.c   void TickTimerSetup(void)
+0000 CFDA FFE5 01341         MOVFF   FSR2H, POSTDEC1
+0004 CFD9 FFE5 01342         MOVFF   FSR2L, POSTDEC1
+0008 CFE2 FFDA 01343         MOVFF   FSR1H, FSR2H
+000C CFE1 FFD9 01344         MOVFF   FSR1L, FSR2L
+               01345 ;       .line   23; hal/HAL.c   CCPR1 = ( configCPU_INT_CLOCK_HZ / configTICK_RATE_HZ );
+0010 0E40      01346         MOVLW   0x40
+0012 6E00      01347         MOVWF   _CCPR1
+               01348 ;       .line   25; hal/HAL.c   TMR1H = ( unsigned char ) 0x00;
+0014 6A00      01349         CLRF    _TMR1H
+               01350 ;       .line   26; hal/HAL.c   TMR1L = ( unsigned char ) 0x00;    
+gpasm-0.13.7 beta               build/default/production/hal/HAL.asm7-19-2011  15:07:13          PAGE 26
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+ 
+0016 6A00      01351         CLRF    _TMR1L
+               01352 ;       .line   29; hal/HAL.c   CCP1CONbits.CCP1M0 = 1;        /*< Compare match mode. */
+0018 8000      01353         BSF     _CCP1CONbits, 0
+               01354 ;       .line   30; hal/HAL.c   CCP1CONbits.CCP1M1 = 1;        /*< Compare match mode. */
+001A 8200      01355         BSF     _CCP1CONbits, 1
+               01356 ;       .line   31; hal/HAL.c   CCP1CONbits.CCP1M2 = 0;        /*< Compare match mode. */
+001C 9400      01357         BCF     _CCP1CONbits, 2
+               01358 ;       .line   32; hal/HAL.c   CCP1CONbits.CCP1M3 = 1;        /*< Compare match mode. */
+001E 8600      01359         BSF     _CCP1CONbits, 3
+               01360 ;       .line   33; hal/HAL.c   PIE1bits.CCP1IE = 1;        /*< Interrupt enable. */
+0020 8400      01361         BSF     _PIE1bits, 2
+               01362 ;       .line   34; hal/HAL.c   INTCONbits.PEIE = 1;        /*< Enable interrupts */
+0022 8C00      01363         BSF     _INTCONbits, 6
+0024 CFE4 FFD9 01364         MOVFF   PREINC1, FSR2L
+0028 CFE4 FFDA 01365         MOVFF   PREINC1, FSR2H
+002C 0012      01366         RETURN  
+               01367 
+               01368 
+               01369 
+               01370 ; Statistics:
+               01371 ; code size:     2424 (0x0978) bytes ( 1.85%)
+               01372 ;                1212 (0x04bc) words
+               01373 ; udata size:       0 (0x0000) bytes ( 0.00%)
+               01374 ; access size:      8 (0x0008) bytes
+               01375 
+               01376 
+gpasm-0.13.7 beta               build/default/production/hal/HAL.asm7-19-2011  15:07:13          PAGE 27
+
+
+SYMBOL TABLE
+  LABEL                             VALUE 
+
+FSR0H                             00000FEA
+FSR0L                             00000FE9
+FSR1H                             00000FE2
+FSR1L                             00000FE1
+FSR2H                             00000FDA
+FSR2L                             00000FD9
+INDF0                             00000FEF
+PLUSW2                            00000FDB
+POSTDEC1                          00000FE5
+POSTINC0                          00000FEE
+PREINC1                           00000FE4
+PRODL                             00000FF3
+STATUS                            00000FD8
+WREG                              00000FE8
+_00110_DS_                        00000080
+_00112_DS_                        00000094
+_00113_DS_                        00000110
+_00119_DS_                        00000126
+_00128_DS_                        0000007C
+_00129_DS_                        0000007C
+_00141_DS_                        00000018
+_00148_DS_                        00000080
+_00149_DS_                        000000A8
+_00151_DS_                        000000BC
+_00152_DS_                        00000138
+_00158_DS_                        0000014E
+_00168_DS_                        00000076
+_00169_DS_                        00000078
+_00170_DS_                        000000A4
+_00171_DS_                        000000A4
+_10147_DS_                        00000068
+_ADCON0                           00000000
+_ADCON0bits                       00000000
+_ADCON1                           00000000
+_ADCON1bits                       00000000
+_ADCON2                           00000000
+_ADCON2bits                       00000000
+_ADRES                            00000000
+_ADRESH                           00000000
+_ADRESL                           00000000
+_BAUDCON                          00000000
+_BAUDCONbits                      00000000
+_BAUDCTL                          00000000
+_BAUDCTLbits                      00000000
+_BRTOS_Mutex_Table                00000000
+_BRTOS_Queue_Table                00000000
+_BRTOS_Sem_Table                  00000000
+_BSR                              00000000
+_BufferText                       00000000
+_CCP1CON                          00000000
+_CCP1CONbits                      00000000
+_CCP2CON                          00000000
+_CCP2CONbits                      00000000
+gpasm-0.13.7 beta               build/default/production/hal/HAL.asm7-19-2011  15:07:13          PAGE 28
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+ 
+_CCPR1                            00000000
+_CCPR1H                           00000000
+_CCPR1L                           00000000
+_CCPR2                            00000000
+_CCPR2H                           00000000
+_CCPR2L                           00000000
+_CMCON                            00000000
+_CMCONbits                        00000000
+_CVRCON                           00000000
+_CVRCONbits                       00000000
+_ContextTask                      00000000
+_CreateVirtualStack               00000000
+_DDRA                             00000000
+_DDRAbits                         00000000
+_DDRB                             00000000
+_DDRBbits                         00000000
+_DDRC                             00000000
+_DDRCbits                         00000000
+_DDRD                             00000000
+_DDRDbits                         00000000
+_DDRE                             00000000
+_DDREbits                         00000000
+_Data                             00000000
+_ECCP1AS                          00000000
+_ECCP1ASbits                      00000000
+_EEADR                            00000000
+_EECON1                           00000000
+_EECON1bits                       00000000
+_EECON2                           00000000
+_EEDATA                           00000000
+_FSR0H                            00000000
+_FSR0L                            00000000
+_FSR1H                            00000000
+_FSR1L                            00000000
+_FSR2H                            00000000
+_FSR2L                            00000000
+_HLVDCON                          00000000
+_HLVDCONbits                      00000000
+_Head                             00000000
+_HighInterrupt                    00000000
+_Hora                             00000000
+_INDF0                            00000000
+_INDF1                            00000000
+_INDF2                            00000000
+_INTCON                           00000000
+_INTCON2                          00000000
+_INTCON2bits                      00000000
+_INTCON3                          00000000
+_INTCON3bits                      00000000
+_INTCONbits                       00000000
+_IPR1                             00000000
+_IPR1bits                         00000000
+_IPR2                             00000000
+_IPR2bits                         00000000
+gpasm-0.13.7 beta               build/default/production/hal/HAL.asm7-19-2011  15:07:13          PAGE 29
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+ 
+_LATA                             00000000
+_LATAbits                         00000000
+_LATB                             00000000
+_LATBbits                         00000000
+_LATC                             00000000
+_LATCbits                         00000000
+_LATD                             00000000
+_LATDbits                         00000000
+_LATE                             00000000
+_LATEbits                         00000000
+_LVDCON                           00000000
+_LVDCONbits                       00000000
+_LastOSDuty                       00000000
+_NumberOfInstalledTasks           00000000
+_OSBlockedList                    00000000
+_OSCCON                           00000000
+_OSCCONbits                       00000000
+_OSCTUNE                          00000000
+_OSCTUNEbits                      00000000
+_OSDuty                           00000000
+_OSDutyTmp                        00000000
+_OSReadyList                      00000000
+_OSSchedule                       00000000
+_OS_TICK_HANDLER                  00000000
+_PC                               00000000
+_PCL                              00000000
+_PCLATH                           00000000
+_PCLATU                           00000000
+_PIE1                             00000000
+_PIE1bits                         00000000
+_PIE2                             00000000
+_PIE2bits                         00000000
+_PIR1                             00000000
+_PIR1bits                         00000000
+_PIR2                             00000000
+_PIR2bits                         00000000
+_PLUSW0                           00000000
+_PLUSW1                           00000000
+_PLUSW2                           00000000
+_PORTA                            00000000
+_PORTAbits                        00000000
+_PORTB                            00000000
+_PORTBbits                        00000000
+_PORTC                            00000000
+_PORTCbits                        00000000
+_PORTD                            00000000
+_PORTDbits                        00000000
+_PORTE                            00000000
+_PORTEbits                        00000000
+_POSTDEC0                         00000000
+_POSTDEC1                         00000000
+_POSTDEC2                         00000000
+_POSTINC0                         00000000
+_POSTINC1                         00000000
+gpasm-0.13.7 beta               build/default/production/hal/HAL.asm7-19-2011  15:07:13          PAGE 30
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+ 
+_POSTINC2                         00000000
+_PR2                              00000000
+_PREINC0                          00000000
+_PREINC1                          00000000
+_PREINC2                          00000000
+_PROD                             00000000
+_PRODH                            00000000
+_PRODL                            00000000
+_PWM1CON                          00000000
+_PWM1CONbits                      00000000
+_PriorityMask                     00000000
+_PriorityVector                   00000000
+_QUEUE_STACK                      00000000
+_RCON                             00000000
+_RCONbits                         00000000
+_RCREG                            00000000
+_RCSTA                            00000000
+_RCSTAbits                        00000000
+_SPBRG                            00000000
+_SPBRGH                           00000000
+_SPvalue                          00000000
+_SSPADD                           00000000
+_SSPBUF                           00000000
+_SSPCON1                          00000000
+_SSPCON1bits                      00000000
+_SSPCON2                          00000000
+_SSPCON2bits                      00000000
+_SSPSTAT                          00000000
+_SSPSTATbits                      00000000
+_STACK                            00000000
+_STATUS                           00000000
+_STATUSbits                       00000000
+_STKPTR                           00000000
+_STKPTRbits                       00000000
+_SelectedTask                     00000000
+_StackAddress                     00000000
+_SwitchContext                    00000000
+_T0CON                            00000000
+_T0CONbits                        00000000
+_T1CON                            00000000
+_T1CONbits                        00000000
+_T2CON                            00000000
+_T2CONbits                        00000000
+_T3CON                            00000000
+_T3CONbits                        00000000
+_TABLAT                           00000000
+_TBLPTR                           00000000
+_TBLPTRH                          00000000
+_TBLPTRL                          00000000
+_TBLPTRU                          00000000
+_TMR0H                            00000000
+_TMR0L                            00000000
+_TMR1H                            00000000
+_TMR1L                            00000000
+gpasm-0.13.7 beta               build/default/production/hal/HAL.asm7-19-2011  15:07:13          PAGE 31
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+ 
+_TMR2                             00000000
+_TMR3H                            00000000
+_TMR3L                            00000000
+_TOS                              00000000
+_TOSH                             00000000
+_TOSL                             00000000
+_TOSU                             00000000
+_TRISA                            00000000
+_TRISAbits                        00000000
+_TRISB                            00000000
+_TRISBbits                        00000000
+_TRISC                            00000000
+_TRISCbits                        00000000
+_TRISD                            00000000
+_TRISDbits                        00000000
+_TRISE                            00000000
+_TRISEbits                        00000000
+_TXREG                            00000000
+_TXSTA                            00000000
+_TXSTAbits                        00000000
+_Tail                             00000000
+_TaskAlloc                        00000000
+_TickTimerHandler                 00000000
+_TickTimerSetup                   00000000
+_WDTCON                           00000000
+_WDTCONbits                       00000000
+_WREG                             00000000
+__18F4520                         00000001
+__gptrput1                        00000000
+_counter                          00000000
+_currentTask                      00000000
+_iNesting                         00000000
+_iQueueAddress                    00000000
+_iStackAddress                    00000000
+_version                          00000000
+r0x00                             00000000
+r0x01                             00000001
+r0x02                             00000002
+r0x03                             00000003
+r0x04                             00000004
+r0x05                             00000005
+r0x06                             00000006
+r0x07                             00000007
+
+
+Errors   :       0
+Warnings :       0 reported,       0 suppressed
+Messages :       0 reported,       0 suppressed
+

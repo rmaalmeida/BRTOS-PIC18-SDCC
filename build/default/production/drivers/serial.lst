@@ -1,0 +1,1676 @@
+gpasm-0.13.7 beta               build/default/production/drivers/serial.asm7-19-2011  15:07:14          PAGE  1
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+ 
+               00001 ;--------------------------------------------------------
+               00002 ; File Created by SDCC : free open source ANSI-C Compiler
+               00003 ; Version 2.9.0 #5416 (Apr 29 2011) (UNIX)
+               00004 ; This file was generated Tue Jul 19 15:07:14 2011
+               00005 ;--------------------------------------------------------
+               00006 ; PIC16 port for the Microchip 16-bit core micros
+               00007 ;--------------------------------------------------------
+               00008         list    p=18f4520
+               00009 
+               00010         radix dec
+               00011 
+               00012 ;--------------------------------------------------------
+               00013 ; public variables in this module
+               00014 ;--------------------------------------------------------
+               00015         global _SerialResource
+               00016         global _SerialRXBuffer
+               00017         global _QSerialRX
+               00018         global _SerialTXBuffer
+               00019         global _QSerialTX
+               00020         global _SerialTX
+               00021         global _Serial_Init
+               00022         global _Serial_Envia_Caracter
+               00023         global _Serial_Envia_Frase
+               00024         global _SerialRxHandler
+               00025         global _SerialRx
+               00026         global _SerialTxHandler
+               00027         global _SerialTx
+               00028         global _acquireUART
+               00029         global _releaseUART
+               00030 
+               00031 ;--------------------------------------------------------
+               00032 ; extern variables in this module
+               00033 ;--------------------------------------------------------
+               00034         extern __gptrget1
+               00035         extern _PORTAbits
+               00036         extern _PORTBbits
+               00037         extern _PORTCbits
+               00038         extern _PORTDbits
+               00039         extern _PORTEbits
+               00040         extern _LATAbits
+               00041         extern _LATBbits
+               00042         extern _LATCbits
+               00043         extern _LATDbits
+               00044         extern _LATEbits
+               00045         extern _DDRAbits
+               00046         extern _TRISAbits
+               00047         extern _DDRBbits
+               00048         extern _TRISBbits
+               00049         extern _DDRCbits
+               00050         extern _TRISCbits
+               00051         extern _DDRDbits
+               00052         extern _TRISDbits
+               00053         extern _DDREbits
+               00054         extern _TRISEbits
+gpasm-0.13.7 beta               build/default/production/drivers/serial.asm7-19-2011  15:07:14          PAGE  2
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+ 
+               00055         extern _OSCTUNEbits
+               00056         extern _PIE1bits
+               00057         extern _PIR1bits
+               00058         extern _IPR1bits
+               00059         extern _PIE2bits
+               00060         extern _PIR2bits
+               00061         extern _IPR2bits
+               00062         extern _EECON1bits
+               00063         extern _RCSTAbits
+               00064         extern _TXSTAbits
+               00065         extern _T3CONbits
+               00066         extern _CMCONbits
+               00067         extern _CVRCONbits
+               00068         extern _ECCP1ASbits
+               00069         extern _PWM1CONbits
+               00070         extern _BAUDCONbits
+               00071         extern _BAUDCTLbits
+               00072         extern _CCP2CONbits
+               00073         extern _CCP1CONbits
+               00074         extern _ADCON2bits
+               00075         extern _ADCON1bits
+               00076         extern _ADCON0bits
+               00077         extern _SSPCON2bits
+               00078         extern _SSPCON1bits
+               00079         extern _SSPSTATbits
+               00080         extern _T2CONbits
+               00081         extern _T1CONbits
+               00082         extern _RCONbits
+               00083         extern _WDTCONbits
+               00084         extern _HLVDCONbits
+               00085         extern _LVDCONbits
+               00086         extern _OSCCONbits
+               00087         extern _T0CONbits
+               00088         extern _STATUSbits
+               00089         extern _INTCON3bits
+               00090         extern _INTCON2bits
+               00091         extern _INTCONbits
+               00092         extern _STKPTRbits
+               00093         extern _SPvalue
+               00094         extern _Hora
+               00095         extern _Data
+               00096         extern _BRTOS_Sem_Table
+               00097         extern _BRTOS_Mutex_Table
+               00098         extern _BRTOS_Queue_Table
+               00099         extern _OSReadyList
+               00100         extern _OSBlockedList
+               00101         extern _Tail
+               00102         extern _Head
+               00103         extern _iNesting
+               00104         extern _currentTask
+               00105         extern _SelectedTask
+               00106         extern _ContextTask
+               00107         extern _iStackAddress
+               00108         extern _NumberOfInstalledTasks
+gpasm-0.13.7 beta               build/default/production/drivers/serial.asm7-19-2011  15:07:14          PAGE  3
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+ 
+               00109         extern _counter
+               00110         extern _OSDuty
+               00111         extern _PriorityVector
+               00112         extern _OSDutyTmp
+               00113         extern _LastOSDuty
+               00114         extern _STACK
+               00115         extern _TaskAlloc
+               00116         extern _QUEUE_STACK
+               00117         extern _iQueueAddress
+               00118         extern _version
+               00119         extern _BufferText
+               00120         extern _StackAddress
+               00121         extern _PORTA
+               00122         extern _PORTB
+               00123         extern _PORTC
+               00124         extern _PORTD
+               00125         extern _PORTE
+               00126         extern _LATA
+               00127         extern _LATB
+               00128         extern _LATC
+               00129         extern _LATD
+               00130         extern _LATE
+               00131         extern _DDRA
+               00132         extern _TRISA
+               00133         extern _DDRB
+               00134         extern _TRISB
+               00135         extern _DDRC
+               00136         extern _TRISC
+               00137         extern _DDRD
+               00138         extern _TRISD
+               00139         extern _DDRE
+               00140         extern _TRISE
+               00141         extern _OSCTUNE
+               00142         extern _PIE1
+               00143         extern _PIR1
+               00144         extern _IPR1
+               00145         extern _PIE2
+               00146         extern _PIR2
+               00147         extern _IPR2
+               00148         extern _EECON1
+               00149         extern _EECON2
+               00150         extern _EEDATA
+               00151         extern _EEADR
+               00152         extern _RCSTA
+               00153         extern _TXSTA
+               00154         extern _TXREG
+               00155         extern _RCREG
+               00156         extern _SPBRG
+               00157         extern _SPBRGH
+               00158         extern _T3CON
+               00159         extern _TMR3L
+               00160         extern _TMR3H
+               00161         extern _CMCON
+               00162         extern _CVRCON
+gpasm-0.13.7 beta               build/default/production/drivers/serial.asm7-19-2011  15:07:14          PAGE  4
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+ 
+               00163         extern _ECCP1AS
+               00164         extern _PWM1CON
+               00165         extern _BAUDCON
+               00166         extern _BAUDCTL
+               00167         extern _CCP2CON
+               00168         extern _CCPR2
+               00169         extern _CCPR2L
+               00170         extern _CCPR2H
+               00171         extern _CCP1CON
+               00172         extern _CCPR1
+               00173         extern _CCPR1L
+               00174         extern _CCPR1H
+               00175         extern _ADCON2
+               00176         extern _ADCON1
+               00177         extern _ADCON0
+               00178         extern _ADRES
+               00179         extern _ADRESL
+               00180         extern _ADRESH
+               00181         extern _SSPCON2
+               00182         extern _SSPCON1
+               00183         extern _SSPSTAT
+               00184         extern _SSPADD
+               00185         extern _SSPBUF
+               00186         extern _T2CON
+               00187         extern _PR2
+               00188         extern _TMR2
+               00189         extern _T1CON
+               00190         extern _TMR1L
+               00191         extern _TMR1H
+               00192         extern _RCON
+               00193         extern _WDTCON
+               00194         extern _HLVDCON
+               00195         extern _LVDCON
+               00196         extern _OSCCON
+               00197         extern _T0CON
+               00198         extern _TMR0L
+               00199         extern _TMR0H
+               00200         extern _STATUS
+               00201         extern _FSR2L
+               00202         extern _FSR2H
+               00203         extern _PLUSW2
+               00204         extern _PREINC2
+               00205         extern _POSTDEC2
+               00206         extern _POSTINC2
+               00207         extern _INDF2
+               00208         extern _BSR
+               00209         extern _FSR1L
+               00210         extern _FSR1H
+               00211         extern _PLUSW1
+               00212         extern _PREINC1
+               00213         extern _POSTDEC1
+               00214         extern _POSTINC1
+               00215         extern _INDF1
+               00216         extern _WREG
+gpasm-0.13.7 beta               build/default/production/drivers/serial.asm7-19-2011  15:07:14          PAGE  5
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+ 
+               00217         extern _FSR0L
+               00218         extern _FSR0H
+               00219         extern _PLUSW0
+               00220         extern _PREINC0
+               00221         extern _POSTDEC0
+               00222         extern _POSTINC0
+               00223         extern _INDF0
+               00224         extern _INTCON3
+               00225         extern _INTCON2
+               00226         extern _INTCON
+               00227         extern _PROD
+               00228         extern _PRODL
+               00229         extern _PRODH
+               00230         extern _TABLAT
+               00231         extern _TBLPTR
+               00232         extern _TBLPTRL
+               00233         extern _TBLPTRH
+               00234         extern _TBLPTRU
+               00235         extern _PC
+               00236         extern _PCL
+               00237         extern _PCLATH
+               00238         extern _PCLATU
+               00239         extern _STKPTR
+               00240         extern _TOS
+               00241         extern _TOSL
+               00242         extern _TOSH
+               00243         extern _TOSU
+               00244         extern _OSSchedule
+               00245         extern _OSSemCreate
+               00246         extern _OSSemPend
+               00247         extern _OSSemPost
+               00248         extern _OSMutexCreate
+               00249         extern _OSMutexAcquire
+               00250         extern _OSMutexRelease
+               00251         extern _OSQueueCreate
+               00252         extern _OSWQueue
+               00253         extern _OSRQueue
+               00254         extern _OSCleanQueue
+               00255         extern _OSQueuePost
+               00256         extern __divulong
+               00257         extern _PriorityMask
+               00258 ;--------------------------------------------------------
+               00259 ;       Equates to used internal registers
+               00260 ;--------------------------------------------------------
+  00000FD8     00261 STATUS  equ     0xfd8
+  00000FE8     00262 WREG    equ     0xfe8
+  00000FE9     00263 FSR0L   equ     0xfe9
+  00000FEA     00264 FSR0H   equ     0xfea
+  00000FE1     00265 FSR1L   equ     0xfe1
+  00000FE2     00266 FSR1H   equ     0xfe2
+  00000FD9     00267 FSR2L   equ     0xfd9
+  00000FDA     00268 FSR2H   equ     0xfda
+  00000FEF     00269 INDF0   equ     0xfef
+  00000FEE     00270 POSTINC0        equ     0xfee
+gpasm-0.13.7 beta               build/default/production/drivers/serial.asm7-19-2011  15:07:14          PAGE  6
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+ 
+  00000FE5     00271 POSTDEC1        equ     0xfe5
+  00000FE4     00272 PREINC1 equ     0xfe4
+  00000FDB     00273 PLUSW2  equ     0xfdb
+  00000FF3     00274 PRODL   equ     0xff3
+  00000FF4     00275 PRODH   equ     0xff4
+               00276 
+               00277 
+               00278         idata
+               00279 _WaitingSerialTXBuffer  db      0x00
+               00280 
+               00281 
+               00282 ; Internal registers
+               00283 .registers      udata_ovr       0x0000
+               00284 r0x00   res     1
+               00285 r0x01   res     1
+               00286 r0x02   res     1
+               00287 r0x03   res     1
+               00288 r0x04   res     1
+               00289 r0x05   res     1
+               00290 
+               00291 udata_serial_0  udata
+               00292 _SerialResource res     3
+               00293 
+               00294 udata_serial_1  udata
+               00295 _SerialTXBuffer res     19
+               00296 
+               00297 udata_serial_2  udata
+               00298 _QSerialTX      res     3
+               00299 
+               00300 udata_serial_3  udata
+               00301 _SerialRXBuffer res     19
+               00302 
+               00303 udata_serial_4  udata
+               00304 _QSerialRX      res     3
+               00305 
+               00306 udata_serial_5  udata
+               00307 _SerialTX       res     3
+               00308 
+               00309 udata_serial_6  udata
+               00310 _SerialTxHandler_caracter_1_1   res     1
+               00311 
+               00312 ;--------------------------------------------------------
+               00313 ; global & static initialisations
+               00314 ;--------------------------------------------------------
+               00315 ; I code from now on!
+               00316 ; ; Starting pCode block
+               00317 S_serial__releaseUART   code
+0000 00318 _releaseUART:
+               00319 ;       .line   216; drivers/serial.c   void releaseUART(void)
+0000 CFDA FFE5 00320         MOVFF   FSR2H, POSTDEC1
+0004 CFD9 FFE5 00321         MOVFF   FSR2L, POSTDEC1
+0008 CFE2 FFDA 00322         MOVFF   FSR1H, FSR2H
+000C CFE1 FFD9 00323         MOVFF   FSR1L, FSR2L
+0010 0000      00324         BANKSEL (_SerialResource + 2)
+gpasm-0.13.7 beta               build/default/production/drivers/serial.asm7-19-2011  15:07:14          PAGE  7
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+ 
+               00325 ;       .line   219; drivers/serial.c   OSMutexRelease(SerialResource);
+0012 5100      00326         MOVF    (_SerialResource + 2), W, B
+0014 6EE5      00327         MOVWF   POSTDEC1
+0016 0000      00328         BANKSEL (_SerialResource + 1)
+0018 5100      00329         MOVF    (_SerialResource + 1), W, B
+001A 6EE5      00330         MOVWF   POSTDEC1
+001C 0000      00331         BANKSEL _SerialResource
+001E 5100      00332         MOVF    _SerialResource, W, B
+0020 6EE5      00333         MOVWF   POSTDEC1
+0022 EC00 F000 00334         CALL    _OSMutexRelease
+0026 0E03      00335         MOVLW   0x03
+0028 26E1      00336         ADDWF   FSR1L, F
+002A B0D8      00337         BTFSC   STATUS, 0
+002C 2AE2      00338         INCF    FSR1H, F
+002E CFE4 FFD9 00339         MOVFF   PREINC1, FSR2L
+0032 CFE4 FFDA 00340         MOVFF   PREINC1, FSR2H
+0036 0012      00341         RETURN  
+               00342 
+               00343 ; ; Starting pCode block
+               00344 S_serial__acquireUART   code
+0000 00345 _acquireUART:
+               00346 ;       .line   209; drivers/serial.c   void acquireUART(void)
+0000 CFDA FFE5 00347         MOVFF   FSR2H, POSTDEC1
+0004 CFD9 FFE5 00348         MOVFF   FSR2L, POSTDEC1
+0008 CFE2 FFDA 00349         MOVFF   FSR1H, FSR2H
+000C CFE1 FFD9 00350         MOVFF   FSR1L, FSR2L
+0010 0000      00351         BANKSEL (_SerialResource + 2)
+               00352 ;       .line   212; drivers/serial.c   OSMutexAcquire(SerialResource);
+0012 5100      00353         MOVF    (_SerialResource + 2), W, B
+0014 6EE5      00354         MOVWF   POSTDEC1
+0016 0000      00355         BANKSEL (_SerialResource + 1)
+0018 5100      00356         MOVF    (_SerialResource + 1), W, B
+001A 6EE5      00357         MOVWF   POSTDEC1
+001C 0000      00358         BANKSEL _SerialResource
+001E 5100      00359         MOVF    _SerialResource, W, B
+0020 6EE5      00360         MOVWF   POSTDEC1
+0022 EC00 F000 00361         CALL    _OSMutexAcquire
+0026 0E03      00362         MOVLW   0x03
+0028 26E1      00363         ADDWF   FSR1L, F
+002A B0D8      00364         BTFSC   STATUS, 0
+002C 2AE2      00365         INCF    FSR1H, F
+002E CFE4 FFD9 00366         MOVFF   PREINC1, FSR2L
+0032 CFE4 FFDA 00367         MOVFF   PREINC1, FSR2H
+0036 0012      00368         RETURN  
+               00369 
+               00370 ; ; Starting pCode block
+               00371 S_serial__SerialTx      code
+0000 00372 _SerialTx:
+               00373 ;       .line   184; drivers/serial.c   void SerialTx(void)
+0000 CFDA FFE5 00374         MOVFF   FSR2H, POSTDEC1
+0004 CFD9 FFE5 00375         MOVFF   FSR2L, POSTDEC1
+0008 CFE2 FFDA 00376         MOVFF   FSR1H, FSR2H
+000C CFE1 FFD9 00377         MOVFF   FSR1L, FSR2L
+0010 C000 FFE5 00378         MOVFF   r0x00, POSTDEC1
+gpasm-0.13.7 beta               build/default/production/drivers/serial.asm7-19-2011  15:07:14          PAGE  8
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+ 
+0014 C000 FFE5 00379         MOVFF   r0x01, POSTDEC1
+0018 C000 FFE4 00380         MOVFF _STATUS, PREINC1 
+001C C000 FFE4 00381         MOVFF _WREG, PREINC1 
+0020 C000 FFE4 00382         MOVFF _BSR, PREINC1 
+0024 C000 FFE4 00383         MOVFF _FSR2H, PREINC1 
+0028 C000 F000 00384         MOVFF _FSR1H, _FSR2H 
+002C C000 FFE4 00385         MOVFF _FSR2L, PREINC1 
+0030 C000 FFE4 00386         MOVFF _FSR0L, PREINC1 
+0034 C000 FFE4 00387         MOVFF _FSR0H, PREINC1 
+0038 C000 FFE4 00388         MOVFF _TABLAT, PREINC1 
+003C C000 FFE4 00389         MOVFF _TBLPTRL, PREINC1 
+0040 C000 FFE4 00390         MOVFF _TBLPTRH, PREINC1 
+0044 C000 FFE4 00391         MOVFF _TBLPTRU, PREINC1 
+0048 C000 FFE4 00392         MOVFF _PRODL, PREINC1 
+004C C000 FFE4 00393         MOVFF _PRODH, PREINC1 
+0050 C000 FFE4 00394         MOVFF _PCLATH, PREINC1 
+0054 C000 FFE4 00395         MOVFF _PCLATU, PREINC1 
+0058 0000      00396         BANKSEL _iNesting
+               00397 ;       .line   190; drivers/serial.c   OS_INT_ENTER();
+005A 2B00      00398         INCF    _iNesting, F, B
+               00399 ;       .line   193; drivers/serial.c   SerialTxHandler();
+005C EC00 F000 00400         CALL    _SerialTxHandler
+0060 0000      00401         BANKSEL _iNesting
+               00402 ;       .line   202; drivers/serial.c   OS_INT_EXIT();
+0062 0700      00403         DECF    _iNesting, F, B
+0064 0000      00404         BANKSEL _iNesting
+0066 5100      00405         MOVF    _iNesting, W, B
+0068 A4D8      00406         BTFSS   STATUS, 2
+006A D000      00407         BRA     _00221_DS_
+006C EC00 F000 00408         CALL    _OSSchedule
+0070 0000      00409         BANKSEL _SelectedTask
+0072 6F00      00410         MOVWF   _SelectedTask, B
+0074 0000      00411         BANKSEL _currentTask
+0076 5100      00412         MOVF    _currentTask, W, B
+0078 0000      00413         BANKSEL _SelectedTask
+007A 1900      00414         XORWF   _SelectedTask, W, B
+007C E100      00415         BNZ     _00231_DS_
+007E D000      00416         BRA     _00221_DS_
+0080 00417 _00230_DS_:
+0080 00418 _00231_DS_:
+0080 C000 F000 00419         MOVFF _STKPTR, _FSR0L 
+0084 00420 _00212_DS_:
+0084 5000      00421         MOVF    _STKPTR, W
+0086 E000      00422         BZ      _00214_DS_
+0088 C000 F000 00423         MOVFF _TOSL, _PREINC1 
+008C C000 F000 00424         MOVFF _TOSH, _PREINC1 
+0090 C000 F000 00425         MOVFF _TOSU, _PREINC1 
+0094 0006      00426         POP 
+0096 D000      00427         BRA     _00212_DS_
+0098 00428 _00214_DS_:
+0098 C000 F000 00429         MOVFF _FSR0L, _PREINC1 
+009C 5200      00430         MOVF _PREINC1, 1, 0 
+009E C000 F000 00431         MOVFF _FSR1L, _SPvalue 
+00A2 C000 F000 00432         MOVFF _FSR1H, _SPvalue+1 
+gpasm-0.13.7 beta               build/default/production/drivers/serial.asm7-19-2011  15:07:14          PAGE  9
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+ 
+               00433 ; ;multiply lit val:0x10 by variable _currentTask and store in r0x00
+               00434 ; ;Unrolled 8 X 8 multiplication
+               00435 ; ;FIXME: the function does not support result==WREG
+00A6 0000      00436         BANKSEL _currentTask
+00A8 5100      00437         MOVF    _currentTask, W, B
+00AA 0D10      00438         MULLW   0x10
+00AC CFF3 F000 00439         MOVFF   PRODL, r0x00
+00B0 6A00      00440         CLRF    r0x01
+00B2 0E00      00441         MOVLW   LOW(_ContextTask)
+00B4 2600      00442         ADDWF   r0x00, F
+00B6 0E00      00443         MOVLW   HIGH(_ContextTask)
+00B8 2200      00444         ADDWFC  r0x01, F
+00BA 0E03      00445         MOVLW   0x03
+00BC 2600      00446         ADDWF   r0x00, F
+00BE B0D8      00447         BTFSC   STATUS, 0
+00C0 2A00      00448         INCF    r0x01, F
+00C2 C000 FFE9 00449         MOVFF   r0x00, FSR0L
+00C6 C000 FFEA 00450         MOVFF   r0x01, FSR0H
+00CA C000 FFEE 00451         MOVFF   _SPvalue, POSTINC0
+00CE C000 FFEF 00452         MOVFF   (_SPvalue + 1), INDF0
+00D2 C000 F000 00453         MOVFF   _SelectedTask, _currentTask
+               00454 ; ;multiply lit val:0x10 by variable _currentTask and store in r0x00
+               00455 ; ;Unrolled 8 X 8 multiplication
+               00456 ; ;FIXME: the function does not support result==WREG
+00D6 0000      00457         BANKSEL _currentTask
+00D8 5100      00458         MOVF    _currentTask, W, B
+00DA 0D10      00459         MULLW   0x10
+00DC CFF3 F000 00460         MOVFF   PRODL, r0x00
+00E0 6A00      00461         CLRF    r0x01
+00E2 0E00      00462         MOVLW   LOW(_ContextTask)
+00E4 2600      00463         ADDWF   r0x00, F
+00E6 0E00      00464         MOVLW   HIGH(_ContextTask)
+00E8 2200      00465         ADDWFC  r0x01, F
+00EA 0E03      00466         MOVLW   0x03
+00EC 2600      00467         ADDWF   r0x00, F
+00EE B0D8      00468         BTFSC   STATUS, 0
+00F0 2A00      00469         INCF    r0x01, F
+00F2 C000 FFE9 00470         MOVFF   r0x00, FSR0L
+00F6 C000 FFEA 00471         MOVFF   r0x01, FSR0H
+00FA CFEE F000 00472         MOVFF   POSTINC0, _SPvalue
+00FE CFEF F000 00473         MOVFF   INDF0, (_SPvalue + 1)
+0102 C000 F000 00474         MOVFF _SPvalue, _FSR1L 
+0106 C000 F000 00475         MOVFF _SPvalue+1, _FSR1H 
+010A C000 F000 00476         MOVFF _POSTDEC1, _FSR0L 
+010E C000 F000 00477         MOVFF _POSTDEC1, _FSR0L 
+0112 6A00      00478         CLRF    _STKPTR
+0114 00479 _00215_DS_:
+0114 5000      00480         MOVF    _FSR0L, W
+0116 5C00      00481         SUBWF   _STKPTR, W
+0118 E200      00482         BC      _00221_DS_
+011A 0005      00483         PUSH 
+011C 5000      00484         MOVF _POSTDEC1, 0, 0 
+011E 6E00      00485         MOVWF _TOSU, 0 
+0120 5000      00486         MOVF _POSTDEC1, 0, 0 
+gpasm-0.13.7 beta               build/default/production/drivers/serial.asm7-19-2011  15:07:14          PAGE 10
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+ 
+0122 6E00      00487         MOVWF _TOSH, 0 
+0124 5000      00488         MOVF _POSTDEC1, 0, 0 
+0126 6E00      00489         MOVWF _TOSL, 0 
+0128 D000      00490         BRA     _00215_DS_
+012A 00491 _00221_DS_:
+012A CFE5 F000 00492         MOVFF POSTDEC1, _PCLATU 
+012E CFE5 F000 00493         MOVFF POSTDEC1, _PCLATH 
+0132 CFE5 F000 00494         MOVFF POSTDEC1, _PRODH 
+0136 CFE5 F000 00495         MOVFF POSTDEC1, _PRODL 
+013A CFE5 F000 00496         MOVFF POSTDEC1, _TBLPTRU 
+013E CFE5 F000 00497         MOVFF POSTDEC1, _TBLPTRH 
+0142 CFE5 F000 00498         MOVFF POSTDEC1, _TBLPTRL 
+0146 CFE5 F000 00499         MOVFF POSTDEC1, _TABLAT 
+014A CFE5 F000 00500         MOVFF POSTDEC1, _FSR0H 
+014E CFE5 F000 00501         MOVFF POSTDEC1, _FSR0L 
+0152 CFE5 F000 00502         MOVFF POSTDEC1, _FSR2L 
+0156 CFE5 F000 00503         MOVFF POSTDEC1, _FSR2H 
+015A C000 F000 00504         MOVFF _FSR2H, _FSR1H 
+015E CFE5 F000 00505         MOVFF POSTDEC1, _BSR 
+0162 CFE5 F000 00506         MOVFF POSTDEC1, _WREG 
+0166 CFE5 F000 00507         MOVFF POSTDEC1, _STATUS 
+016A 0010      00508         RETFIE 0 
+016C CFE4 F000 00509         MOVFF   PREINC1, r0x01
+0170 CFE4 F000 00510         MOVFF   PREINC1, r0x00
+0174 CFE4 FFD9 00511         MOVFF   PREINC1, FSR2L
+0178 CFE4 FFDA 00512         MOVFF   PREINC1, FSR2H
+017C 0012      00513         RETURN  
+               00514 
+               00515 ; ; Starting pCode block
+               00516 S_serial__SerialTxHandler       code
+0000 00517 _SerialTxHandler:
+               00518 ;       .line   166; drivers/serial.c   void SerialTxHandler(void)
+0000 CFDA FFE5 00519         MOVFF   FSR2H, POSTDEC1
+0004 CFD9 FFE5 00520         MOVFF   FSR2L, POSTDEC1
+0008 CFE2 FFDA 00521         MOVFF   FSR1H, FSR2H
+000C CFE1 FFD9 00522         MOVFF   FSR1L, FSR2L
+0010 C000 FFE5 00523         MOVFF   r0x00, POSTDEC1
+0014 C000 FFE5 00524         MOVFF   r0x01, POSTDEC1
+0018 C000 FFE5 00525         MOVFF   r0x02, POSTDEC1
+001C C000 FFE5 00526         MOVFF   r0x03, POSTDEC1
+0020 C000 FFE5 00527         MOVFF   r0x04, POSTDEC1
+0024 C000 FFE5 00528         MOVFF   r0x05, POSTDEC1
+               00529 ;       .line   171; drivers/serial.c   if (OSRQueue(&SerialTXBuffer, (INT8U*)&caracter) == NO_ENTRY_AVAILABLE)
+0028 0E00      00530         MOVLW   HIGH(_SerialTXBuffer)
+002A 6E00      00531         MOVWF   r0x01
+002C 0E00      00532         MOVLW   LOW(_SerialTXBuffer)
+002E 6E00      00533         MOVWF   r0x00
+0030 0E80      00534         MOVLW   0x80
+0032 6E00      00535         MOVWF   r0x02
+0034 0E00      00536         MOVLW   HIGH(_SerialTxHandler_caracter_1_1)
+0036 6E00      00537         MOVWF   r0x04
+0038 0E00      00538         MOVLW   LOW(_SerialTxHandler_caracter_1_1)
+003A 6E00      00539         MOVWF   r0x03
+003C 0E80      00540         MOVLW   0x80
+gpasm-0.13.7 beta               build/default/production/drivers/serial.asm7-19-2011  15:07:14          PAGE 11
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+ 
+003E 6E00      00541         MOVWF   r0x05
+0040 5000      00542         MOVF    r0x05, W
+0042 6EE5      00543         MOVWF   POSTDEC1
+0044 5000      00544         MOVF    r0x04, W
+0046 6EE5      00545         MOVWF   POSTDEC1
+0048 5000      00546         MOVF    r0x03, W
+004A 6EE5      00547         MOVWF   POSTDEC1
+004C 5000      00548         MOVF    r0x02, W
+004E 6EE5      00549         MOVWF   POSTDEC1
+0050 5000      00550         MOVF    r0x01, W
+0052 6EE5      00551         MOVWF   POSTDEC1
+0054 5000      00552         MOVF    r0x00, W
+0056 6EE5      00553         MOVWF   POSTDEC1
+0058 EC00 F000 00554         CALL    _OSRQueue
+005C 6E00      00555         MOVWF   r0x00
+005E 0E06      00556         MOVLW   0x06
+0060 26E1      00557         ADDWF   FSR1L, F
+0062 B0D8      00558         BTFSC   STATUS, 0
+0064 2AE2      00559         INCF    FSR1H, F
+0066 5000      00560         MOVF    r0x00, W
+0068 0A03      00561         XORLW   0x03
+006A E100      00562         BNZ     _00198_DS_
+               00563 ;       .line   173; drivers/serial.c   PIE1bits.TXIE = 0;
+006C 9800      00564         BCF     _PIE1bits, 4
+006E 0000      00565         BANKSEL _WaitingSerialTXBuffer
+               00566 ;       .line   174; drivers/serial.c   if (WaitingSerialTXBuffer == 1)
+0070 5100      00567         MOVF    _WaitingSerialTXBuffer, W, B
+0072 0A01      00568         XORLW   0x01
+0074 E100      00569         BNZ     _00200_DS_
+0076 00570 _00207_DS_:
+0076 0000      00571         BANKSEL (_SerialTX + 2)
+               00572 ;       .line   176; drivers/serial.c   (void)OSSemPost(SerialTX);
+0078 5100      00573         MOVF    (_SerialTX + 2), W, B
+007A 6EE5      00574         MOVWF   POSTDEC1
+007C 0000      00575         BANKSEL (_SerialTX + 1)
+007E 5100      00576         MOVF    (_SerialTX + 1), W, B
+0080 6EE5      00577         MOVWF   POSTDEC1
+0082 0000      00578         BANKSEL _SerialTX
+0084 5100      00579         MOVF    _SerialTX, W, B
+0086 6EE5      00580         MOVWF   POSTDEC1
+0088 EC00 F000 00581         CALL    _OSSemPost
+008C 0E03      00582         MOVLW   0x03
+008E 26E1      00583         ADDWF   FSR1L, F
+0090 B0D8      00584         BTFSC   STATUS, 0
+0092 2AE2      00585         INCF    FSR1H, F
+0094 D000      00586         BRA     _00200_DS_
+0096 00587 _00198_DS_:
+               00588 ;       .line   180; drivers/serial.c   TXREG=caracter;
+0096 C000 F000 00589         MOVFF   _SerialTxHandler_caracter_1_1, _TXREG
+009A 00590 _00200_DS_:
+009A CFE4 F000 00591         MOVFF   PREINC1, r0x05
+009E CFE4 F000 00592         MOVFF   PREINC1, r0x04
+00A2 CFE4 F000 00593         MOVFF   PREINC1, r0x03
+00A6 CFE4 F000 00594         MOVFF   PREINC1, r0x02
+gpasm-0.13.7 beta               build/default/production/drivers/serial.asm7-19-2011  15:07:14          PAGE 12
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+ 
+00AA CFE4 F000 00595         MOVFF   PREINC1, r0x01
+00AE CFE4 F000 00596         MOVFF   PREINC1, r0x00
+00B2 CFE4 FFD9 00597         MOVFF   PREINC1, FSR2L
+00B6 CFE4 FFDA 00598         MOVFF   PREINC1, FSR2H
+00BA 0012      00599         RETURN  
+               00600 
+               00601 ; ; Starting pCode block
+               00602 S_serial__SerialRx      code
+0000 00603 _SerialRx:
+               00604 ;       .line   143; drivers/serial.c   void SerialRx(void)
+0000 CFDA FFE5 00605         MOVFF   FSR2H, POSTDEC1
+0004 CFD9 FFE5 00606         MOVFF   FSR2L, POSTDEC1
+0008 CFE2 FFDA 00607         MOVFF   FSR1H, FSR2H
+000C CFE1 FFD9 00608         MOVFF   FSR1L, FSR2L
+0010 C000 FFE5 00609         MOVFF   r0x00, POSTDEC1
+0014 C000 FFE5 00610         MOVFF   r0x01, POSTDEC1
+0018 C000 FFE4 00611         MOVFF _STATUS, PREINC1 
+001C C000 FFE4 00612         MOVFF _WREG, PREINC1 
+0020 C000 FFE4 00613         MOVFF _BSR, PREINC1 
+0024 C000 FFE4 00614         MOVFF _FSR2H, PREINC1 
+0028 C000 F000 00615         MOVFF _FSR1H, _FSR2H 
+002C C000 FFE4 00616         MOVFF _FSR2L, PREINC1 
+0030 C000 FFE4 00617         MOVFF _FSR0L, PREINC1 
+0034 C000 FFE4 00618         MOVFF _FSR0H, PREINC1 
+0038 C000 FFE4 00619         MOVFF _TABLAT, PREINC1 
+003C C000 FFE4 00620         MOVFF _TBLPTRL, PREINC1 
+0040 C000 FFE4 00621         MOVFF _TBLPTRH, PREINC1 
+0044 C000 FFE4 00622         MOVFF _TBLPTRU, PREINC1 
+0048 C000 FFE4 00623         MOVFF _PRODL, PREINC1 
+004C C000 FFE4 00624         MOVFF _PRODH, PREINC1 
+0050 C000 FFE4 00625         MOVFF _PCLATH, PREINC1 
+0054 C000 FFE4 00626         MOVFF _PCLATU, PREINC1 
+0058 0000      00627         BANKSEL _iNesting
+               00628 ;       .line   149; drivers/serial.c   OS_INT_ENTER();
+005A 2B00      00629         INCF    _iNesting, F, B
+               00630 ;       .line   152; drivers/serial.c   SerialRxHandler();
+005C EC00 F000 00631         CALL    _SerialRxHandler
+0060 0000      00632         BANKSEL _iNesting
+               00633 ;       .line   161; drivers/serial.c   OS_INT_EXIT();
+0062 0700      00634         DECF    _iNesting, F, B
+0064 0000      00635         BANKSEL _iNesting
+0066 5100      00636         MOVF    _iNesting, W, B
+0068 A4D8      00637         BTFSS   STATUS, 2
+006A D000      00638         BRA     _00179_DS_
+006C EC00 F000 00639         CALL    _OSSchedule
+0070 0000      00640         BANKSEL _SelectedTask
+0072 6F00      00641         MOVWF   _SelectedTask, B
+0074 0000      00642         BANKSEL _currentTask
+0076 5100      00643         MOVF    _currentTask, W, B
+0078 0000      00644         BANKSEL _SelectedTask
+007A 1900      00645         XORWF   _SelectedTask, W, B
+007C E100      00646         BNZ     _00189_DS_
+007E D000      00647         BRA     _00179_DS_
+0080 00648 _00188_DS_:
+gpasm-0.13.7 beta               build/default/production/drivers/serial.asm7-19-2011  15:07:14          PAGE 13
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+ 
+0080 00649 _00189_DS_:
+0080 C000 F000 00650         MOVFF _STKPTR, _FSR0L 
+0084 00651 _00170_DS_:
+0084 5000      00652         MOVF    _STKPTR, W
+0086 E000      00653         BZ      _00172_DS_
+0088 C000 F000 00654         MOVFF _TOSL, _PREINC1 
+008C C000 F000 00655         MOVFF _TOSH, _PREINC1 
+0090 C000 F000 00656         MOVFF _TOSU, _PREINC1 
+0094 0006      00657         POP 
+0096 D000      00658         BRA     _00170_DS_
+0098 00659 _00172_DS_:
+0098 C000 F000 00660         MOVFF _FSR0L, _PREINC1 
+009C 5200      00661         MOVF _PREINC1, 1, 0 
+009E C000 F000 00662         MOVFF _FSR1L, _SPvalue 
+00A2 C000 F000 00663         MOVFF _FSR1H, _SPvalue+1 
+               00664 ; ;multiply lit val:0x10 by variable _currentTask and store in r0x00
+               00665 ; ;Unrolled 8 X 8 multiplication
+               00666 ; ;FIXME: the function does not support result==WREG
+00A6 0000      00667         BANKSEL _currentTask
+00A8 5100      00668         MOVF    _currentTask, W, B
+00AA 0D10      00669         MULLW   0x10
+00AC CFF3 F000 00670         MOVFF   PRODL, r0x00
+00B0 6A00      00671         CLRF    r0x01
+00B2 0E00      00672         MOVLW   LOW(_ContextTask)
+00B4 2600      00673         ADDWF   r0x00, F
+00B6 0E00      00674         MOVLW   HIGH(_ContextTask)
+00B8 2200      00675         ADDWFC  r0x01, F
+00BA 0E03      00676         MOVLW   0x03
+00BC 2600      00677         ADDWF   r0x00, F
+00BE B0D8      00678         BTFSC   STATUS, 0
+00C0 2A00      00679         INCF    r0x01, F
+00C2 C000 FFE9 00680         MOVFF   r0x00, FSR0L
+00C6 C000 FFEA 00681         MOVFF   r0x01, FSR0H
+00CA C000 FFEE 00682         MOVFF   _SPvalue, POSTINC0
+00CE C000 FFEF 00683         MOVFF   (_SPvalue + 1), INDF0
+00D2 C000 F000 00684         MOVFF   _SelectedTask, _currentTask
+               00685 ; ;multiply lit val:0x10 by variable _currentTask and store in r0x00
+               00686 ; ;Unrolled 8 X 8 multiplication
+               00687 ; ;FIXME: the function does not support result==WREG
+00D6 0000      00688         BANKSEL _currentTask
+00D8 5100      00689         MOVF    _currentTask, W, B
+00DA 0D10      00690         MULLW   0x10
+00DC CFF3 F000 00691         MOVFF   PRODL, r0x00
+00E0 6A00      00692         CLRF    r0x01
+00E2 0E00      00693         MOVLW   LOW(_ContextTask)
+00E4 2600      00694         ADDWF   r0x00, F
+00E6 0E00      00695         MOVLW   HIGH(_ContextTask)
+00E8 2200      00696         ADDWFC  r0x01, F
+00EA 0E03      00697         MOVLW   0x03
+00EC 2600      00698         ADDWF   r0x00, F
+00EE B0D8      00699         BTFSC   STATUS, 0
+00F0 2A00      00700         INCF    r0x01, F
+00F2 C000 FFE9 00701         MOVFF   r0x00, FSR0L
+00F6 C000 FFEA 00702         MOVFF   r0x01, FSR0H
+gpasm-0.13.7 beta               build/default/production/drivers/serial.asm7-19-2011  15:07:14          PAGE 14
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+ 
+00FA CFEE F000 00703         MOVFF   POSTINC0, _SPvalue
+00FE CFEF F000 00704         MOVFF   INDF0, (_SPvalue + 1)
+0102 C000 F000 00705         MOVFF _SPvalue, _FSR1L 
+0106 C000 F000 00706         MOVFF _SPvalue+1, _FSR1H 
+010A C000 F000 00707         MOVFF _POSTDEC1, _FSR0L 
+010E C000 F000 00708         MOVFF _POSTDEC1, _FSR0L 
+0112 6A00      00709         CLRF    _STKPTR
+0114 00710 _00173_DS_:
+0114 5000      00711         MOVF    _FSR0L, W
+0116 5C00      00712         SUBWF   _STKPTR, W
+0118 E200      00713         BC      _00179_DS_
+011A 0005      00714         PUSH 
+011C 5000      00715         MOVF _POSTDEC1, 0, 0 
+011E 6E00      00716         MOVWF _TOSU, 0 
+0120 5000      00717         MOVF _POSTDEC1, 0, 0 
+0122 6E00      00718         MOVWF _TOSH, 0 
+0124 5000      00719         MOVF _POSTDEC1, 0, 0 
+0126 6E00      00720         MOVWF _TOSL, 0 
+0128 D000      00721         BRA     _00173_DS_
+012A 00722 _00179_DS_:
+012A CFE5 F000 00723         MOVFF POSTDEC1, _PCLATU 
+012E CFE5 F000 00724         MOVFF POSTDEC1, _PCLATH 
+0132 CFE5 F000 00725         MOVFF POSTDEC1, _PRODH 
+0136 CFE5 F000 00726         MOVFF POSTDEC1, _PRODL 
+013A CFE5 F000 00727         MOVFF POSTDEC1, _TBLPTRU 
+013E CFE5 F000 00728         MOVFF POSTDEC1, _TBLPTRH 
+0142 CFE5 F000 00729         MOVFF POSTDEC1, _TBLPTRL 
+0146 CFE5 F000 00730         MOVFF POSTDEC1, _TABLAT 
+014A CFE5 F000 00731         MOVFF POSTDEC1, _FSR0H 
+014E CFE5 F000 00732         MOVFF POSTDEC1, _FSR0L 
+0152 CFE5 F000 00733         MOVFF POSTDEC1, _FSR2L 
+0156 CFE5 F000 00734         MOVFF POSTDEC1, _FSR2H 
+015A C000 F000 00735         MOVFF _FSR2H, _FSR1H 
+015E CFE5 F000 00736         MOVFF POSTDEC1, _BSR 
+0162 CFE5 F000 00737         MOVFF POSTDEC1, _WREG 
+0166 CFE5 F000 00738         MOVFF POSTDEC1, _STATUS 
+016A 0010      00739         RETFIE 0 
+016C CFE4 F000 00740         MOVFF   PREINC1, r0x01
+0170 CFE4 F000 00741         MOVFF   PREINC1, r0x00
+0174 CFE4 FFD9 00742         MOVFF   PREINC1, FSR2L
+0178 CFE4 FFDA 00743         MOVFF   PREINC1, FSR2H
+017C 0012      00744         RETURN  
+               00745 
+               00746 ; ; Starting pCode block
+               00747 S_serial__SerialRxHandler       code
+0000 00748 _SerialRxHandler:
+               00749 ;       .line   122; drivers/serial.c   void SerialRxHandler(void)
+0000 CFDA FFE5 00750         MOVFF   FSR2H, POSTDEC1
+0004 CFD9 FFE5 00751         MOVFF   FSR2L, POSTDEC1
+0008 CFE2 FFDA 00752         MOVFF   FSR1H, FSR2H
+000C CFE1 FFD9 00753         MOVFF   FSR1L, FSR2L
+0010 C000 FFE5 00754         MOVFF   r0x00, POSTDEC1
+               00755 ;       .line   127; drivers/serial.c   caracter = RCREG;
+0014 C000 F000 00756         MOVFF   _RCREG, r0x00
+gpasm-0.13.7 beta               build/default/production/drivers/serial.asm7-19-2011  15:07:14          PAGE 15
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+ 
+               00757 ;       .line   130; drivers/serial.c   if( RCSTAbits.OERR )
+0018 A200      00758         BTFSS   _RCSTAbits, 1
+001A D000      00759         BRA     _00157_DS_
+               00760 ;       .line   132; drivers/serial.c   RCSTAbits.CREN = 0;
+001C 9800      00761         BCF     _RCSTAbits, 4
+               00762 ;       .line   133; drivers/serial.c   RCSTAbits.CREN = 1;
+001E 8800      00763         BSF     _RCSTAbits, 4
+0020 00764 _00157_DS_:
+               00765 ;       .line   136; drivers/serial.c   if (OSQueuePost(QSerialRX,caracter) == BUFFER_UNDERRUN)
+0020 5000      00766         MOVF    r0x00, W
+0022 6EE5      00767         MOVWF   POSTDEC1
+0024 0000      00768         BANKSEL (_QSerialRX + 2)
+0026 5100      00769         MOVF    (_QSerialRX + 2), W, B
+0028 6EE5      00770         MOVWF   POSTDEC1
+002A 0000      00771         BANKSEL (_QSerialRX + 1)
+002C 5100      00772         MOVF    (_QSerialRX + 1), W, B
+002E 6EE5      00773         MOVWF   POSTDEC1
+0030 0000      00774         BANKSEL _QSerialRX
+0032 5100      00775         MOVF    _QSerialRX, W, B
+0034 6EE5      00776         MOVWF   POSTDEC1
+0036 EC00 F000 00777         CALL    _OSQueuePost
+003A 6E00      00778         MOVWF   r0x00
+003C 0E04      00779         MOVLW   0x04
+003E 26E1      00780         ADDWF   FSR1L, F
+0040 B0D8      00781         BTFSC   STATUS, 0
+0042 2AE2      00782         INCF    FSR1H, F
+0044 5000      00783         MOVF    r0x00, W
+0046 0A01      00784         XORLW   0x01
+0048 E100      00785         BNZ     _00160_DS_
+004A 00786 _00165_DS_:
+004A 0000      00787         BANKSEL (_QSerialRX + 2)
+               00788 ;       .line   139; drivers/serial.c   (void)OSCleanQueue(QSerialRX);
+004C 5100      00789         MOVF    (_QSerialRX + 2), W, B
+004E 6EE5      00790         MOVWF   POSTDEC1
+0050 0000      00791         BANKSEL (_QSerialRX + 1)
+0052 5100      00792         MOVF    (_QSerialRX + 1), W, B
+0054 6EE5      00793         MOVWF   POSTDEC1
+0056 0000      00794         BANKSEL _QSerialRX
+0058 5100      00795         MOVF    _QSerialRX, W, B
+005A 6EE5      00796         MOVWF   POSTDEC1
+005C EC00 F000 00797         CALL    _OSCleanQueue
+0060 0E03      00798         MOVLW   0x03
+0062 26E1      00799         ADDWF   FSR1L, F
+0064 B0D8      00800         BTFSC   STATUS, 0
+0066 2AE2      00801         INCF    FSR1H, F
+0068 00802 _00160_DS_:
+0068 CFE4 F000 00803         MOVFF   PREINC1, r0x00
+006C CFE4 FFD9 00804         MOVFF   PREINC1, FSR2L
+0070 CFE4 FFDA 00805         MOVFF   PREINC1, FSR2H
+0074 0012      00806         RETURN  
+               00807 
+               00808 ; ; Starting pCode block
+               00809 S_serial__Serial_Envia_Frase    code
+0000 00810 _Serial_Envia_Frase:
+gpasm-0.13.7 beta               build/default/production/drivers/serial.asm7-19-2011  15:07:14          PAGE 16
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+ 
+               00811 ;       .line   112; drivers/serial.c   void Serial_Envia_Frase(char *string)
+0000 CFDA FFE5 00812         MOVFF   FSR2H, POSTDEC1
+0004 CFD9 FFE5 00813         MOVFF   FSR2L, POSTDEC1
+0008 CFE2 FFDA 00814         MOVFF   FSR1H, FSR2H
+000C CFE1 FFD9 00815         MOVFF   FSR1L, FSR2L
+0010 C000 FFE5 00816         MOVFF   r0x00, POSTDEC1
+0014 C000 FFE5 00817         MOVFF   r0x01, POSTDEC1
+0018 C000 FFE5 00818         MOVFF   r0x02, POSTDEC1
+001C C000 FFE5 00819         MOVFF   r0x03, POSTDEC1
+0020 0E03      00820         MOVLW   0x03
+0022 CFDB F000 00821         MOVFF   PLUSW2, r0x00
+0026 0E04      00822         MOVLW   0x04
+0028 CFDB F000 00823         MOVFF   PLUSW2, r0x01
+002C 0E05      00824         MOVLW   0x05
+002E CFDB F000 00825         MOVFF   PLUSW2, r0x02
+0032 00826 _00148_DS_:
+               00827 ;       .line   114; drivers/serial.c   while(*string)
+0032 C000 FFE9 00828         MOVFF   r0x00, FSR0L
+0036 C000 FFF3 00829         MOVFF   r0x01, PRODL
+003A 5000      00830         MOVF    r0x02, W
+003C EC00 F000 00831         CALL    __gptrget1
+0040 6E00      00832         MOVWF   r0x03
+0042 5000      00833         MOVF    r0x03, W
+0044 E000      00834         BZ      _00151_DS_
+               00835 ;       .line   116; drivers/serial.c   Serial_Envia_Caracter(*string);
+0046 5000      00836         MOVF    r0x03, W
+0048 6EE5      00837         MOVWF   POSTDEC1
+004A EC00 F000 00838         CALL    _Serial_Envia_Caracter
+004E 2AE1      00839         INCF    FSR1L, F
+0050 B0D8      00840         BTFSC   STATUS, 0
+0052 2AE2      00841         INCF    FSR1H, F
+               00842 ;       .line   117; drivers/serial.c   string++;
+0054 2A00      00843         INCF    r0x00, F
+0056 B0D8      00844         BTFSC   STATUS, 0
+0058 2A00      00845         INCF    r0x01, F
+005A B0D8      00846         BTFSC   STATUS, 0
+005C 2A00      00847         INCF    r0x02, F
+005E D000      00848         BRA     _00148_DS_
+0060 00849 _00151_DS_:
+0060 CFE4 F000 00850         MOVFF   PREINC1, r0x03
+0064 CFE4 F000 00851         MOVFF   PREINC1, r0x02
+0068 CFE4 F000 00852         MOVFF   PREINC1, r0x01
+006C CFE4 F000 00853         MOVFF   PREINC1, r0x00
+0070 CFE4 FFD9 00854         MOVFF   PREINC1, FSR2L
+0074 CFE4 FFDA 00855         MOVFF   PREINC1, FSR2H
+0078 0012      00856         RETURN  
+               00857 
+               00858 ; ; Starting pCode block
+               00859 S_serial__Serial_Envia_Caracter code
+0000 00860 _Serial_Envia_Caracter:
+               00861 ;       .line   90; drivers/serial.c    void Serial_Envia_Caracter(CHAR8 newdata)
+0000 CFDA FFE5 00862         MOVFF   FSR2H, POSTDEC1
+0004 CFD9 FFE5 00863         MOVFF   FSR2L, POSTDEC1
+0008 CFE2 FFDA 00864         MOVFF   FSR1H, FSR2H
+gpasm-0.13.7 beta               build/default/production/drivers/serial.asm7-19-2011  15:07:14          PAGE 17
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+ 
+000C CFE1 FFD9 00865         MOVFF   FSR1L, FSR2L
+0010 C000 FFE5 00866         MOVFF   r0x00, POSTDEC1
+0014 C000 FFE5 00867         MOVFF   r0x01, POSTDEC1
+0018 C000 FFE5 00868         MOVFF   r0x02, POSTDEC1
+001C C000 FFE5 00869         MOVFF   r0x03, POSTDEC1
+0020 0E03      00870         MOVLW   0x03
+0022 CFDB F000 00871         MOVFF   PLUSW2, r0x00
+0026 00872 _00130_DS_:
+               00873 ;       .line   92; drivers/serial.c    while (OSWQueue(&SerialTXBuffer, (INT8U)newdata) == BUFFER_UNDERRUN)
+0026 0E00      00874         MOVLW   HIGH(_SerialTXBuffer)
+0028 6E00      00875         MOVWF   r0x02
+002A 0E00      00876         MOVLW   LOW(_SerialTXBuffer)
+002C 6E00      00877         MOVWF   r0x01
+002E 0E80      00878         MOVLW   0x80
+0030 6E00      00879         MOVWF   r0x03
+0032 5000      00880         MOVF    r0x00, W
+0034 6EE5      00881         MOVWF   POSTDEC1
+0036 5000      00882         MOVF    r0x03, W
+0038 6EE5      00883         MOVWF   POSTDEC1
+003A 5000      00884         MOVF    r0x02, W
+003C 6EE5      00885         MOVWF   POSTDEC1
+003E 5000      00886         MOVF    r0x01, W
+0040 6EE5      00887         MOVWF   POSTDEC1
+0042 EC00 F000 00888         CALL    _OSWQueue
+0046 6E00      00889         MOVWF   r0x01
+0048 0E04      00890         MOVLW   0x04
+004A 26E1      00891         ADDWF   FSR1L, F
+004C B0D8      00892         BTFSC   STATUS, 0
+004E 2AE2      00893         INCF    FSR1H, F
+0050 5000      00894         MOVF    r0x01, W
+0052 0A01      00895         XORLW   0x01
+0054 E100      00896         BNZ     _00132_DS_
+               00897 ;       .line   94; drivers/serial.c    OSEnterCritical();
+0056 9E00      00898         BCF     _INTCONbits, 7
+               00899 ;       .line   95; drivers/serial.c    WaitingSerialTXBuffer = 1;
+0058 0E01      00900         MOVLW   0x01
+005A 0000      00901         BANKSEL _WaitingSerialTXBuffer
+005C 6F00      00902         MOVWF   _WaitingSerialTXBuffer, B
+               00903 ;       .line   96; drivers/serial.c    OSExitCritical();
+005E 8E00      00904         BSF     _INTCONbits, 7
+               00905 ;       .line   97; drivers/serial.c    (void)OSSemPend(SerialTX,0);
+0060 0E00      00906         MOVLW   0x00
+0062 6EE5      00907         MOVWF   POSTDEC1
+0064 0E00      00908         MOVLW   0x00
+0066 6EE5      00909         MOVWF   POSTDEC1
+0068 0000      00910         BANKSEL (_SerialTX + 2)
+006A 5100      00911         MOVF    (_SerialTX + 2), W, B
+006C 6EE5      00912         MOVWF   POSTDEC1
+006E 0000      00913         BANKSEL (_SerialTX + 1)
+0070 5100      00914         MOVF    (_SerialTX + 1), W, B
+0072 6EE5      00915         MOVWF   POSTDEC1
+0074 0000      00916         BANKSEL _SerialTX
+0076 5100      00917         MOVF    _SerialTX, W, B
+0078 6EE5      00918         MOVWF   POSTDEC1
+gpasm-0.13.7 beta               build/default/production/drivers/serial.asm7-19-2011  15:07:14          PAGE 18
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+ 
+007A EC00 F000 00919         CALL    _OSSemPend
+007E 0E05      00920         MOVLW   0x05
+0080 26E1      00921         ADDWF   FSR1L, F
+0082 B0D8      00922         BTFSC   STATUS, 0
+0084 2AE2      00923         INCF    FSR1H, F
+0086 D000      00924         BRA     _00130_DS_
+0088 00925 _00132_DS_:
+               00926 ;       .line   100; drivers/serial.c   OSEnterCritical();
+0088 9E00      00927         BCF     _INTCONbits, 7
+008A 0000      00928         BANKSEL _WaitingSerialTXBuffer
+               00929 ;       .line   101; drivers/serial.c   WaitingSerialTXBuffer = 0;
+008C 6B00      00930         CLRF    _WaitingSerialTXBuffer, B
+               00931 ;       .line   102; drivers/serial.c   OSExitCritical();
+008E 8E00      00932         BSF     _INTCONbits, 7
+               00933 ;       .line   104; drivers/serial.c   if (PIE1bits.TXIE != 1)
+0090 6A00      00934         CLRF    r0x00
+0092 B800      00935         BTFSC   _PIE1bits, 4
+0094 2A00      00936         INCF    r0x00, F
+0096 5000      00937         MOVF    r0x00, W
+0098 0A01      00938         XORLW   0x01
+009A E000      00939         BZ      _00135_DS_
+               00940 ;       .line   106; drivers/serial.c   PIE1bits.TXIE = 1;
+009C 8800      00941         BSF     _PIE1bits, 4
+009E 00942 _00135_DS_:
+009E CFE4 F000 00943         MOVFF   PREINC1, r0x03
+00A2 CFE4 F000 00944         MOVFF   PREINC1, r0x02
+00A6 CFE4 F000 00945         MOVFF   PREINC1, r0x01
+00AA CFE4 F000 00946         MOVFF   PREINC1, r0x00
+00AE CFE4 FFD9 00947         MOVFF   PREINC1, FSR2L
+00B2 CFE4 FFDA 00948         MOVFF   PREINC1, FSR2H
+00B6 0012      00949         RETURN  
+               00950 
+               00951 ; ; Starting pCode block
+               00952 S_serial__Serial_Init   code
+0000 00953 _Serial_Init:
+               00954 ;       .line   22; drivers/serial.c    void Serial_Init(unsigned int baudrate, INT8U priority)
+0000 CFDA FFE5 00955         MOVFF   FSR2H, POSTDEC1
+0004 CFD9 FFE5 00956         MOVFF   FSR2L, POSTDEC1
+0008 CFE2 FFDA 00957         MOVFF   FSR1H, FSR2H
+000C CFE1 FFD9 00958         MOVFF   FSR1L, FSR2L
+0010 C000 FFE5 00959         MOVFF   r0x00, POSTDEC1
+0014 C000 FFE5 00960         MOVFF   r0x01, POSTDEC1
+0018 C000 FFE5 00961         MOVFF   r0x02, POSTDEC1
+001C C000 FFE5 00962         MOVFF   r0x03, POSTDEC1
+0020 C000 FFE5 00963         MOVFF   r0x04, POSTDEC1
+0024 C000 FFE5 00964         MOVFF   r0x05, POSTDEC1
+0028 0E03      00965         MOVLW   0x03
+002A CFDB F000 00966         MOVFF   PLUSW2, r0x00
+002E 0E04      00967         MOVLW   0x04
+0030 CFDB F000 00968         MOVFF   PLUSW2, r0x01
+0034 0E05      00969         MOVLW   0x05
+0036 CFDB F000 00970         MOVFF   PLUSW2, r0x02
+               00971 ;       .line   28; drivers/serial.c    ulBaud = configCPU_CLOCK_HZ / baudrate;
+003A 6A00      00972         CLRF    r0x03
+gpasm-0.13.7 beta               build/default/production/drivers/serial.asm7-19-2011  15:07:14          PAGE 19
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+ 
+003C 6A00      00973         CLRF    r0x04
+003E 5000      00974         MOVF    r0x04, W
+0040 6EE5      00975         MOVWF   POSTDEC1
+0042 5000      00976         MOVF    r0x03, W
+0044 6EE5      00977         MOVWF   POSTDEC1
+0046 5000      00978         MOVF    r0x01, W
+0048 6EE5      00979         MOVWF   POSTDEC1
+004A 5000      00980         MOVF    r0x00, W
+004C 6EE5      00981         MOVWF   POSTDEC1
+004E 0E01      00982         MOVLW   0x01
+0050 6EE5      00983         MOVWF   POSTDEC1
+0052 0EE8      00984         MOVLW   0xe8
+0054 6EE5      00985         MOVWF   POSTDEC1
+0056 0E48      00986         MOVLW   0x48
+0058 6EE5      00987         MOVWF   POSTDEC1
+005A 0E00      00988         MOVLW   0x00
+005C 6EE5      00989         MOVWF   POSTDEC1
+005E EC00 F000 00990         CALL    __divulong
+0062 6E00      00991         MOVWF   r0x00
+0064 CFF3 F000 00992         MOVFF   PRODL, r0x01
+0068 CFF4 F000 00993         MOVFF   PRODH, r0x03
+006C CFE9 F000 00994         MOVFF   FSR0L, r0x04
+0070 0E08      00995         MOVLW   0x08
+0072 26E1      00996         ADDWF   FSR1L, F
+0074 B0D8      00997         BTFSC   STATUS, 0
+0076 2AE2      00998         INCF    FSR1H, F
+               00999 ;       .line   29; drivers/serial.c    ulBaud /= (INT32U) 16;
+0078 0EF0      01000         MOVLW   0xf0
+007A 1600      01001         ANDWF   r0x00, F
+007C 3A00      01002         SWAPF   r0x00, F
+007E 3A00      01003         SWAPF   r0x01, F
+0080 1400      01004         ANDWF   r0x01, W
+0082 1A00      01005         XORWF   r0x01, F
+0084 2600      01006         ADDWF   r0x00, F
+0086 5000      01007         MOVF    r0x03, W
+0088 38E8      01008         SWAPF   WREG, W
+008A 0BF0      01009         ANDLW   0xf0
+008C 1200      01010         IORWF   r0x01, F
+008E 0EF0      01011         MOVLW   0xf0
+0090 1600      01012         ANDWF   r0x03, F
+0092 3A00      01013         SWAPF   r0x03, F
+0094 3A00      01014         SWAPF   r0x04, F
+0096 1400      01015         ANDWF   r0x04, W
+0098 1A00      01016         XORWF   r0x04, F
+009A 2600      01017         ADDWF   r0x03, F
+               01018 ;       .line   30; drivers/serial.c    ulBaud -= (INT32U) 1;
+009C 0EFF      01019         MOVLW   0xff
+009E 2600      01020         ADDWF   r0x00, F
+00A0 0EFF      01021         MOVLW   0xff
+00A2 2200      01022         ADDWFC  r0x01, F
+00A4 0EFF      01023         MOVLW   0xff
+00A6 2200      01024         ADDWFC  r0x03, F
+00A8 0EFF      01025         MOVLW   0xff
+00AA 2200      01026         ADDWFC  r0x04, F
+gpasm-0.13.7 beta               build/default/production/drivers/serial.asm7-19-2011  15:07:14          PAGE 20
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+ 
+               01027 ;       .line   34; drivers/serial.c    TXSTA = 0;
+00AC 6A00      01028         CLRF    _TXSTA
+               01029 ;       .line   35; drivers/serial.c    RCSTA = 0;
+00AE 6A00      01030         CLRF    _RCSTA
+               01031 ;       .line   38; drivers/serial.c    SPBRG = (INT8U) ulBaud;
+00B0 5000      01032         MOVF    r0x00, W
+00B2 6E00      01033         MOVWF   _SPBRG
+               01034 ;       .line   41; drivers/serial.c    TRISCbits.TRISC6 = 0;
+00B4 9C00      01035         BCF     _TRISCbits, 6
+               01036 ;       .line   42; drivers/serial.c    TRISCbits.TRISC7 = 1;
+00B6 8E00      01037         BSF     _TRISCbits, 7
+               01038 ;       .line   45; drivers/serial.c    TXSTAbits.BRGH = 1;
+00B8 8400      01039         BSF     _TXSTAbits, 2
+               01040 ;       .line   46; drivers/serial.c    TXSTAbits.TXEN=1;
+00BA 8A00      01041         BSF     _TXSTAbits, 5
+               01042 ;       .line   49; drivers/serial.c    RCSTAbits.SPEN = 1;
+00BC 8E00      01043         BSF     _RCSTAbits, 7
+               01044 ;       .line   50; drivers/serial.c    RCSTAbits.CREN = 1;
+00BE 8800      01045         BSF     _RCSTAbits, 4
+               01046 ;       .line   54; drivers/serial.c    PIE1bits.RCIE = 1;
+00C0 8A00      01047         BSF     _PIE1bits, 5
+               01048 ;       .line   59; drivers/serial.c    if (OSMutexCreate(&SerialResource,priority) != ALLOC_EVENT_OK)
+00C2 0E00      01049         MOVLW   HIGH(_SerialResource)
+00C4 6E00      01050         MOVWF   r0x01
+00C6 0E00      01051         MOVLW   LOW(_SerialResource)
+00C8 6E00      01052         MOVWF   r0x00
+00CA 0E80      01053         MOVLW   0x80
+00CC 6E00      01054         MOVWF   r0x03
+00CE 5000      01055         MOVF    r0x02, W
+00D0 6EE5      01056         MOVWF   POSTDEC1
+00D2 5000      01057         MOVF    r0x03, W
+00D4 6EE5      01058         MOVWF   POSTDEC1
+00D6 5000      01059         MOVF    r0x01, W
+00D8 6EE5      01060         MOVWF   POSTDEC1
+00DA 5000      01061         MOVF    r0x00, W
+00DC 6EE5      01062         MOVWF   POSTDEC1
+00DE EC00 F000 01063         CALL    _OSMutexCreate
+00E2 6E00      01064         MOVWF   r0x00
+00E4 0E04      01065         MOVLW   0x04
+00E6 26E1      01066         ADDWF   FSR1L, F
+00E8 B0D8      01067         BTFSC   STATUS, 0
+00EA 2AE2      01068         INCF    FSR1H, F
+00EC 5000      01069         MOVF    r0x00, W
+00EE E000      01070         BZ      _00109_DS_
+00F0 01071 _00106_DS_:
+               01072 ;       .line   63; drivers/serial.c    while(1){};
+00F0 D000      01073         BRA     _00106_DS_
+00F2 01074 _00109_DS_:
+               01075 ;       .line   66; drivers/serial.c    if (OSQueueCreate(&SerialTXBuffer,64,&QSerialTX) != ALLOC_EVENT_OK)
+00F2 0E00      01076         MOVLW   HIGH(_SerialTXBuffer)
+00F4 6E00      01077         MOVWF   r0x01
+00F6 0E00      01078         MOVLW   LOW(_SerialTXBuffer)
+00F8 6E00      01079         MOVWF   r0x00
+00FA 0E80      01080         MOVLW   0x80
+gpasm-0.13.7 beta               build/default/production/drivers/serial.asm7-19-2011  15:07:14          PAGE 21
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+ 
+00FC 6E00      01081         MOVWF   r0x02
+00FE 0E00      01082         MOVLW   HIGH(_QSerialTX)
+0100 6E00      01083         MOVWF   r0x04
+0102 0E00      01084         MOVLW   LOW(_QSerialTX)
+0104 6E00      01085         MOVWF   r0x03
+0106 0E80      01086         MOVLW   0x80
+0108 6E00      01087         MOVWF   r0x05
+010A 5000      01088         MOVF    r0x05, W
+010C 6EE5      01089         MOVWF   POSTDEC1
+010E 5000      01090         MOVF    r0x04, W
+0110 6EE5      01091         MOVWF   POSTDEC1
+0112 5000      01092         MOVF    r0x03, W
+0114 6EE5      01093         MOVWF   POSTDEC1
+0116 0E00      01094         MOVLW   0x00
+0118 6EE5      01095         MOVWF   POSTDEC1
+011A 0E40      01096         MOVLW   0x40
+011C 6EE5      01097         MOVWF   POSTDEC1
+011E 5000      01098         MOVF    r0x02, W
+0120 6EE5      01099         MOVWF   POSTDEC1
+0122 5000      01100         MOVF    r0x01, W
+0124 6EE5      01101         MOVWF   POSTDEC1
+0126 5000      01102         MOVF    r0x00, W
+0128 6EE5      01103         MOVWF   POSTDEC1
+012A EC00 F000 01104         CALL    _OSQueueCreate
+012E 6E00      01105         MOVWF   r0x00
+0130 0E08      01106         MOVLW   0x08
+0132 26E1      01107         ADDWF   FSR1L, F
+0134 B0D8      01108         BTFSC   STATUS, 0
+0136 2AE2      01109         INCF    FSR1H, F
+0138 5000      01110         MOVF    r0x00, W
+013A E000      01111         BZ      _00114_DS_
+013C 01112 _00111_DS_:
+               01113 ;       .line   70; drivers/serial.c    while(1){};
+013C D000      01114         BRA     _00111_DS_
+013E 01115 _00114_DS_:
+               01116 ;       .line   73; drivers/serial.c    if (OSQueueCreate(&SerialRXBuffer,64,&QSerialRX) != ALLOC_EVENT_OK)
+013E 0E00      01117         MOVLW   HIGH(_SerialRXBuffer)
+0140 6E00      01118         MOVWF   r0x01
+0142 0E00      01119         MOVLW   LOW(_SerialRXBuffer)
+0144 6E00      01120         MOVWF   r0x00
+0146 0E80      01121         MOVLW   0x80
+0148 6E00      01122         MOVWF   r0x02
+014A 0E00      01123         MOVLW   HIGH(_QSerialRX)
+014C 6E00      01124         MOVWF   r0x04
+014E 0E00      01125         MOVLW   LOW(_QSerialRX)
+0150 6E00      01126         MOVWF   r0x03
+0152 0E80      01127         MOVLW   0x80
+0154 6E00      01128         MOVWF   r0x05
+0156 5000      01129         MOVF    r0x05, W
+0158 6EE5      01130         MOVWF   POSTDEC1
+015A 5000      01131         MOVF    r0x04, W
+015C 6EE5      01132         MOVWF   POSTDEC1
+015E 5000      01133         MOVF    r0x03, W
+0160 6EE5      01134         MOVWF   POSTDEC1
+gpasm-0.13.7 beta               build/default/production/drivers/serial.asm7-19-2011  15:07:14          PAGE 22
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+ 
+0162 0E00      01135         MOVLW   0x00
+0164 6EE5      01136         MOVWF   POSTDEC1
+0166 0E40      01137         MOVLW   0x40
+0168 6EE5      01138         MOVWF   POSTDEC1
+016A 5000      01139         MOVF    r0x02, W
+016C 6EE5      01140         MOVWF   POSTDEC1
+016E 5000      01141         MOVF    r0x01, W
+0170 6EE5      01142         MOVWF   POSTDEC1
+0172 5000      01143         MOVF    r0x00, W
+0174 6EE5      01144         MOVWF   POSTDEC1
+0176 EC00 F000 01145         CALL    _OSQueueCreate
+017A 6E00      01146         MOVWF   r0x00
+017C 0E08      01147         MOVLW   0x08
+017E 26E1      01148         ADDWF   FSR1L, F
+0180 B0D8      01149         BTFSC   STATUS, 0
+0182 2AE2      01150         INCF    FSR1H, F
+0184 5000      01151         MOVF    r0x00, W
+0186 E000      01152         BZ      _00119_DS_
+0188 01153 _00116_DS_:
+               01154 ;       .line   77; drivers/serial.c    while(1){};
+0188 D000      01155         BRA     _00116_DS_
+018A 01156 _00119_DS_:
+               01157 ;       .line   80; drivers/serial.c    if (OSSemCreate(0, &SerialTX) != ALLOC_EVENT_OK)
+018A 0E00      01158         MOVLW   HIGH(_SerialTX)
+018C 6E00      01159         MOVWF   r0x01
+018E 0E00      01160         MOVLW   LOW(_SerialTX)
+0190 6E00      01161         MOVWF   r0x00
+0192 0E80      01162         MOVLW   0x80
+0194 6E00      01163         MOVWF   r0x02
+0196 5000      01164         MOVF    r0x02, W
+0198 6EE5      01165         MOVWF   POSTDEC1
+019A 5000      01166         MOVF    r0x01, W
+019C 6EE5      01167         MOVWF   POSTDEC1
+019E 5000      01168         MOVF    r0x00, W
+01A0 6EE5      01169         MOVWF   POSTDEC1
+01A2 0E00      01170         MOVLW   0x00
+01A4 6EE5      01171         MOVWF   POSTDEC1
+01A6 EC00 F000 01172         CALL    _OSSemCreate
+01AA 6E00      01173         MOVWF   r0x00
+01AC 0E04      01174         MOVLW   0x04
+01AE 26E1      01175         ADDWF   FSR1L, F
+01B0 B0D8      01176         BTFSC   STATUS, 0
+01B2 2AE2      01177         INCF    FSR1H, F
+01B4 5000      01178         MOVF    r0x00, W
+01B6 E000      01179         BZ      _00125_DS_
+01B8 01180 _00121_DS_:
+               01181 ;       .line   84; drivers/serial.c    while(1){};
+01B8 D000      01182         BRA     _00121_DS_
+01BA 01183 _00125_DS_:
+01BA CFE4 F000 01184         MOVFF   PREINC1, r0x05
+01BE CFE4 F000 01185         MOVFF   PREINC1, r0x04
+01C2 CFE4 F000 01186         MOVFF   PREINC1, r0x03
+01C6 CFE4 F000 01187         MOVFF   PREINC1, r0x02
+01CA CFE4 F000 01188         MOVFF   PREINC1, r0x01
+gpasm-0.13.7 beta               build/default/production/drivers/serial.asm7-19-2011  15:07:14          PAGE 23
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+ 
+01CE CFE4 F000 01189         MOVFF   PREINC1, r0x00
+01D2 CFE4 FFD9 01190         MOVFF   PREINC1, FSR2L
+01D6 CFE4 FFDA 01191         MOVFF   PREINC1, FSR2H
+01DA 0012      01192         RETURN  
+               01193 
+               01194 
+               01195 
+               01196 ; Statistics:
+               01197 ; code size:     1792 (0x0700) bytes ( 1.37%)
+               01198 ;                 896 (0x0380) words
+               01199 ; udata size:      51 (0x0033) bytes ( 3.98%)
+               01200 ; access size:      6 (0x0006) bytes
+               01201 
+               01202 
+gpasm-0.13.7 beta               build/default/production/drivers/serial.asm7-19-2011  15:07:14          PAGE 24
+
+
+SYMBOL TABLE
+  LABEL                             VALUE 
+
+FSR0H                             00000FEA
+FSR0L                             00000FE9
+FSR1H                             00000FE2
+FSR1L                             00000FE1
+FSR2H                             00000FDA
+FSR2L                             00000FD9
+INDF0                             00000FEF
+PLUSW2                            00000FDB
+POSTDEC1                          00000FE5
+POSTINC0                          00000FEE
+PREINC1                           00000FE4
+PRODH                             00000FF4
+PRODL                             00000FF3
+STATUS                            00000FD8
+WREG                              00000FE8
+_00106_DS_                        000000F0
+_00109_DS_                        000000F2
+_00111_DS_                        0000013C
+_00114_DS_                        0000013E
+_00116_DS_                        00000188
+_00119_DS_                        0000018A
+_00121_DS_                        000001B8
+_00125_DS_                        000001BA
+_00130_DS_                        00000026
+_00132_DS_                        00000088
+_00135_DS_                        0000009E
+_00148_DS_                        00000032
+_00151_DS_                        00000060
+_00157_DS_                        00000020
+_00160_DS_                        00000068
+_00165_DS_                        0000004A
+_00170_DS_                        00000084
+_00172_DS_                        00000098
+_00173_DS_                        00000114
+_00179_DS_                        0000012A
+_00188_DS_                        00000080
+_00189_DS_                        00000080
+_00198_DS_                        00000096
+_00200_DS_                        0000009A
+_00207_DS_                        00000076
+_00212_DS_                        00000084
+_00214_DS_                        00000098
+_00215_DS_                        00000114
+_00221_DS_                        0000012A
+_00230_DS_                        00000080
+_00231_DS_                        00000080
+_ADCON0                           00000000
+_ADCON0bits                       00000000
+_ADCON1                           00000000
+_ADCON1bits                       00000000
+_ADCON2                           00000000
+_ADCON2bits                       00000000
+_ADRES                            00000000
+gpasm-0.13.7 beta               build/default/production/drivers/serial.asm7-19-2011  15:07:14          PAGE 25
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+ 
+_ADRESH                           00000000
+_ADRESL                           00000000
+_BAUDCON                          00000000
+_BAUDCONbits                      00000000
+_BAUDCTL                          00000000
+_BAUDCTLbits                      00000000
+_BRTOS_Mutex_Table                00000000
+_BRTOS_Queue_Table                00000000
+_BRTOS_Sem_Table                  00000000
+_BSR                              00000000
+_BufferText                       00000000
+_CCP1CON                          00000000
+_CCP1CONbits                      00000000
+_CCP2CON                          00000000
+_CCP2CONbits                      00000000
+_CCPR1                            00000000
+_CCPR1H                           00000000
+_CCPR1L                           00000000
+_CCPR2                            00000000
+_CCPR2H                           00000000
+_CCPR2L                           00000000
+_CMCON                            00000000
+_CMCONbits                        00000000
+_CVRCON                           00000000
+_CVRCONbits                       00000000
+_ContextTask                      00000000
+_DDRA                             00000000
+_DDRAbits                         00000000
+_DDRB                             00000000
+_DDRBbits                         00000000
+_DDRC                             00000000
+_DDRCbits                         00000000
+_DDRD                             00000000
+_DDRDbits                         00000000
+_DDRE                             00000000
+_DDREbits                         00000000
+_Data                             00000000
+_ECCP1AS                          00000000
+_ECCP1ASbits                      00000000
+_EEADR                            00000000
+_EECON1                           00000000
+_EECON1bits                       00000000
+_EECON2                           00000000
+_EEDATA                           00000000
+_FSR0H                            00000000
+_FSR0L                            00000000
+_FSR1H                            00000000
+_FSR1L                            00000000
+_FSR2H                            00000000
+_FSR2L                            00000000
+_HLVDCON                          00000000
+_HLVDCONbits                      00000000
+_Head                             00000000
+_Hora                             00000000
+gpasm-0.13.7 beta               build/default/production/drivers/serial.asm7-19-2011  15:07:14          PAGE 26
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+ 
+_INDF0                            00000000
+_INDF1                            00000000
+_INDF2                            00000000
+_INTCON                           00000000
+_INTCON2                          00000000
+_INTCON2bits                      00000000
+_INTCON3                          00000000
+_INTCON3bits                      00000000
+_INTCONbits                       00000000
+_IPR1                             00000000
+_IPR1bits                         00000000
+_IPR2                             00000000
+_IPR2bits                         00000000
+_LATA                             00000000
+_LATAbits                         00000000
+_LATB                             00000000
+_LATBbits                         00000000
+_LATC                             00000000
+_LATCbits                         00000000
+_LATD                             00000000
+_LATDbits                         00000000
+_LATE                             00000000
+_LATEbits                         00000000
+_LVDCON                           00000000
+_LVDCONbits                       00000000
+_LastOSDuty                       00000000
+_NumberOfInstalledTasks           00000000
+_OSBlockedList                    00000000
+_OSCCON                           00000000
+_OSCCONbits                       00000000
+_OSCTUNE                          00000000
+_OSCTUNEbits                      00000000
+_OSCleanQueue                     00000000
+_OSDuty                           00000000
+_OSDutyTmp                        00000000
+_OSMutexAcquire                   00000000
+_OSMutexCreate                    00000000
+_OSMutexRelease                   00000000
+_OSQueueCreate                    00000000
+_OSQueuePost                      00000000
+_OSRQueue                         00000000
+_OSReadyList                      00000000
+_OSSchedule                       00000000
+_OSSemCreate                      00000000
+_OSSemPend                        00000000
+_OSSemPost                        00000000
+_OSWQueue                         00000000
+_PC                               00000000
+_PCL                              00000000
+_PCLATH                           00000000
+_PCLATU                           00000000
+_PIE1                             00000000
+_PIE1bits                         00000000
+_PIE2                             00000000
+gpasm-0.13.7 beta               build/default/production/drivers/serial.asm7-19-2011  15:07:14          PAGE 27
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+ 
+_PIE2bits                         00000000
+_PIR1                             00000000
+_PIR1bits                         00000000
+_PIR2                             00000000
+_PIR2bits                         00000000
+_PLUSW0                           00000000
+_PLUSW1                           00000000
+_PLUSW2                           00000000
+_PORTA                            00000000
+_PORTAbits                        00000000
+_PORTB                            00000000
+_PORTBbits                        00000000
+_PORTC                            00000000
+_PORTCbits                        00000000
+_PORTD                            00000000
+_PORTDbits                        00000000
+_PORTE                            00000000
+_PORTEbits                        00000000
+_POSTDEC0                         00000000
+_POSTDEC1                         00000000
+_POSTDEC2                         00000000
+_POSTINC0                         00000000
+_POSTINC1                         00000000
+_POSTINC2                         00000000
+_PR2                              00000000
+_PREINC0                          00000000
+_PREINC1                          00000000
+_PREINC2                          00000000
+_PROD                             00000000
+_PRODH                            00000000
+_PRODL                            00000000
+_PWM1CON                          00000000
+_PWM1CONbits                      00000000
+_PriorityMask                     00000000
+_PriorityVector                   00000000
+_QSerialRX                        00000000
+_QSerialTX                        00000000
+_QUEUE_STACK                      00000000
+_RCON                             00000000
+_RCONbits                         00000000
+_RCREG                            00000000
+_RCSTA                            00000000
+_RCSTAbits                        00000000
+_SPBRG                            00000000
+_SPBRGH                           00000000
+_SPvalue                          00000000
+_SSPADD                           00000000
+_SSPBUF                           00000000
+_SSPCON1                          00000000
+_SSPCON1bits                      00000000
+_SSPCON2                          00000000
+_SSPCON2bits                      00000000
+_SSPSTAT                          00000000
+_SSPSTATbits                      00000000
+gpasm-0.13.7 beta               build/default/production/drivers/serial.asm7-19-2011  15:07:14          PAGE 28
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+ 
+_STACK                            00000000
+_STATUS                           00000000
+_STATUSbits                       00000000
+_STKPTR                           00000000
+_STKPTRbits                       00000000
+_SelectedTask                     00000000
+_SerialRXBuffer                   00000000
+_SerialResource                   00000000
+_SerialRx                         00000000
+_SerialRxHandler                  00000000
+_SerialTX                         00000000
+_SerialTXBuffer                   00000000
+_SerialTx                         00000000
+_SerialTxHandler                  00000000
+_SerialTxHandler_caracter_1_1     00000000
+_Serial_Envia_Caracter            00000000
+_Serial_Envia_Frase               00000000
+_Serial_Init                      00000000
+_StackAddress                     00000000
+_T0CON                            00000000
+_T0CONbits                        00000000
+_T1CON                            00000000
+_T1CONbits                        00000000
+_T2CON                            00000000
+_T2CONbits                        00000000
+_T3CON                            00000000
+_T3CONbits                        00000000
+_TABLAT                           00000000
+_TBLPTR                           00000000
+_TBLPTRH                          00000000
+_TBLPTRL                          00000000
+_TBLPTRU                          00000000
+_TMR0H                            00000000
+_TMR0L                            00000000
+_TMR1H                            00000000
+_TMR1L                            00000000
+_TMR2                             00000000
+_TMR3H                            00000000
+_TMR3L                            00000000
+_TOS                              00000000
+_TOSH                             00000000
+_TOSL                             00000000
+_TOSU                             00000000
+_TRISA                            00000000
+_TRISAbits                        00000000
+_TRISB                            00000000
+_TRISBbits                        00000000
+_TRISC                            00000000
+_TRISCbits                        00000000
+_TRISD                            00000000
+_TRISDbits                        00000000
+_TRISE                            00000000
+_TRISEbits                        00000000
+_TXREG                            00000000
+gpasm-0.13.7 beta               build/default/production/drivers/serial.asm7-19-2011  15:07:14          PAGE 29
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+ 
+_TXSTA                            00000000
+_TXSTAbits                        00000000
+_Tail                             00000000
+_TaskAlloc                        00000000
+_WDTCON                           00000000
+_WDTCONbits                       00000000
+_WREG                             00000000
+_WaitingSerialTXBuffer            00000000
+__18F4520                         00000001
+__divulong                        00000000
+__gptrget1                        00000000
+_acquireUART                      00000000
+_counter                          00000000
+_currentTask                      00000000
+_iNesting                         00000000
+_iQueueAddress                    00000000
+_iStackAddress                    00000000
+_releaseUART                      00000000
+_version                          00000000
+r0x00                             00000000
+r0x01                             00000001
+r0x02                             00000002
+r0x03                             00000003
+r0x04                             00000004
+r0x05                             00000005
+
+
+Errors   :       0
+Warnings :       0 reported,       0 suppressed
+Messages :       0 reported,       0 suppressed
+

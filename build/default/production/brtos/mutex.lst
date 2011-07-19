@@ -1,0 +1,2000 @@
+gpasm-0.13.7 beta               build/default/production/brtos/mutex.asm7-19-2011  15:07:14          PAGE  1
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+ 
+               00001 ;--------------------------------------------------------
+               00002 ; File Created by SDCC : free open source ANSI-C Compiler
+               00003 ; Version 2.9.0 #5416 (Apr 29 2011) (UNIX)
+               00004 ; This file was generated Tue Jul 19 15:07:14 2011
+               00005 ;--------------------------------------------------------
+               00006 ; PIC16 port for the Microchip 16-bit core micros
+               00007 ;--------------------------------------------------------
+               00008         list    p=18f4520
+               00009 
+               00010         radix dec
+               00011 
+               00012 ;--------------------------------------------------------
+               00013 ; public variables in this module
+               00014 ;--------------------------------------------------------
+               00015         global _OSMutexCreate
+               00016         global _OSMutexDelete
+               00017         global _OSMutexAcquire
+               00018         global _OSMutexRelease
+               00019 
+               00020 ;--------------------------------------------------------
+               00021 ; extern variables in this module
+               00022 ;--------------------------------------------------------
+               00023         extern __gptrput1
+               00024         extern __gptrput2
+               00025         extern __gptrput3
+               00026         extern __gptrget3
+               00027         extern __gptrget1
+               00028         extern __gptrget2
+               00029         extern _PORTAbits
+               00030         extern _PORTBbits
+               00031         extern _PORTCbits
+               00032         extern _PORTDbits
+               00033         extern _PORTEbits
+               00034         extern _LATAbits
+               00035         extern _LATBbits
+               00036         extern _LATCbits
+               00037         extern _LATDbits
+               00038         extern _LATEbits
+               00039         extern _DDRAbits
+               00040         extern _TRISAbits
+               00041         extern _DDRBbits
+               00042         extern _TRISBbits
+               00043         extern _DDRCbits
+               00044         extern _TRISCbits
+               00045         extern _DDRDbits
+               00046         extern _TRISDbits
+               00047         extern _DDREbits
+               00048         extern _TRISEbits
+               00049         extern _OSCTUNEbits
+               00050         extern _PIE1bits
+               00051         extern _PIR1bits
+               00052         extern _IPR1bits
+               00053         extern _PIE2bits
+               00054         extern _PIR2bits
+gpasm-0.13.7 beta               build/default/production/brtos/mutex.asm7-19-2011  15:07:14          PAGE  2
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+ 
+               00055         extern _IPR2bits
+               00056         extern _EECON1bits
+               00057         extern _RCSTAbits
+               00058         extern _TXSTAbits
+               00059         extern _T3CONbits
+               00060         extern _CMCONbits
+               00061         extern _CVRCONbits
+               00062         extern _ECCP1ASbits
+               00063         extern _PWM1CONbits
+               00064         extern _BAUDCONbits
+               00065         extern _BAUDCTLbits
+               00066         extern _CCP2CONbits
+               00067         extern _CCP1CONbits
+               00068         extern _ADCON2bits
+               00069         extern _ADCON1bits
+               00070         extern _ADCON0bits
+               00071         extern _SSPCON2bits
+               00072         extern _SSPCON1bits
+               00073         extern _SSPSTATbits
+               00074         extern _T2CONbits
+               00075         extern _T1CONbits
+               00076         extern _RCONbits
+               00077         extern _WDTCONbits
+               00078         extern _HLVDCONbits
+               00079         extern _LVDCONbits
+               00080         extern _OSCCONbits
+               00081         extern _T0CONbits
+               00082         extern _STATUSbits
+               00083         extern _INTCON3bits
+               00084         extern _INTCON2bits
+               00085         extern _INTCONbits
+               00086         extern _STKPTRbits
+               00087         extern _SPvalue
+               00088         extern _Hora
+               00089         extern _Data
+               00090         extern _BRTOS_Sem_Table
+               00091         extern _BRTOS_Mutex_Table
+               00092         extern _BRTOS_Queue_Table
+               00093         extern _OSReadyList
+               00094         extern _OSBlockedList
+               00095         extern _Tail
+               00096         extern _Head
+               00097         extern _iNesting
+               00098         extern _currentTask
+               00099         extern _SelectedTask
+               00100         extern _ContextTask
+               00101         extern _iStackAddress
+               00102         extern _NumberOfInstalledTasks
+               00103         extern _counter
+               00104         extern _OSDuty
+               00105         extern _PriorityVector
+               00106         extern _OSDutyTmp
+               00107         extern _LastOSDuty
+               00108         extern _STACK
+gpasm-0.13.7 beta               build/default/production/brtos/mutex.asm7-19-2011  15:07:14          PAGE  3
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+ 
+               00109         extern _TaskAlloc
+               00110         extern _QUEUE_STACK
+               00111         extern _iQueueAddress
+               00112         extern _version
+               00113         extern _BufferText
+               00114         extern _StackAddress
+               00115         extern _PORTA
+               00116         extern _PORTB
+               00117         extern _PORTC
+               00118         extern _PORTD
+               00119         extern _PORTE
+               00120         extern _LATA
+               00121         extern _LATB
+               00122         extern _LATC
+               00123         extern _LATD
+               00124         extern _LATE
+               00125         extern _DDRA
+               00126         extern _TRISA
+               00127         extern _DDRB
+               00128         extern _TRISB
+               00129         extern _DDRC
+               00130         extern _TRISC
+               00131         extern _DDRD
+               00132         extern _TRISD
+               00133         extern _DDRE
+               00134         extern _TRISE
+               00135         extern _OSCTUNE
+               00136         extern _PIE1
+               00137         extern _PIR1
+               00138         extern _IPR1
+               00139         extern _PIE2
+               00140         extern _PIR2
+               00141         extern _IPR2
+               00142         extern _EECON1
+               00143         extern _EECON2
+               00144         extern _EEDATA
+               00145         extern _EEADR
+               00146         extern _RCSTA
+               00147         extern _TXSTA
+               00148         extern _TXREG
+               00149         extern _RCREG
+               00150         extern _SPBRG
+               00151         extern _SPBRGH
+               00152         extern _T3CON
+               00153         extern _TMR3L
+               00154         extern _TMR3H
+               00155         extern _CMCON
+               00156         extern _CVRCON
+               00157         extern _ECCP1AS
+               00158         extern _PWM1CON
+               00159         extern _BAUDCON
+               00160         extern _BAUDCTL
+               00161         extern _CCP2CON
+               00162         extern _CCPR2
+gpasm-0.13.7 beta               build/default/production/brtos/mutex.asm7-19-2011  15:07:14          PAGE  4
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+ 
+               00163         extern _CCPR2L
+               00164         extern _CCPR2H
+               00165         extern _CCP1CON
+               00166         extern _CCPR1
+               00167         extern _CCPR1L
+               00168         extern _CCPR1H
+               00169         extern _ADCON2
+               00170         extern _ADCON1
+               00171         extern _ADCON0
+               00172         extern _ADRES
+               00173         extern _ADRESL
+               00174         extern _ADRESH
+               00175         extern _SSPCON2
+               00176         extern _SSPCON1
+               00177         extern _SSPSTAT
+               00178         extern _SSPADD
+               00179         extern _SSPBUF
+               00180         extern _T2CON
+               00181         extern _PR2
+               00182         extern _TMR2
+               00183         extern _T1CON
+               00184         extern _TMR1L
+               00185         extern _TMR1H
+               00186         extern _RCON
+               00187         extern _WDTCON
+               00188         extern _HLVDCON
+               00189         extern _LVDCON
+               00190         extern _OSCCON
+               00191         extern _T0CON
+               00192         extern _TMR0L
+               00193         extern _TMR0H
+               00194         extern _STATUS
+               00195         extern _FSR2L
+               00196         extern _FSR2H
+               00197         extern _PLUSW2
+               00198         extern _PREINC2
+               00199         extern _POSTDEC2
+               00200         extern _POSTINC2
+               00201         extern _INDF2
+               00202         extern _BSR
+               00203         extern _FSR1L
+               00204         extern _FSR1H
+               00205         extern _PLUSW1
+               00206         extern _PREINC1
+               00207         extern _POSTDEC1
+               00208         extern _POSTINC1
+               00209         extern _INDF1
+               00210         extern _WREG
+               00211         extern _FSR0L
+               00212         extern _FSR0H
+               00213         extern _PLUSW0
+               00214         extern _PREINC0
+               00215         extern _POSTDEC0
+               00216         extern _POSTINC0
+gpasm-0.13.7 beta               build/default/production/brtos/mutex.asm7-19-2011  15:07:14          PAGE  5
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+ 
+               00217         extern _INDF0
+               00218         extern _INTCON3
+               00219         extern _INTCON2
+               00220         extern _INTCON
+               00221         extern _PROD
+               00222         extern _PRODL
+               00223         extern _PRODH
+               00224         extern _TABLAT
+               00225         extern _TBLPTR
+               00226         extern _TBLPTRL
+               00227         extern _TBLPTRH
+               00228         extern _TBLPTRU
+               00229         extern _PC
+               00230         extern _PCL
+               00231         extern _PCLATH
+               00232         extern _PCLATU
+               00233         extern _STKPTR
+               00234         extern _TOS
+               00235         extern _TOSL
+               00236         extern _TOSH
+               00237         extern _TOSU
+               00238         extern _SwitchContext
+               00239         extern _SAScheduler
+               00240         extern _PriorityMask
+               00241 ;--------------------------------------------------------
+               00242 ;       Equates to used internal registers
+               00243 ;--------------------------------------------------------
+  00000FD8     00244 STATUS  equ     0xfd8
+  00000FE8     00245 WREG    equ     0xfe8
+  00000FF6     00246 TBLPTRL equ     0xff6
+  00000FF7     00247 TBLPTRH equ     0xff7
+  00000FF8     00248 TBLPTRU equ     0xff8
+  00000FF5     00249 TABLAT  equ     0xff5
+  00000FE9     00250 FSR0L   equ     0xfe9
+  00000FEA     00251 FSR0H   equ     0xfea
+  00000FE1     00252 FSR1L   equ     0xfe1
+  00000FE2     00253 FSR1H   equ     0xfe2
+  00000FD9     00254 FSR2L   equ     0xfd9
+  00000FDA     00255 FSR2H   equ     0xfda
+  00000FEF     00256 INDF0   equ     0xfef
+  00000FE5     00257 POSTDEC1        equ     0xfe5
+  00000FE4     00258 PREINC1 equ     0xfe4
+  00000FDB     00259 PLUSW2  equ     0xfdb
+  00000FF3     00260 PRODL   equ     0xff3
+  00000FF4     00261 PRODH   equ     0xff4
+               00262 
+               00263 
+               00264 ; Internal registers
+               00265 .registers      udata_ovr       0x0000
+               00266 r0x00   res     1
+               00267 r0x01   res     1
+               00268 r0x02   res     1
+               00269 r0x03   res     1
+               00270 r0x04   res     1
+gpasm-0.13.7 beta               build/default/production/brtos/mutex.asm7-19-2011  15:07:14          PAGE  6
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+ 
+               00271 r0x05   res     1
+               00272 r0x06   res     1
+               00273 r0x07   res     1
+               00274 r0x08   res     1
+               00275 r0x09   res     1
+               00276 r0x0a   res     1
+               00277 r0x0b   res     1
+               00278 r0x0c   res     1
+               00279 r0x0d   res     1
+               00280 r0x0e   res     1
+               00281 
+               00282 ;--------------------------------------------------------
+               00283 ; global & static initialisations
+               00284 ;--------------------------------------------------------
+               00285 ; I code from now on!
+               00286 ; ; Starting pCode block
+               00287 S_mutex__OSMutexRelease code
+0000 00288 _OSMutexRelease:
+               00289 ;       .line   344; brtos/mutex.c      INT8U OSMutexRelease(BRTOS_Mutex *pont_event)
+0000 CFDA FFE5 00290         MOVFF   FSR2H, POSTDEC1
+0004 CFD9 FFE5 00291         MOVFF   FSR2L, POSTDEC1
+0008 CFE2 FFDA 00292         MOVFF   FSR1H, FSR2H
+000C CFE1 FFD9 00293         MOVFF   FSR1L, FSR2L
+0010 C000 FFE5 00294         MOVFF   r0x00, POSTDEC1
+0014 C000 FFE5 00295         MOVFF   r0x01, POSTDEC1
+0018 C000 FFE5 00296         MOVFF   r0x02, POSTDEC1
+001C C000 FFE5 00297         MOVFF   r0x03, POSTDEC1
+0020 C000 FFE5 00298         MOVFF   r0x04, POSTDEC1
+0024 C000 FFE5 00299         MOVFF   r0x05, POSTDEC1
+0028 C000 FFE5 00300         MOVFF   r0x06, POSTDEC1
+002C C000 FFE5 00301         MOVFF   r0x07, POSTDEC1
+0030 C000 FFE5 00302         MOVFF   r0x08, POSTDEC1
+0034 C000 FFE5 00303         MOVFF   r0x09, POSTDEC1
+0038 C000 FFE5 00304         MOVFF   r0x0a, POSTDEC1
+003C C000 FFE5 00305         MOVFF   r0x0b, POSTDEC1
+0040 C000 FFE5 00306         MOVFF   r0x0c, POSTDEC1
+0044 C000 FFE5 00307         MOVFF   r0x0d, POSTDEC1
+0048 C000 FFE5 00308         MOVFF   r0x0e, POSTDEC1
+004C 0E03      00309         MOVLW   0x03
+004E CFDB F000 00310         MOVFF   PLUSW2, r0x00
+0052 0E04      00311         MOVLW   0x04
+0054 CFDB F000 00312         MOVFF   PLUSW2, r0x01
+0058 0E05      00313         MOVLW   0x05
+005A CFDB F000 00314         MOVFF   PLUSW2, r0x02
+               00315 ;       .line   367; brtos/mutex.c      OSEnterCritical();
+005E 9E00      00316         BCF     _INTCONbits, 7
+               00317 ;       .line   393; brtos/mutex.c      if (pont_event->OSEventOwner != currentTask)
+0060 5000      00318         MOVF    r0x00, W
+0062 0F02      00319         ADDLW   0x02
+0064 6E00      00320         MOVWF   r0x03
+0066 0E00      00321         MOVLW   0x00
+0068 2000      00322         ADDWFC  r0x01, W
+006A 6E00      00323         MOVWF   r0x04
+006C 0E00      00324         MOVLW   0x00
+gpasm-0.13.7 beta               build/default/production/brtos/mutex.asm7-19-2011  15:07:14          PAGE  7
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+ 
+006E 2000      00325         ADDWFC  r0x02, W
+0070 6E00      00326         MOVWF   r0x05
+0072 C000 FFE9 00327         MOVFF   r0x03, FSR0L
+0076 C000 FFF3 00328         MOVFF   r0x04, PRODL
+007A 5000      00329         MOVF    r0x05, W
+007C EC00 F000 00330         CALL    __gptrget1
+0080 6E00      00331         MOVWF   r0x03
+0082 5000      00332         MOVF    r0x03, W
+0084 0000      00333         BANKSEL _currentTask
+0086 1900      00334         XORWF   _currentTask, W, B
+0088 E000      00335         BZ      _00179_DS_
+               00336 ;       .line   395; brtos/mutex.c      OSExitCritical();
+008A 8E00      00337         BSF     _INTCONbits, 7
+               00338 ;       .line   396; brtos/mutex.c      return ERR_EVENT_OWNER;
+008C 0E07      00339         MOVLW   0x07
+008E D000      00340         BRA     _00184_DS_
+               00341 ; ;multiply lit val:0x10 by variable _currentTask and store in r0x03
+               00342 ; ;Unrolled 8 X 8 multiplication
+               00343 ; ;FIXME: the function does not support result==WREG
+0090 00344 _00179_DS_:
+0090 0000      00345         BANKSEL _currentTask
+               00346 ;       .line   402; brtos/mutex.c      iPriority = ContextTask[currentTask].Priority;
+0092 5100      00347         MOVF    _currentTask, W, B
+0094 0D10      00348         MULLW   0x10
+0096 CFF3 F000 00349         MOVFF   PRODL, r0x03
+009A 6A00      00350         CLRF    r0x04
+009C 0E00      00351         MOVLW   LOW(_ContextTask)
+009E 2600      00352         ADDWF   r0x03, F
+00A0 0E00      00353         MOVLW   HIGH(_ContextTask)
+00A2 2200      00354         ADDWFC  r0x04, F
+00A4 0E09      00355         MOVLW   0x09
+00A6 2600      00356         ADDWF   r0x03, F
+00A8 B0D8      00357         BTFSC   STATUS, 0
+00AA 2A00      00358         INCF    r0x04, F
+00AC C000 FFE9 00359         MOVFF   r0x03, FSR0L
+00B0 C000 FFEA 00360         MOVFF   r0x04, FSR0H
+00B4 CFEF F000 00361         MOVFF   INDF0, r0x05
+               00362 ;       .line   403; brtos/mutex.c      if (iPriority != pont_event->OSOriginalPriority)
+00B8 5000      00363         MOVF    r0x00, W
+00BA 0F04      00364         ADDLW   0x04
+00BC 6E00      00365         MOVWF   r0x06
+00BE 0E00      00366         MOVLW   0x00
+00C0 2000      00367         ADDWFC  r0x01, W
+00C2 6E00      00368         MOVWF   r0x07
+00C4 0E00      00369         MOVLW   0x00
+00C6 2000      00370         ADDWFC  r0x02, W
+00C8 6E00      00371         MOVWF   r0x08
+00CA C000 FFE9 00372         MOVFF   r0x06, FSR0L
+00CE C000 FFF3 00373         MOVFF   r0x07, PRODL
+00D2 5000      00374         MOVF    r0x08, W
+00D4 EC00 F000 00375         CALL    __gptrget1
+00D8 6E00      00376         MOVWF   r0x06
+00DA 5000      00377         MOVF    r0x05, W
+00DC 1800      00378         XORWF   r0x06, W
+gpasm-0.13.7 beta               build/default/production/brtos/mutex.asm7-19-2011  15:07:14          PAGE  8
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+ 
+00DE E100      00379         BNZ     _00192_DS_
+00E0 D000      00380         BRA     _00181_DS_
+               00381 ; ;multiply lit val:0x02 by variable r0x05 and store in r0x07
+               00382 ; ;Unrolled 8 X 8 multiplication
+               00383 ; ;FIXME: the function does not support result==WREG
+00E2 00384 _00192_DS_:
+               00385 ;       .line   408; brtos/mutex.c      OSReadyList = OSReadyList & ~(PriorityMask[iPriority]);
+00E2 90D8      00386         BCF     STATUS, 0
+00E4 3400      00387         RLCF    r0x05, W
+00E6 6E00      00388         MOVWF   r0x07
+00E8 6A00      00389         CLRF    r0x08
+00EA 6A00      00390         CLRF    r0x09
+00EC 0E00      00391         MOVLW   LOW(_PriorityMask)
+00EE 2600      00392         ADDWF   r0x07, F
+00F0 0E00      00393         MOVLW   HIGH(_PriorityMask)
+00F2 2200      00394         ADDWFC  r0x08, F
+00F4 0E00      00395         MOVLW   UPPER(_PriorityMask)
+00F6 2200      00396         ADDWFC  r0x09, F
+00F8 C000 FFF6 00397         MOVFF   r0x07, TBLPTRL
+00FC C000 FFF7 00398         MOVFF   r0x08, TBLPTRH
+0100 C000 FFF8 00399         MOVFF   r0x09, TBLPTRU
+0104 0009      00400         TBLRD*+ 
+0106 CFF5 F000 00401         MOVFF   TABLAT, r0x07
+010A 0009      00402         TBLRD*+ 
+010C CFF5 F000 00403         MOVFF   TABLAT, r0x08
+0110 1E00      00404         COMF    r0x07, F
+0112 1E00      00405         COMF    r0x08, F
+0114 5000      00406         MOVF    r0x07, W
+0116 0000      00407         BANKSEL _OSReadyList
+0118 1700      00408         ANDWF   _OSReadyList, F, B
+011A 5000      00409         MOVF    r0x08, W
+011C 0000      00410         BANKSEL (_OSReadyList + 1)
+011E 1700      00411         ANDWF   (_OSReadyList + 1), F, B
+               00412 ; ;multiply lit val:0x02 by variable r0x06 and store in r0x07
+               00413 ; ;Unrolled 8 X 8 multiplication
+               00414 ; ;FIXME: the function does not support result==WREG
+               00415 ;       .line   410; brtos/mutex.c      OSReadyList = OSReadyList | (PriorityMask[pont_event->OSOriginalPriority]);
+0120 90D8      00416         BCF     STATUS, 0
+0122 3400      00417         RLCF    r0x06, W
+0124 6E00      00418         MOVWF   r0x07
+0126 6A00      00419         CLRF    r0x08
+0128 6A00      00420         CLRF    r0x09
+012A 0E00      00421         MOVLW   LOW(_PriorityMask)
+012C 2600      00422         ADDWF   r0x07, F
+012E 0E00      00423         MOVLW   HIGH(_PriorityMask)
+0130 2200      00424         ADDWFC  r0x08, F
+0132 0E00      00425         MOVLW   UPPER(_PriorityMask)
+0134 2200      00426         ADDWFC  r0x09, F
+0136 C000 FFF6 00427         MOVFF   r0x07, TBLPTRL
+013A C000 FFF7 00428         MOVFF   r0x08, TBLPTRH
+013E C000 FFF8 00429         MOVFF   r0x09, TBLPTRU
+0142 0009      00430         TBLRD*+ 
+0144 CFF5 F000 00431         MOVFF   TABLAT, r0x07
+0148 0009      00432         TBLRD*+ 
+gpasm-0.13.7 beta               build/default/production/brtos/mutex.asm7-19-2011  15:07:14          PAGE  9
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+ 
+014A CFF5 F000 00433         MOVFF   TABLAT, r0x08
+014E 5000      00434         MOVF    r0x07, W
+0150 0000      00435         BANKSEL _OSReadyList
+0152 1300      00436         IORWF   _OSReadyList, F, B
+0154 5000      00437         MOVF    r0x08, W
+0156 0000      00438         BANKSEL (_OSReadyList + 1)
+0158 1300      00439         IORWF   (_OSReadyList + 1), F, B
+               00440 ;       .line   412; brtos/mutex.c      ContextTask[currentTask].Priority = pont_event->OSOriginalPriority;
+015A C000 FFE9 00441         MOVFF   r0x03, FSR0L
+015E C000 FFEA 00442         MOVFF   r0x04, FSR0H
+0162 C000 FFEF 00443         MOVFF   r0x06, INDF0
+0166 00444 _00181_DS_:
+               00445 ;       .line   416; brtos/mutex.c      if (pont_event->OSEventWait != 0)
+0166 5000      00446         MOVF    r0x00, W
+0168 0F05      00447         ADDLW   0x05
+016A 6E00      00448         MOVWF   r0x03
+016C 0E00      00449         MOVLW   0x00
+016E 2000      00450         ADDWFC  r0x01, W
+0170 6E00      00451         MOVWF   r0x04
+0172 0E00      00452         MOVLW   0x00
+0174 2000      00453         ADDWFC  r0x02, W
+0176 6E00      00454         MOVWF   r0x06
+0178 C000 FFE9 00455         MOVFF   r0x03, FSR0L
+017C C000 FFF3 00456         MOVFF   r0x04, PRODL
+0180 5000      00457         MOVF    r0x06, W
+0182 EC00 F000 00458         CALL    __gptrget1
+0186 6E00      00459         MOVWF   r0x07
+0188 5000      00460         MOVF    r0x07, W
+018A B4D8      00461         BTFSC   STATUS, 2
+018C D000      00462         BRA     _00183_DS_
+               00463 ;       .line   419; brtos/mutex.c      iPriority = SAScheduler(pont_event->OSEventWaitList);
+018E 5000      00464         MOVF    r0x00, W
+0190 0F06      00465         ADDLW   0x06
+0192 6E00      00466         MOVWF   r0x07
+0194 0E00      00467         MOVLW   0x00
+0196 2000      00468         ADDWFC  r0x01, W
+0198 6E00      00469         MOVWF   r0x08
+019A 0E00      00470         MOVLW   0x00
+019C 2000      00471         ADDWFC  r0x02, W
+019E 6E00      00472         MOVWF   r0x09
+01A0 C000 FFE9 00473         MOVFF   r0x07, FSR0L
+01A4 C000 FFF3 00474         MOVFF   r0x08, PRODL
+01A8 5000      00475         MOVF    r0x09, W
+01AA EC00 F000 00476         CALL    __gptrget2
+01AE 6E00      00477         MOVWF   r0x0a
+01B0 CFF3 F000 00478         MOVFF   PRODL, r0x0b
+01B4 5000      00479         MOVF    r0x0b, W
+01B6 6EE5      00480         MOVWF   POSTDEC1
+01B8 5000      00481         MOVF    r0x0a, W
+01BA 6EE5      00482         MOVWF   POSTDEC1
+01BC EC00 F000 00483         CALL    _SAScheduler
+01C0 6E00      00484         MOVWF   r0x05
+01C2 0E02      00485         MOVLW   0x02
+01C4 26E1      00486         ADDWF   FSR1L, F
+gpasm-0.13.7 beta               build/default/production/brtos/mutex.asm7-19-2011  15:07:14          PAGE 10
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+ 
+01C6 B0D8      00487         BTFSC   STATUS, 0
+01C8 2AE2      00488         INCF    FSR1H, F
+               00489 ;       .line   422; brtos/mutex.c      pont_event->OSEventWaitList = pont_event->OSEventWaitList & ~(PriorityMask[iPriority]);
+01CA C000 FFE9 00490         MOVFF   r0x07, FSR0L
+01CE C000 FFF3 00491         MOVFF   r0x08, PRODL
+01D2 5000      00492         MOVF    r0x09, W
+01D4 EC00 F000 00493         CALL    __gptrget2
+01D8 6E00      00494         MOVWF   r0x0a
+01DA CFF3 F000 00495         MOVFF   PRODL, r0x0b
+               00496 ; ;multiply lit val:0x02 by variable r0x05 and store in r0x05
+               00497 ; ;Unrolled 8 X 8 multiplication
+               00498 ; ;FIXME: the function does not support result==WREG
+01DE 90D8      00499         BCF     STATUS, 0
+01E0 3600      00500         RLCF    r0x05, F
+01E2 6A00      00501         CLRF    r0x0c
+01E4 6A00      00502         CLRF    r0x0d
+01E6 0E00      00503         MOVLW   LOW(_PriorityMask)
+01E8 2600      00504         ADDWF   r0x05, F
+01EA 0E00      00505         MOVLW   HIGH(_PriorityMask)
+01EC 2200      00506         ADDWFC  r0x0c, F
+01EE 0E00      00507         MOVLW   UPPER(_PriorityMask)
+01F0 2200      00508         ADDWFC  r0x0d, F
+01F2 C000 FFF6 00509         MOVFF   r0x05, TBLPTRL
+01F6 C000 FFF7 00510         MOVFF   r0x0c, TBLPTRH
+01FA C000 FFF8 00511         MOVFF   r0x0d, TBLPTRU
+01FE 0009      00512         TBLRD*+ 
+0200 CFF5 F000 00513         MOVFF   TABLAT, r0x05
+0204 0009      00514         TBLRD*+ 
+0206 CFF5 F000 00515         MOVFF   TABLAT, r0x0c
+020A 1C00      00516         COMF    r0x05, W
+020C 6E00      00517         MOVWF   r0x0d
+020E 1C00      00518         COMF    r0x0c, W
+0210 6E00      00519         MOVWF   r0x0e
+0212 5000      00520         MOVF    r0x0d, W
+0214 1600      00521         ANDWF   r0x0a, F
+0216 5000      00522         MOVF    r0x0e, W
+0218 1600      00523         ANDWF   r0x0b, F
+021A C000 FFE5 00524         MOVFF   r0x0a, POSTDEC1
+021E C000 FFF4 00525         MOVFF   r0x0b, PRODH
+0222 C000 FFE9 00526         MOVFF   r0x07, FSR0L
+0226 C000 FFF3 00527         MOVFF   r0x08, PRODL
+022A 5000      00528         MOVF    r0x09, W
+022C EC00 F000 00529         CALL    __gptrput2
+               00530 ;       .line   425; brtos/mutex.c      pont_event->OSEventWait--;
+0230 C000 FFE9 00531         MOVFF   r0x03, FSR0L
+0234 C000 FFF3 00532         MOVFF   r0x04, PRODL
+0238 5000      00533         MOVF    r0x06, W
+023A EC00 F000 00534         CALL    __gptrget1
+023E 6E00      00535         MOVWF   r0x07
+0240 0600      00536         DECF    r0x07, F
+0242 C000 FFE5 00537         MOVFF   r0x07, POSTDEC1
+0246 C000 FFE9 00538         MOVFF   r0x03, FSR0L
+024A C000 FFF3 00539         MOVFF   r0x04, PRODL
+024E 5000      00540         MOVF    r0x06, W
+gpasm-0.13.7 beta               build/default/production/brtos/mutex.asm7-19-2011  15:07:14          PAGE 11
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+ 
+0250 EC00 F000 00541         CALL    __gptrput1
+               00542 ;       .line   434; brtos/mutex.c      OSReadyList = OSReadyList | (PriorityMask[iPriority]);
+0254 5000      00543         MOVF    r0x05, W
+0256 0000      00544         BANKSEL _OSReadyList
+0258 1300      00545         IORWF   _OSReadyList, F, B
+025A 5000      00546         MOVF    r0x0c, W
+025C 0000      00547         BANKSEL (_OSReadyList + 1)
+025E 1300      00548         IORWF   (_OSReadyList + 1), F, B
+               00549 ;       .line   437; brtos/mutex.c      ChangeContext();
+0260 EC00 F000 00550         CALL    _SwitchContext
+               00551 ;       .line   440; brtos/mutex.c      OSExitCritical();
+0264 8E00      00552         BSF     _INTCONbits, 7
+               00553 ;       .line   442; brtos/mutex.c      return OK;
+0266 6AE8      00554         CLRF    WREG
+0268 D000      00555         BRA     _00184_DS_
+026A 00556 _00183_DS_:
+               00557 ;       .line   446; brtos/mutex.c      pont_event->OSEventState = AVAILABLE_RESOURCE;
+026A 5000      00558         MOVF    r0x00, W
+026C 0F01      00559         ADDLW   0x01
+026E 6E00      00560         MOVWF   r0x03
+0270 0E00      00561         MOVLW   0x00
+0272 2000      00562         ADDWFC  r0x01, W
+0274 6E00      00563         MOVWF   r0x04
+0276 0E00      00564         MOVLW   0x00
+0278 2000      00565         ADDWFC  r0x02, W
+027A 6E00      00566         MOVWF   r0x05
+027C 0E09      00567         MOVLW   0x09
+027E 6EE5      00568         MOVWF   POSTDEC1
+0280 C000 FFE9 00569         MOVFF   r0x03, FSR0L
+0284 C000 FFF3 00570         MOVFF   r0x04, PRODL
+0288 5000      00571         MOVF    r0x05, W
+028A EC00 F000 00572         CALL    __gptrput1
+               00573 ;       .line   447; brtos/mutex.c      PriorityVector[pont_event->OSMaxPriority] = MUTEX_PRIO;
+028E 0E03      00574         MOVLW   0x03
+0290 2600      00575         ADDWF   r0x00, F
+0292 0E00      00576         MOVLW   0x00
+0294 2200      00577         ADDWFC  r0x01, F
+0296 0E00      00578         MOVLW   0x00
+0298 2200      00579         ADDWFC  r0x02, F
+029A C000 FFE9 00580         MOVFF   r0x00, FSR0L
+029E C000 FFF3 00581         MOVFF   r0x01, PRODL
+02A2 5000      00582         MOVF    r0x02, W
+02A4 EC00 F000 00583         CALL    __gptrget1
+02A8 6E00      00584         MOVWF   r0x00
+02AA 6A00      00585         CLRF    r0x01
+02AC 0E00      00586         MOVLW   LOW(_PriorityVector)
+02AE 2600      00587         ADDWF   r0x00, F
+02B0 0E00      00588         MOVLW   HIGH(_PriorityVector)
+02B2 2200      00589         ADDWFC  r0x01, F
+02B4 C000 FFE9 00590         MOVFF   r0x00, FSR0L
+02B8 C000 FFEA 00591         MOVFF   r0x01, FSR0H
+02BC 0EFE      00592         MOVLW   0xfe
+02BE 6EEF      00593         MOVWF   INDF0
+               00594 ;       .line   450; brtos/mutex.c      OSExitCritical();      
+gpasm-0.13.7 beta               build/default/production/brtos/mutex.asm7-19-2011  15:07:14          PAGE 12
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+ 
+02C0 8E00      00595         BSF     _INTCONbits, 7
+               00596 ;       .line   452; brtos/mutex.c      return OK;
+02C2 6AE8      00597         CLRF    WREG
+02C4 00598 _00184_DS_:
+02C4 CFE4 F000 00599         MOVFF   PREINC1, r0x0e
+02C8 CFE4 F000 00600         MOVFF   PREINC1, r0x0d
+02CC CFE4 F000 00601         MOVFF   PREINC1, r0x0c
+02D0 CFE4 F000 00602         MOVFF   PREINC1, r0x0b
+02D4 CFE4 F000 00603         MOVFF   PREINC1, r0x0a
+02D8 CFE4 F000 00604         MOVFF   PREINC1, r0x09
+02DC CFE4 F000 00605         MOVFF   PREINC1, r0x08
+02E0 CFE4 F000 00606         MOVFF   PREINC1, r0x07
+02E4 CFE4 F000 00607         MOVFF   PREINC1, r0x06
+02E8 CFE4 F000 00608         MOVFF   PREINC1, r0x05
+02EC CFE4 F000 00609         MOVFF   PREINC1, r0x04
+02F0 CFE4 F000 00610         MOVFF   PREINC1, r0x03
+02F4 CFE4 F000 00611         MOVFF   PREINC1, r0x02
+02F8 CFE4 F000 00612         MOVFF   PREINC1, r0x01
+02FC CFE4 F000 00613         MOVFF   PREINC1, r0x00
+0300 CFE4 FFD9 00614         MOVFF   PREINC1, FSR2L
+0304 CFE4 FFDA 00615         MOVFF   PREINC1, FSR2H
+0308 0012      00616         RETURN  
+               00617 
+               00618 ; ; Starting pCode block
+               00619 S_mutex__OSMutexAcquire code
+0000 00620 _OSMutexAcquire:
+               00621 ;       .line   198; brtos/mutex.c      INT8U OSMutexAcquire(BRTOS_Mutex *pont_event)
+0000 CFDA FFE5 00622         MOVFF   FSR2H, POSTDEC1
+0004 CFD9 FFE5 00623         MOVFF   FSR2L, POSTDEC1
+0008 CFE2 FFDA 00624         MOVFF   FSR1H, FSR2H
+000C CFE1 FFD9 00625         MOVFF   FSR1L, FSR2L
+0010 C000 FFE5 00626         MOVFF   r0x00, POSTDEC1
+0014 C000 FFE5 00627         MOVFF   r0x01, POSTDEC1
+0018 C000 FFE5 00628         MOVFF   r0x02, POSTDEC1
+001C C000 FFE5 00629         MOVFF   r0x03, POSTDEC1
+0020 C000 FFE5 00630         MOVFF   r0x04, POSTDEC1
+0024 C000 FFE5 00631         MOVFF   r0x05, POSTDEC1
+0028 C000 FFE5 00632         MOVFF   r0x06, POSTDEC1
+002C C000 FFE5 00633         MOVFF   r0x07, POSTDEC1
+0030 C000 FFE5 00634         MOVFF   r0x08, POSTDEC1
+0034 C000 FFE5 00635         MOVFF   r0x09, POSTDEC1
+0038 C000 FFE5 00636         MOVFF   r0x0a, POSTDEC1
+003C C000 FFE5 00637         MOVFF   r0x0b, POSTDEC1
+0040 0E03      00638         MOVLW   0x03
+0042 CFDB F000 00639         MOVFF   PLUSW2, r0x00
+0046 0E04      00640         MOVLW   0x04
+0048 CFDB F000 00641         MOVFF   PLUSW2, r0x01
+004C 0E05      00642         MOVLW   0x05
+004E CFDB F000 00643         MOVFF   PLUSW2, r0x02
+               00644 ;       .line   219; brtos/mutex.c      OSEnterCritical();
+0052 9E00      00645         BCF     _INTCONbits, 7
+               00646 ;       .line   241; brtos/mutex.c      if (pont_event->OSEventState == AVAILABLE_RESOURCE)
+0054 5000      00647         MOVF    r0x00, W
+0056 0F01      00648         ADDLW   0x01
+gpasm-0.13.7 beta               build/default/production/brtos/mutex.asm7-19-2011  15:07:14          PAGE 13
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+ 
+0058 6E00      00649         MOVWF   r0x03
+005A 0E00      00650         MOVLW   0x00
+005C 2000      00651         ADDWFC  r0x01, W
+005E 6E00      00652         MOVWF   r0x04
+0060 0E00      00653         MOVLW   0x00
+0062 2000      00654         ADDWFC  r0x02, W
+0064 6E00      00655         MOVWF   r0x05
+0066 C000 FFE9 00656         MOVFF   r0x03, FSR0L
+006A C000 FFF3 00657         MOVFF   r0x04, PRODL
+006E 5000      00658         MOVF    r0x05, W
+0070 EC00 F000 00659         CALL    __gptrget1
+0074 6E00      00660         MOVWF   r0x06
+0076 5000      00661         MOVF    r0x06, W
+0078 0A09      00662         XORLW   0x09
+007A E000      00663         BZ      _00167_DS_
+007C D000      00664         BRA     _00159_DS_
+007E 00665 _00167_DS_:
+               00666 ;       .line   244; brtos/mutex.c      pont_event->OSEventState = BUSY_RESOURCE;
+007E 0E0A      00667         MOVLW   0x0a
+0080 6EE5      00668         MOVWF   POSTDEC1
+0082 C000 FFE9 00669         MOVFF   r0x03, FSR0L
+0086 C000 FFF3 00670         MOVFF   r0x04, PRODL
+008A 5000      00671         MOVF    r0x05, W
+008C EC00 F000 00672         CALL    __gptrput1
+               00673 ;       .line   247; brtos/mutex.c      pont_event->OSEventOwner = currentTask;
+0090 5000      00674         MOVF    r0x00, W
+0092 0F02      00675         ADDLW   0x02
+0094 6E00      00676         MOVWF   r0x03
+0096 0E00      00677         MOVLW   0x00
+0098 2000      00678         ADDWFC  r0x01, W
+009A 6E00      00679         MOVWF   r0x04
+009C 0E00      00680         MOVLW   0x00
+009E 2000      00681         ADDWFC  r0x02, W
+00A0 6E00      00682         MOVWF   r0x05
+00A2 C000 FFE5 00683         MOVFF   _currentTask, POSTDEC1
+00A6 C000 FFE9 00684         MOVFF   r0x03, FSR0L
+00AA C000 FFF3 00685         MOVFF   r0x04, PRODL
+00AE 5000      00686         MOVF    r0x05, W
+00B0 EC00 F000 00687         CALL    __gptrput1
+               00688 ;       .line   254; brtos/mutex.c      pont_event->OSOriginalPriority = ContextTask[currentTask].Priority;
+00B4 5000      00689         MOVF    r0x00, W
+00B6 0F04      00690         ADDLW   0x04
+00B8 6E00      00691         MOVWF   r0x03
+00BA 0E00      00692         MOVLW   0x00
+00BC 2000      00693         ADDWFC  r0x01, W
+00BE 6E00      00694         MOVWF   r0x04
+00C0 0E00      00695         MOVLW   0x00
+00C2 2000      00696         ADDWFC  r0x02, W
+00C4 6E00      00697         MOVWF   r0x05
+               00698 ; ;multiply lit val:0x10 by variable _currentTask and store in r0x06
+               00699 ; ;Unrolled 8 X 8 multiplication
+               00700 ; ;FIXME: the function does not support result==WREG
+00C6 0000      00701         BANKSEL _currentTask
+00C8 5100      00702         MOVF    _currentTask, W, B
+gpasm-0.13.7 beta               build/default/production/brtos/mutex.asm7-19-2011  15:07:14          PAGE 14
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+ 
+00CA 0D10      00703         MULLW   0x10
+00CC CFF3 F000 00704         MOVFF   PRODL, r0x06
+00D0 6A00      00705         CLRF    r0x07
+00D2 0E00      00706         MOVLW   LOW(_ContextTask)
+00D4 2600      00707         ADDWF   r0x06, F
+00D6 0E00      00708         MOVLW   HIGH(_ContextTask)
+00D8 2200      00709         ADDWFC  r0x07, F
+00DA 0E09      00710         MOVLW   0x09
+00DC 2600      00711         ADDWF   r0x06, F
+00DE B0D8      00712         BTFSC   STATUS, 0
+00E0 2A00      00713         INCF    r0x07, F
+00E2 C000 FFE9 00714         MOVFF   r0x06, FSR0L
+00E6 C000 FFEA 00715         MOVFF   r0x07, FSR0H
+00EA CFEF F000 00716         MOVFF   INDF0, r0x08
+00EE C000 FFE5 00717         MOVFF   r0x08, POSTDEC1
+00F2 C000 FFE9 00718         MOVFF   r0x03, FSR0L
+00F6 C000 FFF3 00719         MOVFF   r0x04, PRODL
+00FA 5000      00720         MOVF    r0x05, W
+00FC EC00 F000 00721         CALL    __gptrput1
+               00722 ;       .line   256; brtos/mutex.c      if (pont_event->OSMaxPriority > ContextTask[currentTask].Priority)
+0100 5000      00723         MOVF    r0x00, W
+0102 0F03      00724         ADDLW   0x03
+0104 6E00      00725         MOVWF   r0x09
+0106 0E00      00726         MOVLW   0x00
+0108 2000      00727         ADDWFC  r0x01, W
+010A 6E00      00728         MOVWF   r0x0a
+010C 0E00      00729         MOVLW   0x00
+010E 2000      00730         ADDWFC  r0x02, W
+0110 6E00      00731         MOVWF   r0x0b
+0112 C000 FFE9 00732         MOVFF   r0x09, FSR0L
+0116 C000 FFF3 00733         MOVFF   r0x0a, PRODL
+011A 5000      00734         MOVF    r0x0b, W
+011C EC00 F000 00735         CALL    __gptrget1
+0120 6E00      00736         MOVWF   r0x09
+0122 5000      00737         MOVF    r0x09, W
+0124 5C00      00738         SUBWF   r0x08, W
+0126 B0D8      00739         BTFSC   STATUS, 0
+0128 D000      00740         BRA     _00155_DS_
+               00741 ;       .line   259; brtos/mutex.c      ContextTask[currentTask].Priority = pont_event->OSMaxPriority;
+012A C000 FFE9 00742         MOVFF   r0x06, FSR0L
+012E C000 FFEA 00743         MOVFF   r0x07, FSR0H
+0132 C000 FFEF 00744         MOVFF   r0x09, INDF0
+               00745 ;       .line   262; brtos/mutex.c      PriorityVector[pont_event->OSMaxPriority] = currentTask;
+0136 0E00      00746         MOVLW   LOW(_PriorityVector)
+0138 2400      00747         ADDWF   r0x09, W
+013A 6E00      00748         MOVWF   r0x06
+013C 6A00      00749         CLRF    r0x07
+013E 0E00      00750         MOVLW   HIGH(_PriorityVector)
+0140 2200      00751         ADDWFC  r0x07, F
+0142 C000 FFE9 00752         MOVFF   r0x06, FSR0L
+0146 C000 FFEA 00753         MOVFF   r0x07, FSR0H
+014A C000 FFEF 00754         MOVFF   _currentTask, INDF0
+               00755 ;       .line   265; brtos/mutex.c      OSReadyList = OSReadyList & ~(PriorityMask[pont_event->OSOriginalPriority]);
+014E C000 FFE9 00756         MOVFF   r0x03, FSR0L
+gpasm-0.13.7 beta               build/default/production/brtos/mutex.asm7-19-2011  15:07:14          PAGE 15
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+ 
+0152 C000 FFF3 00757         MOVFF   r0x04, PRODL
+0156 5000      00758         MOVF    r0x05, W
+0158 EC00 F000 00759         CALL    __gptrget1
+015C 6E00      00760         MOVWF   r0x03
+               00761 ; ;multiply lit val:0x02 by variable r0x03 and store in r0x03
+               00762 ; ;Unrolled 8 X 8 multiplication
+               00763 ; ;FIXME: the function does not support result==WREG
+015E 90D8      00764         BCF     STATUS, 0
+0160 3600      00765         RLCF    r0x03, F
+0162 6A00      00766         CLRF    r0x04
+0164 6A00      00767         CLRF    r0x05
+0166 0E00      00768         MOVLW   LOW(_PriorityMask)
+0168 2600      00769         ADDWF   r0x03, F
+016A 0E00      00770         MOVLW   HIGH(_PriorityMask)
+016C 2200      00771         ADDWFC  r0x04, F
+016E 0E00      00772         MOVLW   UPPER(_PriorityMask)
+0170 2200      00773         ADDWFC  r0x05, F
+0172 C000 FFF6 00774         MOVFF   r0x03, TBLPTRL
+0176 C000 FFF7 00775         MOVFF   r0x04, TBLPTRH
+017A C000 FFF8 00776         MOVFF   r0x05, TBLPTRU
+017E 0009      00777         TBLRD*+ 
+0180 CFF5 F000 00778         MOVFF   TABLAT, r0x03
+0184 0009      00779         TBLRD*+ 
+0186 CFF5 F000 00780         MOVFF   TABLAT, r0x04
+018A 1E00      00781         COMF    r0x03, F
+018C 1E00      00782         COMF    r0x04, F
+018E 5000      00783         MOVF    r0x03, W
+0190 0000      00784         BANKSEL _OSReadyList
+0192 1700      00785         ANDWF   _OSReadyList, F, B
+0194 5000      00786         MOVF    r0x04, W
+0196 0000      00787         BANKSEL (_OSReadyList + 1)
+0198 1700      00788         ANDWF   (_OSReadyList + 1), F, B
+               00789 ; ;multiply lit val:0x02 by variable r0x09 and store in r0x09
+               00790 ; ;Unrolled 8 X 8 multiplication
+               00791 ; ;FIXME: the function does not support result==WREG
+               00792 ;       .line   267; brtos/mutex.c      OSReadyList = OSReadyList | (PriorityMask[pont_event->OSMaxPriority]);
+019A 90D8      00793         BCF     STATUS, 0
+019C 3600      00794         RLCF    r0x09, F
+019E 6A00      00795         CLRF    r0x03
+01A0 6A00      00796         CLRF    r0x04
+01A2 0E00      00797         MOVLW   LOW(_PriorityMask)
+01A4 2600      00798         ADDWF   r0x09, F
+01A6 0E00      00799         MOVLW   HIGH(_PriorityMask)
+01A8 2200      00800         ADDWFC  r0x03, F
+01AA 0E00      00801         MOVLW   UPPER(_PriorityMask)
+01AC 2200      00802         ADDWFC  r0x04, F
+01AE C000 FFF6 00803         MOVFF   r0x09, TBLPTRL
+01B2 C000 FFF7 00804         MOVFF   r0x03, TBLPTRH
+01B6 C000 FFF8 00805         MOVFF   r0x04, TBLPTRU
+01BA 0009      00806         TBLRD*+ 
+01BC CFF5 F000 00807         MOVFF   TABLAT, r0x09
+01C0 0009      00808         TBLRD*+ 
+01C2 CFF5 F000 00809         MOVFF   TABLAT, r0x03
+01C6 5000      00810         MOVF    r0x09, W
+gpasm-0.13.7 beta               build/default/production/brtos/mutex.asm7-19-2011  15:07:14          PAGE 16
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+ 
+01C8 0000      00811         BANKSEL _OSReadyList
+01CA 1300      00812         IORWF   _OSReadyList, F, B
+01CC 5000      00813         MOVF    r0x03, W
+01CE 0000      00814         BANKSEL (_OSReadyList + 1)
+01D0 1300      00815         IORWF   (_OSReadyList + 1), F, B
+01D2 00816 _00155_DS_:
+               00817 ;       .line   270; brtos/mutex.c      OSExitCritical();
+01D2 8E00      00818         BSF     _INTCONbits, 7
+               00819 ;       .line   271; brtos/mutex.c      return OK;
+01D4 6AE8      00820         CLRF    WREG
+01D6 D000      00821         BRA     _00161_DS_
+               00822 ; ;multiply lit val:0x10 by variable _currentTask and store in r0x03
+               00823 ; ;Unrolled 8 X 8 multiplication
+               00824 ; ;FIXME: the function does not support result==WREG
+01D8 00825 _00159_DS_:
+01D8 0000      00826         BANKSEL _currentTask
+               00827 ;       .line   276; brtos/mutex.c      iPriority = ContextTask[currentTask].Priority;
+01DA 5100      00828         MOVF    _currentTask, W, B
+01DC 0D10      00829         MULLW   0x10
+01DE CFF3 F000 00830         MOVFF   PRODL, r0x03
+01E2 6A00      00831         CLRF    r0x04
+01E4 0E00      00832         MOVLW   LOW(_ContextTask)
+01E6 2600      00833         ADDWF   r0x03, F
+01E8 0E00      00834         MOVLW   HIGH(_ContextTask)
+01EA 2200      00835         ADDWFC  r0x04, F
+01EC 0E09      00836         MOVLW   0x09
+01EE 2600      00837         ADDWF   r0x03, F
+01F0 B0D8      00838         BTFSC   STATUS, 0
+01F2 2A00      00839         INCF    r0x04, F
+01F4 C000 FFE9 00840         MOVFF   r0x03, FSR0L
+01F8 C000 FFEA 00841         MOVFF   r0x04, FSR0H
+01FC CFEF F000 00842         MOVFF   INDF0, r0x03
+               00843 ;       .line   278; brtos/mutex.c      pont_event->OSEventWait++;
+0200 5000      00844         MOVF    r0x00, W
+0202 0F05      00845         ADDLW   0x05
+0204 6E00      00846         MOVWF   r0x04
+0206 0E00      00847         MOVLW   0x00
+0208 2000      00848         ADDWFC  r0x01, W
+020A 6E00      00849         MOVWF   r0x05
+020C 0E00      00850         MOVLW   0x00
+020E 2000      00851         ADDWFC  r0x02, W
+0210 6E00      00852         MOVWF   r0x06
+0212 C000 FFE9 00853         MOVFF   r0x04, FSR0L
+0216 C000 FFF3 00854         MOVFF   r0x05, PRODL
+021A 5000      00855         MOVF    r0x06, W
+021C EC00 F000 00856         CALL    __gptrget1
+0220 6E00      00857         MOVWF   r0x07
+0222 2A00      00858         INCF    r0x07, F
+0224 C000 FFE5 00859         MOVFF   r0x07, POSTDEC1
+0228 C000 FFE9 00860         MOVFF   r0x04, FSR0L
+022C C000 FFF3 00861         MOVFF   r0x05, PRODL
+0230 5000      00862         MOVF    r0x06, W
+0232 EC00 F000 00863         CALL    __gptrput1
+               00864 ;       .line   281; brtos/mutex.c      pont_event->OSEventWaitList = pont_event->OSEventWaitList | (PriorityMask[iPriority]);
+gpasm-0.13.7 beta               build/default/production/brtos/mutex.asm7-19-2011  15:07:14          PAGE 17
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+ 
+0236 5000      00865         MOVF    r0x00, W
+0238 0F06      00866         ADDLW   0x06
+023A 6E00      00867         MOVWF   r0x04
+023C 0E00      00868         MOVLW   0x00
+023E 2000      00869         ADDWFC  r0x01, W
+0240 6E00      00870         MOVWF   r0x05
+0242 0E00      00871         MOVLW   0x00
+0244 2000      00872         ADDWFC  r0x02, W
+0246 6E00      00873         MOVWF   r0x06
+0248 C000 FFE9 00874         MOVFF   r0x04, FSR0L
+024C C000 FFF3 00875         MOVFF   r0x05, PRODL
+0250 5000      00876         MOVF    r0x06, W
+0252 EC00 F000 00877         CALL    __gptrget2
+0256 6E00      00878         MOVWF   r0x07
+0258 CFF3 F000 00879         MOVFF   PRODL, r0x08
+               00880 ; ;multiply lit val:0x02 by variable r0x03 and store in r0x09
+               00881 ; ;Unrolled 8 X 8 multiplication
+               00882 ; ;FIXME: the function does not support result==WREG
+025C 90D8      00883         BCF     STATUS, 0
+025E 3400      00884         RLCF    r0x03, W
+0260 6E00      00885         MOVWF   r0x09
+0262 6A00      00886         CLRF    r0x0a
+0264 6A00      00887         CLRF    r0x0b
+0266 0E00      00888         MOVLW   LOW(_PriorityMask)
+0268 2600      00889         ADDWF   r0x09, F
+026A 0E00      00890         MOVLW   HIGH(_PriorityMask)
+026C 2200      00891         ADDWFC  r0x0a, F
+026E 0E00      00892         MOVLW   UPPER(_PriorityMask)
+0270 2200      00893         ADDWFC  r0x0b, F
+0272 C000 FFF6 00894         MOVFF   r0x09, TBLPTRL
+0276 C000 FFF7 00895         MOVFF   r0x0a, TBLPTRH
+027A C000 FFF8 00896         MOVFF   r0x0b, TBLPTRU
+027E 0009      00897         TBLRD*+ 
+0280 CFF5 F000 00898         MOVFF   TABLAT, r0x09
+0284 0009      00899         TBLRD*+ 
+0286 CFF5 F000 00900         MOVFF   TABLAT, r0x0a
+028A 5000      00901         MOVF    r0x09, W
+028C 1200      00902         IORWF   r0x07, F
+028E 5000      00903         MOVF    r0x0a, W
+0290 1200      00904         IORWF   r0x08, F
+0292 C000 FFE5 00905         MOVFF   r0x07, POSTDEC1
+0296 C000 FFF4 00906         MOVFF   r0x08, PRODH
+029A C000 FFE9 00907         MOVFF   r0x04, FSR0L
+029E C000 FFF3 00908         MOVFF   r0x05, PRODL
+02A2 5000      00909         MOVF    r0x06, W
+02A4 EC00 F000 00910         CALL    __gptrput2
+               00911 ;       .line   290; brtos/mutex.c      OSReadyList = OSReadyList & ~(PriorityMask[iPriority]);
+02A8 1E00      00912         COMF    r0x09, F
+02AA 1E00      00913         COMF    r0x0a, F
+02AC 5000      00914         MOVF    r0x09, W
+02AE 0000      00915         BANKSEL _OSReadyList
+02B0 1700      00916         ANDWF   _OSReadyList, F, B
+02B2 5000      00917         MOVF    r0x0a, W
+02B4 0000      00918         BANKSEL (_OSReadyList + 1)
+gpasm-0.13.7 beta               build/default/production/brtos/mutex.asm7-19-2011  15:07:14          PAGE 18
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+ 
+02B6 1700      00919         ANDWF   (_OSReadyList + 1), F, B
+               00920 ;       .line   293; brtos/mutex.c      ChangeContext();
+02B8 EC00 F000 00921         CALL    _SwitchContext
+               00922 ;       .line   296; brtos/mutex.c      OSExitCritical();
+02BC 8E00      00923         BSF     _INTCONbits, 7
+               00924 ;       .line   298; brtos/mutex.c      OSEnterCritical();    
+02BE 9E00      00925         BCF     _INTCONbits, 7
+               00926 ;       .line   301; brtos/mutex.c      pont_event->OSEventOwner = currentTask;
+02C0 5000      00927         MOVF    r0x00, W
+02C2 0F02      00928         ADDLW   0x02
+02C4 6E00      00929         MOVWF   r0x04
+02C6 0E00      00930         MOVLW   0x00
+02C8 2000      00931         ADDWFC  r0x01, W
+02CA 6E00      00932         MOVWF   r0x05
+02CC 0E00      00933         MOVLW   0x00
+02CE 2000      00934         ADDWFC  r0x02, W
+02D0 6E00      00935         MOVWF   r0x06
+02D2 C000 FFE5 00936         MOVFF   _currentTask, POSTDEC1
+02D6 C000 FFE9 00937         MOVFF   r0x04, FSR0L
+02DA C000 FFF3 00938         MOVFF   r0x05, PRODL
+02DE 5000      00939         MOVF    r0x06, W
+02E0 EC00 F000 00940         CALL    __gptrput1
+               00941 ;       .line   308; brtos/mutex.c      pont_event->OSOriginalPriority = iPriority;
+02E4 5000      00942         MOVF    r0x00, W
+02E6 0F04      00943         ADDLW   0x04
+02E8 6E00      00944         MOVWF   r0x04
+02EA 0E00      00945         MOVLW   0x00
+02EC 2000      00946         ADDWFC  r0x01, W
+02EE 6E00      00947         MOVWF   r0x05
+02F0 0E00      00948         MOVLW   0x00
+02F2 2000      00949         ADDWFC  r0x02, W
+02F4 6E00      00950         MOVWF   r0x06
+02F6 C000 FFE5 00951         MOVFF   r0x03, POSTDEC1
+02FA C000 FFE9 00952         MOVFF   r0x04, FSR0L
+02FE C000 FFF3 00953         MOVFF   r0x05, PRODL
+0302 5000      00954         MOVF    r0x06, W
+0304 EC00 F000 00955         CALL    __gptrput1
+               00956 ;       .line   310; brtos/mutex.c      if (pont_event->OSMaxPriority > iPriority)
+0308 0E03      00957         MOVLW   0x03
+030A 2600      00958         ADDWF   r0x00, F
+030C 0E00      00959         MOVLW   0x00
+030E 2200      00960         ADDWFC  r0x01, F
+0310 0E00      00961         MOVLW   0x00
+0312 2200      00962         ADDWFC  r0x02, F
+0314 C000 FFE9 00963         MOVFF   r0x00, FSR0L
+0318 C000 FFF3 00964         MOVFF   r0x01, PRODL
+031C 5000      00965         MOVF    r0x02, W
+031E EC00 F000 00966         CALL    __gptrget1
+0322 6E00      00967         MOVWF   r0x00
+0324 5000      00968         MOVF    r0x00, W
+0326 5C00      00969         SUBWF   r0x03, W
+0328 B0D8      00970         BTFSC   STATUS, 0
+032A D000      00971         BRA     _00157_DS_
+               00972 ; ;multiply lit val:0x10 by variable _currentTask and store in r0x01
+gpasm-0.13.7 beta               build/default/production/brtos/mutex.asm7-19-2011  15:07:14          PAGE 19
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+ 
+               00973 ; ;Unrolled 8 X 8 multiplication
+               00974 ; ;FIXME: the function does not support result==WREG
+032C 0000      00975         BANKSEL _currentTask
+               00976 ;       .line   313; brtos/mutex.c      ContextTask[currentTask].Priority = pont_event->OSMaxPriority;
+032E 5100      00977         MOVF    _currentTask, W, B
+0330 0D10      00978         MULLW   0x10
+0332 CFF3 F000 00979         MOVFF   PRODL, r0x01
+0336 6A00      00980         CLRF    r0x02
+0338 0E00      00981         MOVLW   LOW(_ContextTask)
+033A 2600      00982         ADDWF   r0x01, F
+033C 0E00      00983         MOVLW   HIGH(_ContextTask)
+033E 2200      00984         ADDWFC  r0x02, F
+0340 0E09      00985         MOVLW   0x09
+0342 2600      00986         ADDWF   r0x01, F
+0344 B0D8      00987         BTFSC   STATUS, 0
+0346 2A00      00988         INCF    r0x02, F
+0348 C000 FFE9 00989         MOVFF   r0x01, FSR0L
+034C C000 FFEA 00990         MOVFF   r0x02, FSR0H
+0350 C000 FFEF 00991         MOVFF   r0x00, INDF0
+               00992 ;       .line   316; brtos/mutex.c      PriorityVector[pont_event->OSMaxPriority] = currentTask;
+0354 0E00      00993         MOVLW   LOW(_PriorityVector)
+0356 2400      00994         ADDWF   r0x00, W
+0358 6E00      00995         MOVWF   r0x01
+035A 6A00      00996         CLRF    r0x02
+035C 0E00      00997         MOVLW   HIGH(_PriorityVector)
+035E 2200      00998         ADDWFC  r0x02, F
+0360 C000 FFE9 00999         MOVFF   r0x01, FSR0L
+0364 C000 FFEA 01000         MOVFF   r0x02, FSR0H
+0368 C000 FFEF 01001         MOVFF   _currentTask, INDF0
+               01002 ; ;multiply lit val:0x02 by variable r0x03 and store in r0x03
+               01003 ; ;Unrolled 8 X 8 multiplication
+               01004 ; ;FIXME: the function does not support result==WREG
+               01005 ;       .line   319; brtos/mutex.c      OSReadyList = OSReadyList & ~(PriorityMask[iPriority]);
+036C 90D8      01006         BCF     STATUS, 0
+036E 3600      01007         RLCF    r0x03, F
+0370 6A00      01008         CLRF    r0x01
+0372 6A00      01009         CLRF    r0x02
+0374 0E00      01010         MOVLW   LOW(_PriorityMask)
+0376 2600      01011         ADDWF   r0x03, F
+0378 0E00      01012         MOVLW   HIGH(_PriorityMask)
+037A 2200      01013         ADDWFC  r0x01, F
+037C 0E00      01014         MOVLW   UPPER(_PriorityMask)
+037E 2200      01015         ADDWFC  r0x02, F
+0380 C000 FFF6 01016         MOVFF   r0x03, TBLPTRL
+0384 C000 FFF7 01017         MOVFF   r0x01, TBLPTRH
+0388 C000 FFF8 01018         MOVFF   r0x02, TBLPTRU
+038C 0009      01019         TBLRD*+ 
+038E CFF5 F000 01020         MOVFF   TABLAT, r0x03
+0392 0009      01021         TBLRD*+ 
+0394 CFF5 F000 01022         MOVFF   TABLAT, r0x01
+0398 1E00      01023         COMF    r0x03, F
+039A 1E00      01024         COMF    r0x01, F
+039C 5000      01025         MOVF    r0x03, W
+039E 0000      01026         BANKSEL _OSReadyList
+gpasm-0.13.7 beta               build/default/production/brtos/mutex.asm7-19-2011  15:07:14          PAGE 20
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+ 
+03A0 1700      01027         ANDWF   _OSReadyList, F, B
+03A2 5000      01028         MOVF    r0x01, W
+03A4 0000      01029         BANKSEL (_OSReadyList + 1)
+03A6 1700      01030         ANDWF   (_OSReadyList + 1), F, B
+               01031 ; ;multiply lit val:0x02 by variable r0x00 and store in r0x00
+               01032 ; ;Unrolled 8 X 8 multiplication
+               01033 ; ;FIXME: the function does not support result==WREG
+               01034 ;       .line   321; brtos/mutex.c      OSReadyList = OSReadyList | (PriorityMask[pont_event->OSMaxPriority]);
+03A8 90D8      01035         BCF     STATUS, 0
+03AA 3600      01036         RLCF    r0x00, F
+03AC 6A00      01037         CLRF    r0x01
+03AE 6A00      01038         CLRF    r0x02
+03B0 0E00      01039         MOVLW   LOW(_PriorityMask)
+03B2 2600      01040         ADDWF   r0x00, F
+03B4 0E00      01041         MOVLW   HIGH(_PriorityMask)
+03B6 2200      01042         ADDWFC  r0x01, F
+03B8 0E00      01043         MOVLW   UPPER(_PriorityMask)
+03BA 2200      01044         ADDWFC  r0x02, F
+03BC C000 FFF6 01045         MOVFF   r0x00, TBLPTRL
+03C0 C000 FFF7 01046         MOVFF   r0x01, TBLPTRH
+03C4 C000 FFF8 01047         MOVFF   r0x02, TBLPTRU
+03C8 0009      01048         TBLRD*+ 
+03CA CFF5 F000 01049         MOVFF   TABLAT, r0x00
+03CE 0009      01050         TBLRD*+ 
+03D0 CFF5 F000 01051         MOVFF   TABLAT, r0x01
+03D4 5000      01052         MOVF    r0x00, W
+03D6 0000      01053         BANKSEL _OSReadyList
+03D8 1300      01054         IORWF   _OSReadyList, F, B
+03DA 5000      01055         MOVF    r0x01, W
+03DC 0000      01056         BANKSEL (_OSReadyList + 1)
+03DE 1300      01057         IORWF   (_OSReadyList + 1), F, B
+03E0 01058 _00157_DS_:
+               01059 ;       .line   324; brtos/mutex.c      OSExitCritical();
+03E0 8E00      01060         BSF     _INTCONbits, 7
+               01061 ;       .line   325; brtos/mutex.c      return OK;
+03E2 6AE8      01062         CLRF    WREG
+03E4 01063 _00161_DS_:
+03E4 CFE4 F000 01064         MOVFF   PREINC1, r0x0b
+03E8 CFE4 F000 01065         MOVFF   PREINC1, r0x0a
+03EC CFE4 F000 01066         MOVFF   PREINC1, r0x09
+03F0 CFE4 F000 01067         MOVFF   PREINC1, r0x08
+03F4 CFE4 F000 01068         MOVFF   PREINC1, r0x07
+03F8 CFE4 F000 01069         MOVFF   PREINC1, r0x06
+03FC CFE4 F000 01070         MOVFF   PREINC1, r0x05
+0400 CFE4 F000 01071         MOVFF   PREINC1, r0x04
+0404 CFE4 F000 01072         MOVFF   PREINC1, r0x03
+0408 CFE4 F000 01073         MOVFF   PREINC1, r0x02
+040C CFE4 F000 01074         MOVFF   PREINC1, r0x01
+0410 CFE4 F000 01075         MOVFF   PREINC1, r0x00
+0414 CFE4 FFD9 01076         MOVFF   PREINC1, FSR2L
+0418 CFE4 FFDA 01077         MOVFF   PREINC1, FSR2H
+041C 0012      01078         RETURN  
+               01079 
+               01080 ; ; Starting pCode block
+gpasm-0.13.7 beta               build/default/production/brtos/mutex.asm7-19-2011  15:07:14          PAGE 21
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+ 
+               01081 S_mutex__OSMutexDelete  code
+0000 01082 _OSMutexDelete:
+               01083 ;       .line   153; brtos/mutex.c      INT8U OSMutexDelete (BRTOS_Mutex **event)
+0000 CFDA FFE5 01084         MOVFF   FSR2H, POSTDEC1
+0004 CFD9 FFE5 01085         MOVFF   FSR2L, POSTDEC1
+0008 CFE2 FFDA 01086         MOVFF   FSR1H, FSR2H
+000C CFE1 FFD9 01087         MOVFF   FSR1L, FSR2L
+0010 C000 FFE5 01088         MOVFF   r0x00, POSTDEC1
+0014 C000 FFE5 01089         MOVFF   r0x01, POSTDEC1
+0018 C000 FFE5 01090         MOVFF   r0x02, POSTDEC1
+001C C000 FFE5 01091         MOVFF   r0x03, POSTDEC1
+0020 C000 FFE5 01092         MOVFF   r0x04, POSTDEC1
+0024 C000 FFE5 01093         MOVFF   r0x05, POSTDEC1
+0028 C000 FFE5 01094         MOVFF   r0x06, POSTDEC1
+002C C000 FFE5 01095         MOVFF   r0x07, POSTDEC1
+0030 C000 FFE5 01096         MOVFF   r0x08, POSTDEC1
+0034 0E03      01097         MOVLW   0x03
+0036 CFDB F000 01098         MOVFF   PLUSW2, r0x00
+003A 0E04      01099         MOVLW   0x04
+003C CFDB F000 01100         MOVFF   PLUSW2, r0x01
+0040 0E05      01101         MOVLW   0x05
+0042 CFDB F000 01102         MOVFF   PLUSW2, r0x02
+0046 0000      01103         BANKSEL _iNesting
+               01104 ;       .line   158; brtos/mutex.c      if (iNesting > 0) {                                // See if caller is an interrupt
+0048 5100      01105         MOVF    _iNesting, W, B
+004A E000      01106         BZ      _00148_DS_
+               01107 ;       .line   159; brtos/mutex.c      return(IRQ_PEND_ERR);                          // Can't be delete by interrupt
+004C 0E02      01108         MOVLW   0x02
+004E D000      01109         BRA     _00149_DS_
+0050 01110 _00148_DS_:
+               01111 ;       .line   163; brtos/mutex.c      OSEnterCritical();
+0050 9E00      01112         BCF     _INTCONbits, 7
+               01113 ;       .line   165; brtos/mutex.c      pont_event = *event;  
+0052 C000 FFE9 01114         MOVFF   r0x00, FSR0L
+0056 C000 FFF3 01115         MOVFF   r0x01, PRODL
+005A 5000      01116         MOVF    r0x02, W
+005C EC00 F000 01117         CALL    __gptrget3
+0060 6E00      01118         MOVWF   r0x03
+0062 CFF3 F000 01119         MOVFF   PRODL, r0x04
+0066 CFF4 F000 01120         MOVFF   PRODH, r0x05
+               01121 ;       .line   166; brtos/mutex.c      pont_event->OSEventAllocated   = 0;
+006A 0E00      01122         MOVLW   0x00
+006C 6EE5      01123         MOVWF   POSTDEC1
+006E C000 FFE9 01124         MOVFF   r0x03, FSR0L
+0072 C000 FFF3 01125         MOVFF   r0x04, PRODL
+0076 5000      01126         MOVF    r0x05, W
+0078 EC00 F000 01127         CALL    __gptrput1
+               01128 ;       .line   167; brtos/mutex.c      pont_event->OSEventState       = 0;
+007C 5000      01129         MOVF    r0x03, W
+007E 0F01      01130         ADDLW   0x01
+0080 6E00      01131         MOVWF   r0x06
+0082 0E00      01132         MOVLW   0x00
+0084 2000      01133         ADDWFC  r0x04, W
+0086 6E00      01134         MOVWF   r0x07
+gpasm-0.13.7 beta               build/default/production/brtos/mutex.asm7-19-2011  15:07:14          PAGE 22
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+ 
+0088 0E00      01135         MOVLW   0x00
+008A 2000      01136         ADDWFC  r0x05, W
+008C 6E00      01137         MOVWF   r0x08
+008E 0E00      01138         MOVLW   0x00
+0090 6EE5      01139         MOVWF   POSTDEC1
+0092 C000 FFE9 01140         MOVFF   r0x06, FSR0L
+0096 C000 FFF3 01141         MOVFF   r0x07, PRODL
+009A 5000      01142         MOVF    r0x08, W
+009C EC00 F000 01143         CALL    __gptrput1
+               01144 ;       .line   168; brtos/mutex.c      pont_event->OSEventOwner       = 0;                        
+00A0 5000      01145         MOVF    r0x03, W
+00A2 0F02      01146         ADDLW   0x02
+00A4 6E00      01147         MOVWF   r0x06
+00A6 0E00      01148         MOVLW   0x00
+00A8 2000      01149         ADDWFC  r0x04, W
+00AA 6E00      01150         MOVWF   r0x07
+00AC 0E00      01151         MOVLW   0x00
+00AE 2000      01152         ADDWFC  r0x05, W
+00B0 6E00      01153         MOVWF   r0x08
+00B2 0E00      01154         MOVLW   0x00
+00B4 6EE5      01155         MOVWF   POSTDEC1
+00B6 C000 FFE9 01156         MOVFF   r0x06, FSR0L
+00BA C000 FFF3 01157         MOVFF   r0x07, PRODL
+00BE 5000      01158         MOVF    r0x08, W
+00C0 EC00 F000 01159         CALL    __gptrput1
+               01160 ;       .line   169; brtos/mutex.c      pont_event->OSMaxPriority      = 0;                      
+00C4 5000      01161         MOVF    r0x03, W
+00C6 0F03      01162         ADDLW   0x03
+00C8 6E00      01163         MOVWF   r0x06
+00CA 0E00      01164         MOVLW   0x00
+00CC 2000      01165         ADDWFC  r0x04, W
+00CE 6E00      01166         MOVWF   r0x07
+00D0 0E00      01167         MOVLW   0x00
+00D2 2000      01168         ADDWFC  r0x05, W
+00D4 6E00      01169         MOVWF   r0x08
+00D6 0E00      01170         MOVLW   0x00
+00D8 6EE5      01171         MOVWF   POSTDEC1
+00DA C000 FFE9 01172         MOVFF   r0x06, FSR0L
+00DE C000 FFF3 01173         MOVFF   r0x07, PRODL
+00E2 5000      01174         MOVF    r0x08, W
+00E4 EC00 F000 01175         CALL    __gptrput1
+               01176 ;       .line   170; brtos/mutex.c      pont_event->OSOriginalPriority = 0;                
+00E8 5000      01177         MOVF    r0x03, W
+00EA 0F04      01178         ADDLW   0x04
+00EC 6E00      01179         MOVWF   r0x06
+00EE 0E00      01180         MOVLW   0x00
+00F0 2000      01181         ADDWFC  r0x04, W
+00F2 6E00      01182         MOVWF   r0x07
+00F4 0E00      01183         MOVLW   0x00
+00F6 2000      01184         ADDWFC  r0x05, W
+00F8 6E00      01185         MOVWF   r0x08
+00FA 0E00      01186         MOVLW   0x00
+00FC 6EE5      01187         MOVWF   POSTDEC1
+00FE C000 FFE9 01188         MOVFF   r0x06, FSR0L
+gpasm-0.13.7 beta               build/default/production/brtos/mutex.asm7-19-2011  15:07:14          PAGE 23
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+ 
+0102 C000 FFF3 01189         MOVFF   r0x07, PRODL
+0106 5000      01190         MOVF    r0x08, W
+0108 EC00 F000 01191         CALL    __gptrput1
+               01192 ;       .line   171; brtos/mutex.c      pont_event->OSEventWait        = 0;  
+010C 5000      01193         MOVF    r0x03, W
+010E 0F05      01194         ADDLW   0x05
+0110 6E00      01195         MOVWF   r0x06
+0112 0E00      01196         MOVLW   0x00
+0114 2000      01197         ADDWFC  r0x04, W
+0116 6E00      01198         MOVWF   r0x07
+0118 0E00      01199         MOVLW   0x00
+011A 2000      01200         ADDWFC  r0x05, W
+011C 6E00      01201         MOVWF   r0x08
+011E 0E00      01202         MOVLW   0x00
+0120 6EE5      01203         MOVWF   POSTDEC1
+0122 C000 FFE9 01204         MOVFF   r0x06, FSR0L
+0126 C000 FFF3 01205         MOVFF   r0x07, PRODL
+012A 5000      01206         MOVF    r0x08, W
+012C EC00 F000 01207         CALL    __gptrput1
+               01208 ;       .line   173; brtos/mutex.c      pont_event->OSEventWaitList=0;
+0130 0E06      01209         MOVLW   0x06
+0132 2600      01210         ADDWF   r0x03, F
+0134 0E00      01211         MOVLW   0x00
+0136 2200      01212         ADDWFC  r0x04, F
+0138 0E00      01213         MOVLW   0x00
+013A 2200      01214         ADDWFC  r0x05, F
+013C 0E00      01215         MOVLW   0x00
+013E 6EE5      01216         MOVWF   POSTDEC1
+0140 0E00      01217         MOVLW   0x00
+0142 6EF4      01218         MOVWF   PRODH
+0144 C000 FFE9 01219         MOVFF   r0x03, FSR0L
+0148 C000 FFF3 01220         MOVFF   r0x04, PRODL
+014C 5000      01221         MOVF    r0x05, W
+014E EC00 F000 01222         CALL    __gptrput2
+               01223 ;       .line   175; brtos/mutex.c      *event = NULL;
+0152 0E00      01224         MOVLW   0x00
+0154 6EE5      01225         MOVWF   POSTDEC1
+0156 0E00      01226         MOVLW   0x00
+0158 6EF4      01227         MOVWF   PRODH
+015A 0E00      01228         MOVLW   0x00
+015C 6EF6      01229         MOVWF   TBLPTRL
+015E C000 FFE9 01230         MOVFF   r0x00, FSR0L
+0162 C000 FFF3 01231         MOVFF   r0x01, PRODL
+0166 5000      01232         MOVF    r0x02, W
+0168 EC00 F000 01233         CALL    __gptrput3
+               01234 ;       .line   178; brtos/mutex.c      OSExitCritical();
+016C 8E00      01235         BSF     _INTCONbits, 7
+               01236 ;       .line   180; brtos/mutex.c      return(DELETE_EVENT_OK);
+016E 0E08      01237         MOVLW   0x08
+0170 01238 _00149_DS_:
+0170 CFE4 F000 01239         MOVFF   PREINC1, r0x08
+0174 CFE4 F000 01240         MOVFF   PREINC1, r0x07
+0178 CFE4 F000 01241         MOVFF   PREINC1, r0x06
+017C CFE4 F000 01242         MOVFF   PREINC1, r0x05
+gpasm-0.13.7 beta               build/default/production/brtos/mutex.asm7-19-2011  15:07:14          PAGE 24
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+ 
+0180 CFE4 F000 01243         MOVFF   PREINC1, r0x04
+0184 CFE4 F000 01244         MOVFF   PREINC1, r0x03
+0188 CFE4 F000 01245         MOVFF   PREINC1, r0x02
+018C CFE4 F000 01246         MOVFF   PREINC1, r0x01
+0190 CFE4 F000 01247         MOVFF   PREINC1, r0x00
+0194 CFE4 FFD9 01248         MOVFF   PREINC1, FSR2L
+0198 CFE4 FFDA 01249         MOVFF   PREINC1, FSR2H
+019C 0012      01250         RETURN  
+               01251 
+               01252 ; ; Starting pCode block
+               01253 S_mutex__OSMutexCreate  code
+0000 01254 _OSMutexCreate:
+               01255 ;       .line   70; brtos/mutex.c       INT8U OSMutexCreate (BRTOS_Mutex **event, INT8U HigherPriority)
+0000 CFDA FFE5 01256         MOVFF   FSR2H, POSTDEC1
+0004 CFD9 FFE5 01257         MOVFF   FSR2L, POSTDEC1
+0008 CFE2 FFDA 01258         MOVFF   FSR1H, FSR2H
+000C CFE1 FFD9 01259         MOVFF   FSR1L, FSR2L
+0010 C000 FFE5 01260         MOVFF   r0x00, POSTDEC1
+0014 C000 FFE5 01261         MOVFF   r0x01, POSTDEC1
+0018 C000 FFE5 01262         MOVFF   r0x02, POSTDEC1
+001C C000 FFE5 01263         MOVFF   r0x03, POSTDEC1
+0020 C000 FFE5 01264         MOVFF   r0x04, POSTDEC1
+0024 C000 FFE5 01265         MOVFF   r0x05, POSTDEC1
+0028 C000 FFE5 01266         MOVFF   r0x06, POSTDEC1
+002C C000 FFE5 01267         MOVFF   r0x07, POSTDEC1
+0030 C000 FFE5 01268         MOVFF   r0x08, POSTDEC1
+0034 C000 FFE5 01269         MOVFF   r0x09, POSTDEC1
+0038 C000 FFE5 01270         MOVFF   r0x0a, POSTDEC1
+003C 0E03      01271         MOVLW   0x03
+003E CFDB F000 01272         MOVFF   PLUSW2, r0x00
+0042 0E04      01273         MOVLW   0x04
+0044 CFDB F000 01274         MOVFF   PLUSW2, r0x01
+0048 0E05      01275         MOVLW   0x05
+004A CFDB F000 01276         MOVFF   PLUSW2, r0x02
+004E 0E06      01277         MOVLW   0x06
+0050 CFDB F000 01278         MOVFF   PLUSW2, r0x03
+0054 0000      01279         BANKSEL _iNesting
+               01280 ;       .line   77; brtos/mutex.c       if (iNesting > 0) {                                // See if caller is an interrupt
+0056 5100      01281         MOVF    _iNesting, W, B
+0058 E000      01282         BZ      _00106_DS_
+               01283 ;       .line   78; brtos/mutex.c       return(IRQ_PEND_ERR);                          // Can't be create by interrupt
+005A 0E02      01284         MOVLW   0x02
+005C D000      01285         BRA     _00125_DS_
+005E 01286 _00106_DS_:
+005E 0000      01287         BANKSEL _currentTask
+               01288 ;       .line   82; brtos/mutex.c       if (currentTask)
+0060 5100      01289         MOVF    _currentTask, W, B
+0062 E000      01290         BZ      _00108_DS_
+               01291 ;       .line   83; brtos/mutex.c       OSEnterCritical();
+0064 9E00      01292         BCF     _INTCONbits, 7
+0066 01293 _00108_DS_:
+               01294 ;       .line   85; brtos/mutex.c       if (PriorityVector[HigherPriority] != EMPTY_PRIO)
+0066 0E00      01295         MOVLW   LOW(_PriorityVector)
+0068 2400      01296         ADDWF   r0x03, W
+gpasm-0.13.7 beta               build/default/production/brtos/mutex.asm7-19-2011  15:07:14          PAGE 25
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+ 
+006A 6E00      01297         MOVWF   r0x04
+006C 6A00      01298         CLRF    r0x05
+006E 0E00      01299         MOVLW   HIGH(_PriorityVector)
+0070 2200      01300         ADDWFC  r0x05, F
+0072 C000 FFE9 01301         MOVFF   r0x04, FSR0L
+0076 C000 FFEA 01302         MOVFF   r0x05, FSR0H
+007A CFEF F000 01303         MOVFF   INDF0, r0x06
+007E 5000      01304         MOVF    r0x06, W
+0080 0AFF      01305         XORLW   0xff
+0082 E000      01306         BZ      _00112_DS_
+0084 01307 _00138_DS_:
+0084 0000      01308         BANKSEL _currentTask
+               01309 ;       .line   88; brtos/mutex.c       if (currentTask)
+0086 5100      01310         MOVF    _currentTask, W, B
+0088 E000      01311         BZ      _00110_DS_
+               01312 ;       .line   89; brtos/mutex.c       OSExitCritical();
+008A 8E00      01313         BSF     _INTCONbits, 7
+008C 01314 _00110_DS_:
+               01315 ;       .line   90; brtos/mutex.c       return BUSY_PRIORITY;                          // The priority is busy
+008C 0E04      01316         MOVLW   0x04
+008E D000      01317         BRA     _00125_DS_
+0090 01318 _00112_DS_:
+               01319 ;       .line   94; brtos/mutex.c       PriorityVector[HigherPriority] = MUTEX_PRIO;
+0090 C000 FFE9 01320         MOVFF   r0x04, FSR0L
+0094 C000 FFEA 01321         MOVFF   r0x05, FSR0H
+0098 0EFE      01322         MOVLW   0xfe
+009A 6EEF      01323         MOVWF   INDF0
+               01324 ;       .line   97; brtos/mutex.c       for(i=0;i<=BRTOS_MAX_MUTEX;i++)
+009C 6A00      01325         CLRF    r0x04
+009E 6A00      01326         CLRF    r0x05
+00A0 6A00      01327         CLRF    r0x06
+00A2 6A00      01328         CLRF    r0x07
+00A4 01329 _00119_DS_:
+00A4 5000      01330         MOVF    r0x05, W
+00A6 0F80      01331         ADDLW   0x80
+00A8 0F80      01332         ADDLW   0x80
+00AA E100      01333         BNZ     _00139_DS_
+00AC 0E03      01334         MOVLW   0x03
+00AE 5C00      01335         SUBWF   r0x04, W
+00B0 01336 _00139_DS_:
+00B0 E200      01337         BC      _00122_DS_
+               01338 ;       .line   100; brtos/mutex.c      if(i >= BRTOS_MAX_MUTEX)
+00B2 5000      01339         MOVF    r0x05, W
+00B4 0F80      01340         ADDLW   0x80
+00B6 0F80      01341         ADDLW   0x80
+00B8 E100      01342         BNZ     _00140_DS_
+00BA 0E02      01343         MOVLW   0x02
+00BC 5C00      01344         SUBWF   r0x04, W
+00BE 01345 _00140_DS_:
+00BE E300      01346         BNC     _00116_DS_
+00C0 0000      01347         BANKSEL _currentTask
+               01348 ;       .line   105; brtos/mutex.c      if (currentTask)
+00C2 5100      01349         MOVF    _currentTask, W, B
+00C4 E000      01350         BZ      _00114_DS_
+gpasm-0.13.7 beta               build/default/production/brtos/mutex.asm7-19-2011  15:07:14          PAGE 26
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+ 
+               01351 ;       .line   106; brtos/mutex.c      OSExitCritical();
+00C6 8E00      01352         BSF     _INTCONbits, 7
+00C8 01353 _00114_DS_:
+               01354 ;       .line   108; brtos/mutex.c      return(NO_AVAILABLE_EVENT);
+00C8 0E01      01355         MOVLW   0x01
+00CA D000      01356         BRA     _00125_DS_
+00CC 01357 _00116_DS_:
+               01358 ;       .line   112; brtos/mutex.c      if(BRTOS_Mutex_Table[i].OSEventAllocated != TRUE)
+00CC 0E00      01359         MOVLW   LOW(_BRTOS_Mutex_Table)
+00CE 2400      01360         ADDWF   r0x06, W
+00D0 6E00      01361         MOVWF   r0x08
+00D2 0E00      01362         MOVLW   HIGH(_BRTOS_Mutex_Table)
+00D4 2000      01363         ADDWFC  r0x07, W
+00D6 6E00      01364         MOVWF   r0x09
+00D8 C000 FFE9 01365         MOVFF   r0x08, FSR0L
+00DC C000 FFEA 01366         MOVFF   r0x09, FSR0H
+00E0 CFEF F000 01367         MOVFF   INDF0, r0x0a
+00E4 5000      01368         MOVF    r0x0a, W
+00E6 0A01      01369         XORLW   0x01
+00E8 E000      01370         BZ      _00121_DS_
+               01371 ;       .line   114; brtos/mutex.c      BRTOS_Mutex_Table[i].OSEventAllocated = TRUE;
+00EA C000 FFE9 01372         MOVFF   r0x08, FSR0L
+00EE C000 FFEA 01373         MOVFF   r0x09, FSR0H
+00F2 0E01      01374         MOVLW   0x01
+00F4 6EEF      01375         MOVWF   INDF0
+               01376 ;       .line   115; brtos/mutex.c      pont_event = &BRTOS_Mutex_Table[i];
+00F6 0E00      01377         MOVLW   LOW(_BRTOS_Mutex_Table)
+00F8 2400      01378         ADDWF   r0x06, W
+00FA 6E00      01379         MOVWF   r0x08
+00FC 0E00      01380         MOVLW   HIGH(_BRTOS_Mutex_Table)
+00FE 2000      01381         ADDWFC  r0x07, W
+0100 6E00      01382         MOVWF   r0x09
+0102 5000      01383         MOVF    r0x09, W
+0104 6E00      01384         MOVWF   r0x09
+0106 5000      01385         MOVF    r0x08, W
+0108 6E00      01386         MOVWF   r0x08
+010A 0E80      01387         MOVLW   0x80
+010C 6E00      01388         MOVWF   r0x0a
+               01389 ;       .line   116; brtos/mutex.c      break;      
+010E D000      01390         BRA     _00122_DS_
+0110 01391 _00121_DS_:
+               01392 ;       .line   97; brtos/mutex.c       for(i=0;i<=BRTOS_MAX_MUTEX;i++)
+0110 0E08      01393         MOVLW   0x08
+0112 2600      01394         ADDWF   r0x06, F
+0114 B0D8      01395         BTFSC   STATUS, 0
+0116 2A00      01396         INCF    r0x07, F
+0118 2A00      01397         INCF    r0x04, F
+011A B0D8      01398         BTFSC   STATUS, 0
+011C 2A00      01399         INCF    r0x05, F
+011E D000      01400         BRA     _00119_DS_
+0120 01401 _00122_DS_:
+               01402 ;       .line   122; brtos/mutex.c      pont_event->OSEventState = AVAILABLE_RESOURCE;       // Set mutex init value
+0120 5000      01403         MOVF    r0x08, W
+0122 0F01      01404         ADDLW   0x01
+gpasm-0.13.7 beta               build/default/production/brtos/mutex.asm7-19-2011  15:07:14          PAGE 27
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+ 
+0124 6E00      01405         MOVWF   r0x04
+0126 0E00      01406         MOVLW   0x00
+0128 2000      01407         ADDWFC  r0x09, W
+012A 6E00      01408         MOVWF   r0x05
+012C 0E00      01409         MOVLW   0x00
+012E 2000      01410         ADDWFC  r0x0a, W
+0130 6E00      01411         MOVWF   r0x06
+0132 0E09      01412         MOVLW   0x09
+0134 6EE5      01413         MOVWF   POSTDEC1
+0136 C000 FFE9 01414         MOVFF   r0x04, FSR0L
+013A C000 FFF3 01415         MOVFF   r0x05, PRODL
+013E 5000      01416         MOVF    r0x06, W
+0140 EC00 F000 01417         CALL    __gptrput1
+               01418 ;       .line   123; brtos/mutex.c      pont_event->OSEventWait  = 0;
+0144 5000      01419         MOVF    r0x08, W
+0146 0F05      01420         ADDLW   0x05
+0148 6E00      01421         MOVWF   r0x04
+014A 0E00      01422         MOVLW   0x00
+014C 2000      01423         ADDWFC  r0x09, W
+014E 6E00      01424         MOVWF   r0x05
+0150 0E00      01425         MOVLW   0x00
+0152 2000      01426         ADDWFC  r0x0a, W
+0154 6E00      01427         MOVWF   r0x06
+0156 0E00      01428         MOVLW   0x00
+0158 6EE5      01429         MOVWF   POSTDEC1
+015A C000 FFE9 01430         MOVFF   r0x04, FSR0L
+015E C000 FFF3 01431         MOVFF   r0x05, PRODL
+0162 5000      01432         MOVF    r0x06, W
+0164 EC00 F000 01433         CALL    __gptrput1
+               01434 ;       .line   124; brtos/mutex.c      pont_event->OSMaxPriority = HigherPriority;          // Determina a tarefa de maior prioridade acessando o mutex
+0168 5000      01435         MOVF    r0x08, W
+016A 0F03      01436         ADDLW   0x03
+016C 6E00      01437         MOVWF   r0x04
+016E 0E00      01438         MOVLW   0x00
+0170 2000      01439         ADDWFC  r0x09, W
+0172 6E00      01440         MOVWF   r0x05
+0174 0E00      01441         MOVLW   0x00
+0176 2000      01442         ADDWFC  r0x0a, W
+0178 6E00      01443         MOVWF   r0x06
+017A C000 FFE5 01444         MOVFF   r0x03, POSTDEC1
+017E C000 FFE9 01445         MOVFF   r0x04, FSR0L
+0182 C000 FFF3 01446         MOVFF   r0x05, PRODL
+0186 5000      01447         MOVF    r0x06, W
+0188 EC00 F000 01448         CALL    __gptrput1
+               01449 ;       .line   127; brtos/mutex.c      pont_event->OSEventWaitList=0;
+018C 5000      01450         MOVF    r0x08, W
+018E 0F06      01451         ADDLW   0x06
+0190 6E00      01452         MOVWF   r0x03
+0192 0E00      01453         MOVLW   0x00
+0194 2000      01454         ADDWFC  r0x09, W
+0196 6E00      01455         MOVWF   r0x04
+0198 0E00      01456         MOVLW   0x00
+019A 2000      01457         ADDWFC  r0x0a, W
+019C 6E00      01458         MOVWF   r0x05
+gpasm-0.13.7 beta               build/default/production/brtos/mutex.asm7-19-2011  15:07:14          PAGE 28
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+ 
+019E 0E00      01459         MOVLW   0x00
+01A0 6EE5      01460         MOVWF   POSTDEC1
+01A2 0E00      01461         MOVLW   0x00
+01A4 6EF4      01462         MOVWF   PRODH
+01A6 C000 FFE9 01463         MOVFF   r0x03, FSR0L
+01AA C000 FFF3 01464         MOVFF   r0x04, PRODL
+01AE 5000      01465         MOVF    r0x05, W
+01B0 EC00 F000 01466         CALL    __gptrput2
+               01467 ;       .line   129; brtos/mutex.c      *event = pont_event;
+01B4 C000 FFE5 01468         MOVFF   r0x08, POSTDEC1
+01B8 C000 FFF4 01469         MOVFF   r0x09, PRODH
+01BC C000 FFF6 01470         MOVFF   r0x0a, TBLPTRL
+01C0 C000 FFE9 01471         MOVFF   r0x00, FSR0L
+01C4 C000 FFF3 01472         MOVFF   r0x01, PRODL
+01C8 5000      01473         MOVF    r0x02, W
+01CA EC00 F000 01474         CALL    __gptrput3
+01CE 0000      01475         BANKSEL _currentTask
+               01476 ;       .line   132; brtos/mutex.c      if (currentTask)
+01D0 5100      01477         MOVF    _currentTask, W, B
+01D2 E000      01478         BZ      _00124_DS_
+               01479 ;       .line   133; brtos/mutex.c      OSExitCritical();  
+01D4 8E00      01480         BSF     _INTCONbits, 7
+01D6 01481 _00124_DS_:
+               01482 ;       .line   135; brtos/mutex.c      return(ALLOC_EVENT_OK);
+01D6 6AE8      01483         CLRF    WREG
+01D8 01484 _00125_DS_:
+01D8 CFE4 F000 01485         MOVFF   PREINC1, r0x0a
+01DC CFE4 F000 01486         MOVFF   PREINC1, r0x09
+01E0 CFE4 F000 01487         MOVFF   PREINC1, r0x08
+01E4 CFE4 F000 01488         MOVFF   PREINC1, r0x07
+01E8 CFE4 F000 01489         MOVFF   PREINC1, r0x06
+01EC CFE4 F000 01490         MOVFF   PREINC1, r0x05
+01F0 CFE4 F000 01491         MOVFF   PREINC1, r0x04
+01F4 CFE4 F000 01492         MOVFF   PREINC1, r0x03
+01F8 CFE4 F000 01493         MOVFF   PREINC1, r0x02
+01FC CFE4 F000 01494         MOVFF   PREINC1, r0x01
+0200 CFE4 F000 01495         MOVFF   PREINC1, r0x00
+0204 CFE4 FFD9 01496         MOVFF   PREINC1, FSR2L
+0208 CFE4 FFDA 01497         MOVFF   PREINC1, FSR2H
+020C 0012      01498         RETURN  
+               01499 
+               01500 
+               01501 
+               01502 ; Statistics:
+               01503 ; code size:     2772 (0x0ad4) bytes ( 2.11%)
+               01504 ;                1386 (0x056a) words
+               01505 ; udata size:       0 (0x0000) bytes ( 0.00%)
+               01506 ; access size:     15 (0x000f) bytes
+               01507 
+               01508 
+gpasm-0.13.7 beta               build/default/production/brtos/mutex.asm7-19-2011  15:07:14          PAGE 29
+
+
+SYMBOL TABLE
+  LABEL                             VALUE 
+
+FSR0H                             00000FEA
+FSR0L                             00000FE9
+FSR1H                             00000FE2
+FSR1L                             00000FE1
+FSR2H                             00000FDA
+FSR2L                             00000FD9
+INDF0                             00000FEF
+PLUSW2                            00000FDB
+POSTDEC1                          00000FE5
+PREINC1                           00000FE4
+PRODH                             00000FF4
+PRODL                             00000FF3
+STATUS                            00000FD8
+TABLAT                            00000FF5
+TBLPTRH                           00000FF7
+TBLPTRL                           00000FF6
+TBLPTRU                           00000FF8
+WREG                              00000FE8
+_00106_DS_                        0000005E
+_00108_DS_                        00000066
+_00110_DS_                        0000008C
+_00112_DS_                        00000090
+_00114_DS_                        000000C8
+_00116_DS_                        000000CC
+_00119_DS_                        000000A4
+_00121_DS_                        00000110
+_00122_DS_                        00000120
+_00124_DS_                        000001D6
+_00125_DS_                        000001D8
+_00138_DS_                        00000084
+_00139_DS_                        000000B0
+_00140_DS_                        000000BE
+_00148_DS_                        00000050
+_00149_DS_                        00000170
+_00155_DS_                        000001D2
+_00157_DS_                        000003E0
+_00159_DS_                        000001D8
+_00161_DS_                        000003E4
+_00167_DS_                        0000007E
+_00179_DS_                        00000090
+_00181_DS_                        00000166
+_00183_DS_                        0000026A
+_00184_DS_                        000002C4
+_00192_DS_                        000000E2
+_ADCON0                           00000000
+_ADCON0bits                       00000000
+_ADCON1                           00000000
+_ADCON1bits                       00000000
+_ADCON2                           00000000
+_ADCON2bits                       00000000
+_ADRES                            00000000
+_ADRESH                           00000000
+_ADRESL                           00000000
+gpasm-0.13.7 beta               build/default/production/brtos/mutex.asm7-19-2011  15:07:14          PAGE 30
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+ 
+_BAUDCON                          00000000
+_BAUDCONbits                      00000000
+_BAUDCTL                          00000000
+_BAUDCTLbits                      00000000
+_BRTOS_Mutex_Table                00000000
+_BRTOS_Queue_Table                00000000
+_BRTOS_Sem_Table                  00000000
+_BSR                              00000000
+_BufferText                       00000000
+_CCP1CON                          00000000
+_CCP1CONbits                      00000000
+_CCP2CON                          00000000
+_CCP2CONbits                      00000000
+_CCPR1                            00000000
+_CCPR1H                           00000000
+_CCPR1L                           00000000
+_CCPR2                            00000000
+_CCPR2H                           00000000
+_CCPR2L                           00000000
+_CMCON                            00000000
+_CMCONbits                        00000000
+_CVRCON                           00000000
+_CVRCONbits                       00000000
+_ContextTask                      00000000
+_DDRA                             00000000
+_DDRAbits                         00000000
+_DDRB                             00000000
+_DDRBbits                         00000000
+_DDRC                             00000000
+_DDRCbits                         00000000
+_DDRD                             00000000
+_DDRDbits                         00000000
+_DDRE                             00000000
+_DDREbits                         00000000
+_Data                             00000000
+_ECCP1AS                          00000000
+_ECCP1ASbits                      00000000
+_EEADR                            00000000
+_EECON1                           00000000
+_EECON1bits                       00000000
+_EECON2                           00000000
+_EEDATA                           00000000
+_FSR0H                            00000000
+_FSR0L                            00000000
+_FSR1H                            00000000
+_FSR1L                            00000000
+_FSR2H                            00000000
+_FSR2L                            00000000
+_HLVDCON                          00000000
+_HLVDCONbits                      00000000
+_Head                             00000000
+_Hora                             00000000
+_INDF0                            00000000
+_INDF1                            00000000
+gpasm-0.13.7 beta               build/default/production/brtos/mutex.asm7-19-2011  15:07:14          PAGE 31
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+ 
+_INDF2                            00000000
+_INTCON                           00000000
+_INTCON2                          00000000
+_INTCON2bits                      00000000
+_INTCON3                          00000000
+_INTCON3bits                      00000000
+_INTCONbits                       00000000
+_IPR1                             00000000
+_IPR1bits                         00000000
+_IPR2                             00000000
+_IPR2bits                         00000000
+_LATA                             00000000
+_LATAbits                         00000000
+_LATB                             00000000
+_LATBbits                         00000000
+_LATC                             00000000
+_LATCbits                         00000000
+_LATD                             00000000
+_LATDbits                         00000000
+_LATE                             00000000
+_LATEbits                         00000000
+_LVDCON                           00000000
+_LVDCONbits                       00000000
+_LastOSDuty                       00000000
+_NumberOfInstalledTasks           00000000
+_OSBlockedList                    00000000
+_OSCCON                           00000000
+_OSCCONbits                       00000000
+_OSCTUNE                          00000000
+_OSCTUNEbits                      00000000
+_OSDuty                           00000000
+_OSDutyTmp                        00000000
+_OSMutexAcquire                   00000000
+_OSMutexCreate                    00000000
+_OSMutexDelete                    00000000
+_OSMutexRelease                   00000000
+_OSReadyList                      00000000
+_PC                               00000000
+_PCL                              00000000
+_PCLATH                           00000000
+_PCLATU                           00000000
+_PIE1                             00000000
+_PIE1bits                         00000000
+_PIE2                             00000000
+_PIE2bits                         00000000
+_PIR1                             00000000
+_PIR1bits                         00000000
+_PIR2                             00000000
+_PIR2bits                         00000000
+_PLUSW0                           00000000
+_PLUSW1                           00000000
+_PLUSW2                           00000000
+_PORTA                            00000000
+_PORTAbits                        00000000
+gpasm-0.13.7 beta               build/default/production/brtos/mutex.asm7-19-2011  15:07:14          PAGE 32
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+ 
+_PORTB                            00000000
+_PORTBbits                        00000000
+_PORTC                            00000000
+_PORTCbits                        00000000
+_PORTD                            00000000
+_PORTDbits                        00000000
+_PORTE                            00000000
+_PORTEbits                        00000000
+_POSTDEC0                         00000000
+_POSTDEC1                         00000000
+_POSTDEC2                         00000000
+_POSTINC0                         00000000
+_POSTINC1                         00000000
+_POSTINC2                         00000000
+_PR2                              00000000
+_PREINC0                          00000000
+_PREINC1                          00000000
+_PREINC2                          00000000
+_PROD                             00000000
+_PRODH                            00000000
+_PRODL                            00000000
+_PWM1CON                          00000000
+_PWM1CONbits                      00000000
+_PriorityMask                     00000000
+_PriorityVector                   00000000
+_QUEUE_STACK                      00000000
+_RCON                             00000000
+_RCONbits                         00000000
+_RCREG                            00000000
+_RCSTA                            00000000
+_RCSTAbits                        00000000
+_SAScheduler                      00000000
+_SPBRG                            00000000
+_SPBRGH                           00000000
+_SPvalue                          00000000
+_SSPADD                           00000000
+_SSPBUF                           00000000
+_SSPCON1                          00000000
+_SSPCON1bits                      00000000
+_SSPCON2                          00000000
+_SSPCON2bits                      00000000
+_SSPSTAT                          00000000
+_SSPSTATbits                      00000000
+_STACK                            00000000
+_STATUS                           00000000
+_STATUSbits                       00000000
+_STKPTR                           00000000
+_STKPTRbits                       00000000
+_SelectedTask                     00000000
+_StackAddress                     00000000
+_SwitchContext                    00000000
+_T0CON                            00000000
+_T0CONbits                        00000000
+_T1CON                            00000000
+gpasm-0.13.7 beta               build/default/production/brtos/mutex.asm7-19-2011  15:07:14          PAGE 33
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+ 
+_T1CONbits                        00000000
+_T2CON                            00000000
+_T2CONbits                        00000000
+_T3CON                            00000000
+_T3CONbits                        00000000
+_TABLAT                           00000000
+_TBLPTR                           00000000
+_TBLPTRH                          00000000
+_TBLPTRL                          00000000
+_TBLPTRU                          00000000
+_TMR0H                            00000000
+_TMR0L                            00000000
+_TMR1H                            00000000
+_TMR1L                            00000000
+_TMR2                             00000000
+_TMR3H                            00000000
+_TMR3L                            00000000
+_TOS                              00000000
+_TOSH                             00000000
+_TOSL                             00000000
+_TOSU                             00000000
+_TRISA                            00000000
+_TRISAbits                        00000000
+_TRISB                            00000000
+_TRISBbits                        00000000
+_TRISC                            00000000
+_TRISCbits                        00000000
+_TRISD                            00000000
+_TRISDbits                        00000000
+_TRISE                            00000000
+_TRISEbits                        00000000
+_TXREG                            00000000
+_TXSTA                            00000000
+_TXSTAbits                        00000000
+_Tail                             00000000
+_TaskAlloc                        00000000
+_WDTCON                           00000000
+_WDTCONbits                       00000000
+_WREG                             00000000
+__18F4520                         00000001
+__gptrget1                        00000000
+__gptrget2                        00000000
+__gptrget3                        00000000
+__gptrput1                        00000000
+__gptrput2                        00000000
+__gptrput3                        00000000
+_counter                          00000000
+_currentTask                      00000000
+_iNesting                         00000000
+_iQueueAddress                    00000000
+_iStackAddress                    00000000
+_version                          00000000
+r0x00                             00000000
+r0x01                             00000001
+gpasm-0.13.7 beta               build/default/production/brtos/mutex.asm7-19-2011  15:07:14          PAGE 34
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+ 
+r0x02                             00000002
+r0x03                             00000003
+r0x04                             00000004
+r0x05                             00000005
+r0x06                             00000006
+r0x07                             00000007
+r0x08                             00000008
+r0x09                             00000009
+r0x0a                             0000000A
+r0x0b                             0000000B
+r0x0c                             0000000C
+r0x0d                             0000000D
+r0x0e                             0000000E
+
+
+Errors   :       0
+Warnings :       0 reported,       0 suppressed
+Messages :       0 reported,       0 suppressed
+

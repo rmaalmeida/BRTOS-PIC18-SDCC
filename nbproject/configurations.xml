@@ -1,0 +1,105 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<configurationDescriptor version="62">
+  <logicalFolder name="root" displayName="root" projectFiles="true">
+    <logicalFolder name="brtos" displayName="brtos" projectFiles="true">
+      <logicalFolder name="includes" displayName="includes" projectFiles="true">
+        <itemPath>brtos/includes/BRTOS.h</itemPath>
+        <itemPath>brtos/includes/OS_RTC.h</itemPath>
+        <itemPath>brtos/includes/OS_types.h</itemPath>
+      </logicalFolder>
+      <itemPath>brtos/BRTOS.c</itemPath>
+      <itemPath>brtos/OS_RTC.c</itemPath>
+      <itemPath>brtos/mbox.c</itemPath>
+      <itemPath>brtos/mutex.c</itemPath>
+      <itemPath>brtos/queue.c</itemPath>
+      <itemPath>brtos/semaphore.c</itemPath>
+    </logicalFolder>
+    <logicalFolder name="drivers" displayName="drivers" projectFiles="true">
+      <itemPath>drivers/adc.c</itemPath>
+      <itemPath>drivers/adc.h</itemPath>
+      <itemPath>drivers/basico.h</itemPath>
+      <itemPath>drivers/lcd.c</itemPath>
+      <itemPath>drivers/lcd.h</itemPath>
+      <itemPath>drivers/serial.c</itemPath>
+      <itemPath>drivers/serial.h</itemPath>
+    </logicalFolder>
+    <logicalFolder name="hal" displayName="hal" projectFiles="true">
+      <itemPath>hal/HAL.c</itemPath>
+      <itemPath>hal/HAL.h</itemPath>
+    </logicalFolder>
+    <logicalFolder name="includes" displayName="includes" projectFiles="true">
+      <itemPath>includes/BRTOSConfig.h</itemPath>
+      <itemPath>includes/drivers.h</itemPath>
+      <itemPath>includes/hardware.h</itemPath>
+      <itemPath>includes/tasks.h</itemPath>
+    </logicalFolder>
+    <logicalFolder name="ExternalFiles"
+                   displayName="Important Files"
+                   projectFiles="false">
+      <itemPath>Makefile</itemPath>
+    </logicalFolder>
+    <itemPath>main.c</itemPath>
+    <itemPath>tasks.c</itemPath>
+  </logicalFolder>
+  <sourceRootList>
+    <Elem>.</Elem>
+    <Elem>/usr/share/sdcc/include</Elem>
+  </sourceRootList>
+  <projectmakefile>Makefile</projectmakefile>
+  <confs>
+    <conf name="default" type="2">
+      <toolsSet>
+        <developmentServer>localhost</developmentServer>
+        <targetDevice>PIC18F4520</targetDevice>
+        <targetHeader></targetHeader>
+        <platformTool>ICD2PlatformTool</platformTool>
+        <languageToolchain>SDCCToolchain</languageToolchain>
+        <languageToolchainVersion>2.9.0</languageToolchainVersion>
+        <platform>2</platform>
+      </toolsSet>
+      <compileType>
+        <linkerTool>
+          <linkerLibItems>
+          </linkerLibItems>
+        </linkerTool>
+      </compileType>
+      <ICD2PlatformTool>
+        <property key="power.powerfromICD" value="false"/>
+        <property key="program.autoselect" value="auto"/>
+        <property key="program.preserveprogram" value="skip"/>
+        <property key="program.programmemory" value="full"/>
+        <property key="program.programmemory.range.end" value="0x7fff"/>
+        <property key="program.preserveprogram.range.end" value="0x7fff"/>
+        <property key="program.preserveprogram.range.start" value="0x0"/>
+        <property key="program.useridmemory" value="true"/>
+        <property key="program.programmemory.range.start" value="0x0"/>
+        <property key="program.eedatamemory" value="true"/>
+        <property key="firmware.autodownload" value="true"/>
+        <property key="program.configmemory" value="true"/>
+        <property key="program.erasebeforeprogram" value="true"/>
+        <property key="Freeze Peripherals" value="true"/>
+        <property key="program.preserveeedata" value="false"/>
+      </ICD2PlatformTool>
+      <SDCCToolchain>
+      </SDCCToolchain>
+      <sdcc>
+        <property key="optimize-cmp" value="false"/>
+        <property key="V-show-commands-compiler" value="false"/>
+        <property key="optimize-df" value="false"/>
+        <property key="pcode-verbose" value="false"/>
+        <property key="pstack-model" value="large"/>
+        <property key="no-optimize-goto" value="false"/>
+        <property key="verbose" value="false"/>
+        <property key="extended" value="false"/>
+        <property key="use-non-free" value="false"/>
+        <property key="Werror" value="false"/>
+        <property key="debug-xtra16" value="false"/>
+        <property key="pno-banksel" value="false"/>
+        <property key="obanksel" value="0"/>
+        <property key="debug-xtra14" value="false"/>
+        <property key="no-c-code-in-asm" value="false"/>
+        <property key="no-pcode-opt" value="false"/>
+      </sdcc>
+    </conf>
+  </confs>
+</configurationDescriptor>

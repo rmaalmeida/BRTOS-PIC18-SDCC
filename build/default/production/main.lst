@@ -1,0 +1,861 @@
+gpasm-0.13.7 beta               build/default/production/main.asm7-19-2011  15:07:13          PAGE  1
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+ 
+               00001 ;--------------------------------------------------------
+               00002 ; File Created by SDCC : free open source ANSI-C Compiler
+               00003 ; Version 2.9.0 #5416 (Apr 29 2011) (UNIX)
+               00004 ; This file was generated Tue Jul 19 15:07:13 2011
+               00005 ;--------------------------------------------------------
+               00006 ; PIC16 port for the Microchip 16-bit core micros
+               00007 ;--------------------------------------------------------
+               00008         list    p=18f4520
+               00009 
+               00010         radix dec
+               00011 
+               00012 ;--------------------------------------------------------
+               00013 ; public variables in this module
+               00014 ;--------------------------------------------------------
+               00015         global _SemTeste
+               00016         global _main
+               00017 
+               00018 ;--------------------------------------------------------
+               00019 ; extern variables in this module
+               00020 ;--------------------------------------------------------
+               00021         extern _PORTAbits
+               00022         extern _PORTBbits
+               00023         extern _PORTCbits
+               00024         extern _PORTDbits
+               00025         extern _PORTEbits
+               00026         extern _LATAbits
+               00027         extern _LATBbits
+               00028         extern _LATCbits
+               00029         extern _LATDbits
+               00030         extern _LATEbits
+               00031         extern _DDRAbits
+               00032         extern _TRISAbits
+               00033         extern _DDRBbits
+               00034         extern _TRISBbits
+               00035         extern _DDRCbits
+               00036         extern _TRISCbits
+               00037         extern _DDRDbits
+               00038         extern _TRISDbits
+               00039         extern _DDREbits
+               00040         extern _TRISEbits
+               00041         extern _OSCTUNEbits
+               00042         extern _PIE1bits
+               00043         extern _PIR1bits
+               00044         extern _IPR1bits
+               00045         extern _PIE2bits
+               00046         extern _PIR2bits
+               00047         extern _IPR2bits
+               00048         extern _EECON1bits
+               00049         extern _RCSTAbits
+               00050         extern _TXSTAbits
+               00051         extern _T3CONbits
+               00052         extern _CMCONbits
+               00053         extern _CVRCONbits
+               00054         extern _ECCP1ASbits
+gpasm-0.13.7 beta               build/default/production/main.asm7-19-2011  15:07:13          PAGE  2
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+ 
+               00055         extern _PWM1CONbits
+               00056         extern _BAUDCONbits
+               00057         extern _BAUDCTLbits
+               00058         extern _CCP2CONbits
+               00059         extern _CCP1CONbits
+               00060         extern _ADCON2bits
+               00061         extern _ADCON1bits
+               00062         extern _ADCON0bits
+               00063         extern _SSPCON2bits
+               00064         extern _SSPCON1bits
+               00065         extern _SSPSTATbits
+               00066         extern _T2CONbits
+               00067         extern _T1CONbits
+               00068         extern _RCONbits
+               00069         extern _WDTCONbits
+               00070         extern _HLVDCONbits
+               00071         extern _LVDCONbits
+               00072         extern _OSCCONbits
+               00073         extern _T0CONbits
+               00074         extern _STATUSbits
+               00075         extern _INTCON3bits
+               00076         extern _INTCON2bits
+               00077         extern _INTCONbits
+               00078         extern _STKPTRbits
+               00079         extern _SPvalue
+               00080         extern _Hora
+               00081         extern _Data
+               00082         extern _BRTOS_Sem_Table
+               00083         extern _BRTOS_Mutex_Table
+               00084         extern _BRTOS_Queue_Table
+               00085         extern _OSReadyList
+               00086         extern _OSBlockedList
+               00087         extern _Tail
+               00088         extern _Head
+               00089         extern _iNesting
+               00090         extern _currentTask
+               00091         extern _SelectedTask
+               00092         extern _ContextTask
+               00093         extern _iStackAddress
+               00094         extern _NumberOfInstalledTasks
+               00095         extern _counter
+               00096         extern _OSDuty
+               00097         extern _PriorityVector
+               00098         extern _OSDutyTmp
+               00099         extern _LastOSDuty
+               00100         extern _STACK
+               00101         extern _TaskAlloc
+               00102         extern _QUEUE_STACK
+               00103         extern _iQueueAddress
+               00104         extern _version
+               00105         extern _BufferText
+               00106         extern _StackAddress
+               00107         extern _PORTA
+               00108         extern _PORTB
+gpasm-0.13.7 beta               build/default/production/main.asm7-19-2011  15:07:13          PAGE  3
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+ 
+               00109         extern _PORTC
+               00110         extern _PORTD
+               00111         extern _PORTE
+               00112         extern _LATA
+               00113         extern _LATB
+               00114         extern _LATC
+               00115         extern _LATD
+               00116         extern _LATE
+               00117         extern _DDRA
+               00118         extern _TRISA
+               00119         extern _DDRB
+               00120         extern _TRISB
+               00121         extern _DDRC
+               00122         extern _TRISC
+               00123         extern _DDRD
+               00124         extern _TRISD
+               00125         extern _DDRE
+               00126         extern _TRISE
+               00127         extern _OSCTUNE
+               00128         extern _PIE1
+               00129         extern _PIR1
+               00130         extern _IPR1
+               00131         extern _PIE2
+               00132         extern _PIR2
+               00133         extern _IPR2
+               00134         extern _EECON1
+               00135         extern _EECON2
+               00136         extern _EEDATA
+               00137         extern _EEADR
+               00138         extern _RCSTA
+               00139         extern _TXSTA
+               00140         extern _TXREG
+               00141         extern _RCREG
+               00142         extern _SPBRG
+               00143         extern _SPBRGH
+               00144         extern _T3CON
+               00145         extern _TMR3L
+               00146         extern _TMR3H
+               00147         extern _CMCON
+               00148         extern _CVRCON
+               00149         extern _ECCP1AS
+               00150         extern _PWM1CON
+               00151         extern _BAUDCON
+               00152         extern _BAUDCTL
+               00153         extern _CCP2CON
+               00154         extern _CCPR2
+               00155         extern _CCPR2L
+               00156         extern _CCPR2H
+               00157         extern _CCP1CON
+               00158         extern _CCPR1
+               00159         extern _CCPR1L
+               00160         extern _CCPR1H
+               00161         extern _ADCON2
+               00162         extern _ADCON1
+gpasm-0.13.7 beta               build/default/production/main.asm7-19-2011  15:07:13          PAGE  4
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+ 
+               00163         extern _ADCON0
+               00164         extern _ADRES
+               00165         extern _ADRESL
+               00166         extern _ADRESH
+               00167         extern _SSPCON2
+               00168         extern _SSPCON1
+               00169         extern _SSPSTAT
+               00170         extern _SSPADD
+               00171         extern _SSPBUF
+               00172         extern _T2CON
+               00173         extern _PR2
+               00174         extern _TMR2
+               00175         extern _T1CON
+               00176         extern _TMR1L
+               00177         extern _TMR1H
+               00178         extern _RCON
+               00179         extern _WDTCON
+               00180         extern _HLVDCON
+               00181         extern _LVDCON
+               00182         extern _OSCCON
+               00183         extern _T0CON
+               00184         extern _TMR0L
+               00185         extern _TMR0H
+               00186         extern _STATUS
+               00187         extern _FSR2L
+               00188         extern _FSR2H
+               00189         extern _PLUSW2
+               00190         extern _PREINC2
+               00191         extern _POSTDEC2
+               00192         extern _POSTINC2
+               00193         extern _INDF2
+               00194         extern _BSR
+               00195         extern _FSR1L
+               00196         extern _FSR1H
+               00197         extern _PLUSW1
+               00198         extern _PREINC1
+               00199         extern _POSTDEC1
+               00200         extern _POSTINC1
+               00201         extern _INDF1
+               00202         extern _WREG
+               00203         extern _FSR0L
+               00204         extern _FSR0H
+               00205         extern _PLUSW0
+               00206         extern _PREINC0
+               00207         extern _POSTDEC0
+               00208         extern _POSTINC0
+               00209         extern _INDF0
+               00210         extern _INTCON3
+               00211         extern _INTCON2
+               00212         extern _INTCON
+               00213         extern _PROD
+               00214         extern _PRODL
+               00215         extern _PRODH
+               00216         extern _TABLAT
+gpasm-0.13.7 beta               build/default/production/main.asm7-19-2011  15:07:13          PAGE  5
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+ 
+               00217         extern _TBLPTR
+               00218         extern _TBLPTRL
+               00219         extern _TBLPTRH
+               00220         extern _TBLPTRU
+               00221         extern _PC
+               00222         extern _PCL
+               00223         extern _PCLATH
+               00224         extern _PCLATU
+               00225         extern _STKPTR
+               00226         extern _TOS
+               00227         extern _TOSL
+               00228         extern _TOSH
+               00229         extern _TOSU
+               00230         extern _InstallTask
+               00231         extern _BRTOSStart
+               00232         extern _BRTOS_Init
+               00233         extern _OSSemCreate
+               00234         extern _System_Time
+               00235         extern _Task_2
+               00236         extern _Task_3
+               00237         extern _Task_Serial
+               00238         extern _Task_LCD
+               00239         extern _Serial_Init
+               00240         extern _PriorityMask
+               00241 ;--------------------------------------------------------
+               00242 ;       Equates to used internal registers
+               00243 ;--------------------------------------------------------
+  00000FD8     00244 STATUS  equ     0xfd8
+  00000FE1     00245 FSR1L   equ     0xfe1
+  00000FE2     00246 FSR1H   equ     0xfe2
+  00000FE5     00247 POSTDEC1        equ     0xfe5
+               00248 
+               00249 
+               00250 ; Internal registers
+               00251 .registers      udata_ovr       0x0000
+               00252 r0x00   res     1
+               00253 r0x01   res     1
+               00254 r0x02   res     1
+               00255 
+               00256 udata_main_0    udata
+               00257 _SemTeste       res     3
+               00258 
+               00259 ;--------------------------------------------------------
+               00260 ; interrupt vector 
+               00261 ;--------------------------------------------------------
+               00262 
+               00263 ;--------------------------------------------------------
+               00264 ; global & static initialisations
+               00265 ;--------------------------------------------------------
+               00266 ; I code from now on!
+               00267 ; ; Starting pCode block
+               00268 S_main__main    code
+0000 00269 _main:
+               00270 ;       .line   13; main.c      OSCCONbits.IDLEN = 1;
+gpasm-0.13.7 beta               build/default/production/main.asm7-19-2011  15:07:13          PAGE  6
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+ 
+0000 8E00      00271         BSF     _OSCCONbits, 7
+               00272 ;       .line   16; main.c      BRTOS_Init(); 
+0002 EC00 F000 00273         CALL    _BRTOS_Init
+               00274 ;       .line   18; main.c      Serial_Init(57600,3); 
+0006 0E03      00275         MOVLW   0x03
+0008 6EE5      00276         MOVWF   POSTDEC1
+000A 0EE1      00277         MOVLW   0xe1
+000C 6EE5      00278         MOVWF   POSTDEC1
+000E 0E00      00279         MOVLW   0x00
+0010 6EE5      00280         MOVWF   POSTDEC1
+0012 EC00 F000 00281         CALL    _Serial_Init
+0016 0E03      00282         MOVLW   0x03
+0018 26E1      00283         ADDWF   FSR1L, F
+001A B0D8      00284         BTFSC   STATUS, 0
+001C 2AE2      00285         INCF    FSR1H, F
+               00286 ;       .line   20; main.c      if (OSSemCreate(0,&SemTeste) != ALLOC_EVENT_OK)
+001E 0E00      00287         MOVLW   HIGH(_SemTeste)
+0020 6E00      00288         MOVWF   r0x01
+0022 0E00      00289         MOVLW   LOW(_SemTeste)
+0024 6E00      00290         MOVWF   r0x00
+0026 0E80      00291         MOVLW   0x80
+0028 6E00      00292         MOVWF   r0x02
+002A 5000      00293         MOVF    r0x02, W
+002C 6EE5      00294         MOVWF   POSTDEC1
+002E 5000      00295         MOVF    r0x01, W
+0030 6EE5      00296         MOVWF   POSTDEC1
+0032 5000      00297         MOVF    r0x00, W
+0034 6EE5      00298         MOVWF   POSTDEC1
+0036 0E00      00299         MOVLW   0x00
+0038 6EE5      00300         MOVWF   POSTDEC1
+003A EC00 F000 00301         CALL    _OSSemCreate
+003E 6E00      00302         MOVWF   r0x00
+0040 0E04      00303         MOVLW   0x04
+0042 26E1      00304         ADDWF   FSR1L, F
+0044 B0D8      00305         BTFSC   STATUS, 0
+0046 2AE2      00306         INCF    FSR1H, F
+0048 5000      00307         MOVF    r0x00, W
+004A E000      00308         BZ      _00109_DS_
+004C 00309 _00106_DS_:
+               00310 ;       .line   24; main.c      while(1){};
+004C D000      00311         BRA     _00106_DS_
+004E 00312 _00109_DS_:
+               00313 ;       .line   28; main.c      if(InstallTask(&System_Time,(const CHAR8 *)"System Time",90,6) != OK)
+004E 0E06      00314         MOVLW   0x06
+0050 6EE5      00315         MOVWF   POSTDEC1
+0052 0E00      00316         MOVLW   0x00
+0054 6EE5      00317         MOVWF   POSTDEC1
+0056 0E5A      00318         MOVLW   0x5a
+0058 6EE5      00319         MOVWF   POSTDEC1
+005A 0E00      00320         MOVLW   UPPER(__str_0)
+005C 6EE5      00321         MOVWF   POSTDEC1
+005E 0E00      00322         MOVLW   HIGH(__str_0)
+0060 6EE5      00323         MOVWF   POSTDEC1
+0062 0E00      00324         MOVLW   LOW(__str_0)
+gpasm-0.13.7 beta               build/default/production/main.asm7-19-2011  15:07:13          PAGE  7
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+ 
+0064 6EE5      00325         MOVWF   POSTDEC1
+0066 0E00      00326         MOVLW   UPPER(_System_Time)
+0068 6EE5      00327         MOVWF   POSTDEC1
+006A 0E00      00328         MOVLW   HIGH(_System_Time)
+006C 6EE5      00329         MOVWF   POSTDEC1
+006E 0E00      00330         MOVLW   LOW(_System_Time)
+0070 6EE5      00331         MOVWF   POSTDEC1
+0072 EC00 F000 00332         CALL    _InstallTask
+0076 6E00      00333         MOVWF   r0x00
+0078 0E09      00334         MOVLW   0x09
+007A 26E1      00335         ADDWF   FSR1L, F
+007C B0D8      00336         BTFSC   STATUS, 0
+007E 2AE2      00337         INCF    FSR1H, F
+0080 5000      00338         MOVF    r0x00, W
+0082 E000      00339         BZ      _00114_DS_
+0084 00340 _00111_DS_:
+               00341 ;       .line   32; main.c      while(1){};
+0084 D000      00342         BRA     _00111_DS_
+0086 00343 _00114_DS_:
+               00344 ;       .line   37; main.c      if(InstallTask(&Task_2,(const CHAR8 *)"Tarefa Teste 1",83,4) != OK)
+0086 0E04      00345         MOVLW   0x04
+0088 6EE5      00346         MOVWF   POSTDEC1
+008A 0E00      00347         MOVLW   0x00
+008C 6EE5      00348         MOVWF   POSTDEC1
+008E 0E53      00349         MOVLW   0x53
+0090 6EE5      00350         MOVWF   POSTDEC1
+0092 0E00      00351         MOVLW   UPPER(__str_1)
+0094 6EE5      00352         MOVWF   POSTDEC1
+0096 0E00      00353         MOVLW   HIGH(__str_1)
+0098 6EE5      00354         MOVWF   POSTDEC1
+009A 0E00      00355         MOVLW   LOW(__str_1)
+009C 6EE5      00356         MOVWF   POSTDEC1
+009E 0E00      00357         MOVLW   UPPER(_Task_2)
+00A0 6EE5      00358         MOVWF   POSTDEC1
+00A2 0E00      00359         MOVLW   HIGH(_Task_2)
+00A4 6EE5      00360         MOVWF   POSTDEC1
+00A6 0E00      00361         MOVLW   LOW(_Task_2)
+00A8 6EE5      00362         MOVWF   POSTDEC1
+00AA EC00 F000 00363         CALL    _InstallTask
+00AE 6E00      00364         MOVWF   r0x00
+00B0 0E09      00365         MOVLW   0x09
+00B2 26E1      00366         ADDWF   FSR1L, F
+00B4 B0D8      00367         BTFSC   STATUS, 0
+00B6 2AE2      00368         INCF    FSR1H, F
+00B8 5000      00369         MOVF    r0x00, W
+00BA E000      00370         BZ      _00119_DS_
+00BC 00371 _00116_DS_:
+               00372 ;       .line   41; main.c      while(1){};
+00BC D000      00373         BRA     _00116_DS_
+00BE 00374 _00119_DS_:
+               00375 ;       .line   44; main.c      if(InstallTask(&Task_3,(const CHAR8 *)"Tarefa Teste 2",83,5) != OK)
+00BE 0E05      00376         MOVLW   0x05
+00C0 6EE5      00377         MOVWF   POSTDEC1
+00C2 0E00      00378         MOVLW   0x00
+gpasm-0.13.7 beta               build/default/production/main.asm7-19-2011  15:07:13          PAGE  8
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+ 
+00C4 6EE5      00379         MOVWF   POSTDEC1
+00C6 0E53      00380         MOVLW   0x53
+00C8 6EE5      00381         MOVWF   POSTDEC1
+00CA 0E00      00382         MOVLW   UPPER(__str_2)
+00CC 6EE5      00383         MOVWF   POSTDEC1
+00CE 0E00      00384         MOVLW   HIGH(__str_2)
+00D0 6EE5      00385         MOVWF   POSTDEC1
+00D2 0E00      00386         MOVLW   LOW(__str_2)
+00D4 6EE5      00387         MOVWF   POSTDEC1
+00D6 0E00      00388         MOVLW   UPPER(_Task_3)
+00D8 6EE5      00389         MOVWF   POSTDEC1
+00DA 0E00      00390         MOVLW   HIGH(_Task_3)
+00DC 6EE5      00391         MOVWF   POSTDEC1
+00DE 0E00      00392         MOVLW   LOW(_Task_3)
+00E0 6EE5      00393         MOVWF   POSTDEC1
+00E2 EC00 F000 00394         CALL    _InstallTask
+00E6 6E00      00395         MOVWF   r0x00
+00E8 0E09      00396         MOVLW   0x09
+00EA 26E1      00397         ADDWF   FSR1L, F
+00EC B0D8      00398         BTFSC   STATUS, 0
+00EE 2AE2      00399         INCF    FSR1H, F
+00F0 5000      00400         MOVF    r0x00, W
+00F2 E000      00401         BZ      _00124_DS_
+00F4 00402 _00121_DS_:
+               00403 ;       .line   48; main.c      while(1){};
+00F4 D000      00404         BRA     _00121_DS_
+00F6 00405 _00124_DS_:
+               00406 ;       .line   52; main.c      if(InstallTask(&Task_Serial,(const CHAR8 *)"Tarefa Serial",128,2) != OK)
+00F6 0E02      00407         MOVLW   0x02
+00F8 6EE5      00408         MOVWF   POSTDEC1
+00FA 0E00      00409         MOVLW   0x00
+00FC 6EE5      00410         MOVWF   POSTDEC1
+00FE 0E80      00411         MOVLW   0x80
+0100 6EE5      00412         MOVWF   POSTDEC1
+0102 0E00      00413         MOVLW   UPPER(__str_3)
+0104 6EE5      00414         MOVWF   POSTDEC1
+0106 0E00      00415         MOVLW   HIGH(__str_3)
+0108 6EE5      00416         MOVWF   POSTDEC1
+010A 0E00      00417         MOVLW   LOW(__str_3)
+010C 6EE5      00418         MOVWF   POSTDEC1
+010E 0E00      00419         MOVLW   UPPER(_Task_Serial)
+0110 6EE5      00420         MOVWF   POSTDEC1
+0112 0E00      00421         MOVLW   HIGH(_Task_Serial)
+0114 6EE5      00422         MOVWF   POSTDEC1
+0116 0E00      00423         MOVLW   LOW(_Task_Serial)
+0118 6EE5      00424         MOVWF   POSTDEC1
+011A EC00 F000 00425         CALL    _InstallTask
+011E 6E00      00426         MOVWF   r0x00
+0120 0E09      00427         MOVLW   0x09
+0122 26E1      00428         ADDWF   FSR1L, F
+0124 B0D8      00429         BTFSC   STATUS, 0
+0126 2AE2      00430         INCF    FSR1H, F
+0128 5000      00431         MOVF    r0x00, W
+012A E000      00432         BZ      _00129_DS_
+gpasm-0.13.7 beta               build/default/production/main.asm7-19-2011  15:07:13          PAGE  9
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+ 
+012C 00433 _00126_DS_:
+               00434 ;       .line   56; main.c      while(1){};
+012C D000      00435         BRA     _00126_DS_
+012E 00436 _00129_DS_:
+               00437 ;       .line   60; main.c      if(InstallTask(&Task_LCD,(const CHAR8 *)"Tarefa LCD",128,1) != OK)
+012E 0E01      00438         MOVLW   0x01
+0130 6EE5      00439         MOVWF   POSTDEC1
+0132 0E00      00440         MOVLW   0x00
+0134 6EE5      00441         MOVWF   POSTDEC1
+0136 0E80      00442         MOVLW   0x80
+0138 6EE5      00443         MOVWF   POSTDEC1
+013A 0E00      00444         MOVLW   UPPER(__str_4)
+013C 6EE5      00445         MOVWF   POSTDEC1
+013E 0E00      00446         MOVLW   HIGH(__str_4)
+0140 6EE5      00447         MOVWF   POSTDEC1
+0142 0E00      00448         MOVLW   LOW(__str_4)
+0144 6EE5      00449         MOVWF   POSTDEC1
+0146 0E00      00450         MOVLW   UPPER(_Task_LCD)
+0148 6EE5      00451         MOVWF   POSTDEC1
+014A 0E00      00452         MOVLW   HIGH(_Task_LCD)
+014C 6EE5      00453         MOVWF   POSTDEC1
+014E 0E00      00454         MOVLW   LOW(_Task_LCD)
+0150 6EE5      00455         MOVWF   POSTDEC1
+0152 EC00 F000 00456         CALL    _InstallTask
+0156 6E00      00457         MOVWF   r0x00
+0158 0E09      00458         MOVLW   0x09
+015A 26E1      00459         ADDWF   FSR1L, F
+015C B0D8      00460         BTFSC   STATUS, 0
+015E 2AE2      00461         INCF    FSR1H, F
+0160 5000      00462         MOVF    r0x00, W
+0162 E000      00463         BZ      _00134_DS_
+0164 00464 _00131_DS_:
+               00465 ;       .line   64; main.c      while(1){};
+0164 D000      00466         BRA     _00131_DS_
+0166 00467 _00134_DS_:
+               00468 ;       .line   68; main.c      if(BRTOSStart() != OK)
+0166 EC00 F000 00469         CALL    _BRTOSStart
+016A 6E00      00470         MOVWF   r0x00
+016C 5000      00471         MOVF    r0x00, W
+016E E000      00472         BZ      _00141_DS_
+0170 00473 _00136_DS_:
+               00474 ;       .line   72; main.c      while(1){};
+0170 D000      00475         BRA     _00136_DS_
+0172 00476 _00141_DS_:
+0172 D000      00477         BRA     _00141_DS_
+0174 0012      00478         RETURN  
+               00479 
+               00480 ; ; Starting pCode block
+0176 00481 __str_0:
+0176 7953 7473 00482         DB      0x53, 0x79, 0x73, 0x74, 0x65, 0x6d, 0x20, 0x54, 0x69, 0x6d, 0x65, 0x00
+     6D65 5420 
+     6D69 0065 
+               00483 ; ; Starting pCode block
+0182 00484 __str_1:
+gpasm-0.13.7 beta               build/default/production/main.asm7-19-2011  15:07:13          PAGE 10
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+ 
+0182 6154 6572 00485         DB      0x54, 0x61, 0x72, 0x65, 0x66, 0x61, 0x20, 0x54, 0x65, 0x73, 0x74, 0x65
+     6166 5420 
+     7365 6574 
+018E 3120 0000 00486         DB      0x20, 0x31, 0x00
+               00487 ; ; Starting pCode block
+0192 00488 __str_2:
+0192 6154 6572 00489         DB      0x54, 0x61, 0x72, 0x65, 0x66, 0x61, 0x20, 0x54, 0x65, 0x73, 0x74, 0x65
+     6166 5420 
+     7365 6574 
+019E 3220 0000 00490         DB      0x20, 0x32, 0x00
+               00491 ; ; Starting pCode block
+01A2 00492 __str_3:
+01A2 6154 6572 00493         DB      0x54, 0x61, 0x72, 0x65, 0x66, 0x61, 0x20, 0x53, 0x65, 0x72, 0x69, 0x61
+     6166 5320 
+     7265 6169 
+01AE 006C      00494         DB      0x6c, 0x00
+               00495 ; ; Starting pCode block
+01B0 00496 __str_4:
+01B0 6154 6572 00497         DB      0x54, 0x61, 0x72, 0x65, 0x66, 0x61, 0x20, 0x4c, 0x43, 0x44, 0x00
+     6166 4C20 
+     4443 0000 
+               00498 
+               00499 
+               00500 ; Statistics:
+               00501 ; code size:      390 (0x0186) bytes ( 0.30%)
+               00502 ;                 195 (0x00c3) words
+               00503 ; udata size:       3 (0x0003) bytes ( 0.23%)
+               00504 ; access size:      3 (0x0003) bytes
+               00505 
+               00506 
+gpasm-0.13.7 beta               build/default/production/main.asm7-19-2011  15:07:13          PAGE 11
+
+
+SYMBOL TABLE
+  LABEL                             VALUE 
+
+FSR1H                             00000FE2
+FSR1L                             00000FE1
+POSTDEC1                          00000FE5
+STATUS                            00000FD8
+_00106_DS_                        0000004C
+_00109_DS_                        0000004E
+_00111_DS_                        00000084
+_00114_DS_                        00000086
+_00116_DS_                        000000BC
+_00119_DS_                        000000BE
+_00121_DS_                        000000F4
+_00124_DS_                        000000F6
+_00126_DS_                        0000012C
+_00129_DS_                        0000012E
+_00131_DS_                        00000164
+_00134_DS_                        00000166
+_00136_DS_                        00000170
+_00141_DS_                        00000172
+_ADCON0                           00000000
+_ADCON0bits                       00000000
+_ADCON1                           00000000
+_ADCON1bits                       00000000
+_ADCON2                           00000000
+_ADCON2bits                       00000000
+_ADRES                            00000000
+_ADRESH                           00000000
+_ADRESL                           00000000
+_BAUDCON                          00000000
+_BAUDCONbits                      00000000
+_BAUDCTL                          00000000
+_BAUDCTLbits                      00000000
+_BRTOSStart                       00000000
+_BRTOS_Init                       00000000
+_BRTOS_Mutex_Table                00000000
+_BRTOS_Queue_Table                00000000
+_BRTOS_Sem_Table                  00000000
+_BSR                              00000000
+_BufferText                       00000000
+_CCP1CON                          00000000
+_CCP1CONbits                      00000000
+_CCP2CON                          00000000
+_CCP2CONbits                      00000000
+_CCPR1                            00000000
+_CCPR1H                           00000000
+_CCPR1L                           00000000
+_CCPR2                            00000000
+_CCPR2H                           00000000
+_CCPR2L                           00000000
+_CMCON                            00000000
+_CMCONbits                        00000000
+_CVRCON                           00000000
+_CVRCONbits                       00000000
+_ContextTask                      00000000
+gpasm-0.13.7 beta               build/default/production/main.asm7-19-2011  15:07:13          PAGE 12
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+ 
+_DDRA                             00000000
+_DDRAbits                         00000000
+_DDRB                             00000000
+_DDRBbits                         00000000
+_DDRC                             00000000
+_DDRCbits                         00000000
+_DDRD                             00000000
+_DDRDbits                         00000000
+_DDRE                             00000000
+_DDREbits                         00000000
+_Data                             00000000
+_ECCP1AS                          00000000
+_ECCP1ASbits                      00000000
+_EEADR                            00000000
+_EECON1                           00000000
+_EECON1bits                       00000000
+_EECON2                           00000000
+_EEDATA                           00000000
+_FSR0H                            00000000
+_FSR0L                            00000000
+_FSR1H                            00000000
+_FSR1L                            00000000
+_FSR2H                            00000000
+_FSR2L                            00000000
+_HLVDCON                          00000000
+_HLVDCONbits                      00000000
+_Head                             00000000
+_Hora                             00000000
+_INDF0                            00000000
+_INDF1                            00000000
+_INDF2                            00000000
+_INTCON                           00000000
+_INTCON2                          00000000
+_INTCON2bits                      00000000
+_INTCON3                          00000000
+_INTCON3bits                      00000000
+_INTCONbits                       00000000
+_IPR1                             00000000
+_IPR1bits                         00000000
+_IPR2                             00000000
+_IPR2bits                         00000000
+_InstallTask                      00000000
+_LATA                             00000000
+_LATAbits                         00000000
+_LATB                             00000000
+_LATBbits                         00000000
+_LATC                             00000000
+_LATCbits                         00000000
+_LATD                             00000000
+_LATDbits                         00000000
+_LATE                             00000000
+_LATEbits                         00000000
+_LVDCON                           00000000
+_LVDCONbits                       00000000
+gpasm-0.13.7 beta               build/default/production/main.asm7-19-2011  15:07:13          PAGE 13
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+ 
+_LastOSDuty                       00000000
+_NumberOfInstalledTasks           00000000
+_OSBlockedList                    00000000
+_OSCCON                           00000000
+_OSCCONbits                       00000000
+_OSCTUNE                          00000000
+_OSCTUNEbits                      00000000
+_OSDuty                           00000000
+_OSDutyTmp                        00000000
+_OSReadyList                      00000000
+_OSSemCreate                      00000000
+_PC                               00000000
+_PCL                              00000000
+_PCLATH                           00000000
+_PCLATU                           00000000
+_PIE1                             00000000
+_PIE1bits                         00000000
+_PIE2                             00000000
+_PIE2bits                         00000000
+_PIR1                             00000000
+_PIR1bits                         00000000
+_PIR2                             00000000
+_PIR2bits                         00000000
+_PLUSW0                           00000000
+_PLUSW1                           00000000
+_PLUSW2                           00000000
+_PORTA                            00000000
+_PORTAbits                        00000000
+_PORTB                            00000000
+_PORTBbits                        00000000
+_PORTC                            00000000
+_PORTCbits                        00000000
+_PORTD                            00000000
+_PORTDbits                        00000000
+_PORTE                            00000000
+_PORTEbits                        00000000
+_POSTDEC0                         00000000
+_POSTDEC1                         00000000
+_POSTDEC2                         00000000
+_POSTINC0                         00000000
+_POSTINC1                         00000000
+_POSTINC2                         00000000
+_PR2                              00000000
+_PREINC0                          00000000
+_PREINC1                          00000000
+_PREINC2                          00000000
+_PROD                             00000000
+_PRODH                            00000000
+_PRODL                            00000000
+_PWM1CON                          00000000
+_PWM1CONbits                      00000000
+_PriorityMask                     00000000
+_PriorityVector                   00000000
+_QUEUE_STACK                      00000000
+gpasm-0.13.7 beta               build/default/production/main.asm7-19-2011  15:07:13          PAGE 14
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+ 
+_RCON                             00000000
+_RCONbits                         00000000
+_RCREG                            00000000
+_RCSTA                            00000000
+_RCSTAbits                        00000000
+_SPBRG                            00000000
+_SPBRGH                           00000000
+_SPvalue                          00000000
+_SSPADD                           00000000
+_SSPBUF                           00000000
+_SSPCON1                          00000000
+_SSPCON1bits                      00000000
+_SSPCON2                          00000000
+_SSPCON2bits                      00000000
+_SSPSTAT                          00000000
+_SSPSTATbits                      00000000
+_STACK                            00000000
+_STATUS                           00000000
+_STATUSbits                       00000000
+_STKPTR                           00000000
+_STKPTRbits                       00000000
+_SelectedTask                     00000000
+_SemTeste                         00000000
+_Serial_Init                      00000000
+_StackAddress                     00000000
+_System_Time                      00000000
+_T0CON                            00000000
+_T0CONbits                        00000000
+_T1CON                            00000000
+_T1CONbits                        00000000
+_T2CON                            00000000
+_T2CONbits                        00000000
+_T3CON                            00000000
+_T3CONbits                        00000000
+_TABLAT                           00000000
+_TBLPTR                           00000000
+_TBLPTRH                          00000000
+_TBLPTRL                          00000000
+_TBLPTRU                          00000000
+_TMR0H                            00000000
+_TMR0L                            00000000
+_TMR1H                            00000000
+_TMR1L                            00000000
+_TMR2                             00000000
+_TMR3H                            00000000
+_TMR3L                            00000000
+_TOS                              00000000
+_TOSH                             00000000
+_TOSL                             00000000
+_TOSU                             00000000
+_TRISA                            00000000
+_TRISAbits                        00000000
+_TRISB                            00000000
+_TRISBbits                        00000000
+gpasm-0.13.7 beta               build/default/production/main.asm7-19-2011  15:07:13          PAGE 15
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+ 
+_TRISC                            00000000
+_TRISCbits                        00000000
+_TRISD                            00000000
+_TRISDbits                        00000000
+_TRISE                            00000000
+_TRISEbits                        00000000
+_TXREG                            00000000
+_TXSTA                            00000000
+_TXSTAbits                        00000000
+_Tail                             00000000
+_TaskAlloc                        00000000
+_Task_2                           00000000
+_Task_3                           00000000
+_Task_LCD                         00000000
+_Task_Serial                      00000000
+_WDTCON                           00000000
+_WDTCONbits                       00000000
+_WREG                             00000000
+__18F4520                         00000001
+__str_0                           00000176
+__str_1                           00000182
+__str_2                           00000192
+__str_3                           000001A2
+__str_4                           000001B0
+_counter                          00000000
+_currentTask                      00000000
+_iNesting                         00000000
+_iQueueAddress                    00000000
+_iStackAddress                    00000000
+_main                             00000000
+_version                          00000000
+r0x00                             00000000
+r0x01                             00000001
+r0x02                             00000002
+
+
+Errors   :       0
+Warnings :       0 reported,       0 suppressed
+Messages :       0 reported,       0 suppressed
+

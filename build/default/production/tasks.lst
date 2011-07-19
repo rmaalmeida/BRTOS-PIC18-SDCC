@@ -1,0 +1,1083 @@
+gpasm-0.13.7 beta               build/default/production/tasks.asm7-19-2011  15:07:13          PAGE  1
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+ 
+               00001 ;--------------------------------------------------------
+               00002 ; File Created by SDCC : free open source ANSI-C Compiler
+               00003 ; Version 2.9.0 #5416 (Apr 29 2011) (UNIX)
+               00004 ; This file was generated Tue Jul 19 15:07:13 2011
+               00005 ;--------------------------------------------------------
+               00006 ; PIC16 port for the Microchip 16-bit core micros
+               00007 ;--------------------------------------------------------
+               00008         list    p=18f4520
+               00009 
+               00010         radix dec
+               00011 
+               00012 ;--------------------------------------------------------
+               00013 ; public variables in this module
+               00014 ;--------------------------------------------------------
+               00015         global _System_Time
+               00016         global _Task_2
+               00017         global _Task_3
+               00018         global _Task_Serial
+               00019         global _Task_LCD
+               00020         global _BufferLCD
+               00021 
+               00022 ;--------------------------------------------------------
+               00023 ; extern variables in this module
+               00024 ;--------------------------------------------------------
+               00025         extern _PORTAbits
+               00026         extern _PORTBbits
+               00027         extern _PORTCbits
+               00028         extern _PORTDbits
+               00029         extern _PORTEbits
+               00030         extern _LATAbits
+               00031         extern _LATBbits
+               00032         extern _LATCbits
+               00033         extern _LATDbits
+               00034         extern _LATEbits
+               00035         extern _DDRAbits
+               00036         extern _TRISAbits
+               00037         extern _DDRBbits
+               00038         extern _TRISBbits
+               00039         extern _DDRCbits
+               00040         extern _TRISCbits
+               00041         extern _DDRDbits
+               00042         extern _TRISDbits
+               00043         extern _DDREbits
+               00044         extern _TRISEbits
+               00045         extern _OSCTUNEbits
+               00046         extern _PIE1bits
+               00047         extern _PIR1bits
+               00048         extern _IPR1bits
+               00049         extern _PIE2bits
+               00050         extern _PIR2bits
+               00051         extern _IPR2bits
+               00052         extern _EECON1bits
+               00053         extern _RCSTAbits
+               00054         extern _TXSTAbits
+gpasm-0.13.7 beta               build/default/production/tasks.asm7-19-2011  15:07:13          PAGE  2
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+ 
+               00055         extern _T3CONbits
+               00056         extern _CMCONbits
+               00057         extern _CVRCONbits
+               00058         extern _ECCP1ASbits
+               00059         extern _PWM1CONbits
+               00060         extern _BAUDCONbits
+               00061         extern _BAUDCTLbits
+               00062         extern _CCP2CONbits
+               00063         extern _CCP1CONbits
+               00064         extern _ADCON2bits
+               00065         extern _ADCON1bits
+               00066         extern _ADCON0bits
+               00067         extern _SSPCON2bits
+               00068         extern _SSPCON1bits
+               00069         extern _SSPSTATbits
+               00070         extern _T2CONbits
+               00071         extern _T1CONbits
+               00072         extern _RCONbits
+               00073         extern _WDTCONbits
+               00074         extern _HLVDCONbits
+               00075         extern _LVDCONbits
+               00076         extern _OSCCONbits
+               00077         extern _T0CONbits
+               00078         extern _STATUSbits
+               00079         extern _INTCON3bits
+               00080         extern _INTCON2bits
+               00081         extern _INTCONbits
+               00082         extern _STKPTRbits
+               00083         extern _SPvalue
+               00084         extern _Hora
+               00085         extern _Data
+               00086         extern _BRTOS_Sem_Table
+               00087         extern _BRTOS_Mutex_Table
+               00088         extern _BRTOS_Queue_Table
+               00089         extern _OSReadyList
+               00090         extern _OSBlockedList
+               00091         extern _Tail
+               00092         extern _Head
+               00093         extern _iNesting
+               00094         extern _currentTask
+               00095         extern _SelectedTask
+               00096         extern _ContextTask
+               00097         extern _iStackAddress
+               00098         extern _NumberOfInstalledTasks
+               00099         extern _counter
+               00100         extern _OSDuty
+               00101         extern _PriorityVector
+               00102         extern _OSDutyTmp
+               00103         extern _LastOSDuty
+               00104         extern _STACK
+               00105         extern _TaskAlloc
+               00106         extern _QUEUE_STACK
+               00107         extern _iQueueAddress
+               00108         extern _version
+gpasm-0.13.7 beta               build/default/production/tasks.asm7-19-2011  15:07:13          PAGE  3
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+ 
+               00109         extern _BufferText
+               00110         extern _StackAddress
+               00111         extern _SemTeste
+               00112         extern _QSerialRX
+               00113         extern _PORTA
+               00114         extern _PORTB
+               00115         extern _PORTC
+               00116         extern _PORTD
+               00117         extern _PORTE
+               00118         extern _LATA
+               00119         extern _LATB
+               00120         extern _LATC
+               00121         extern _LATD
+               00122         extern _LATE
+               00123         extern _DDRA
+               00124         extern _TRISA
+               00125         extern _DDRB
+               00126         extern _TRISB
+               00127         extern _DDRC
+               00128         extern _TRISC
+               00129         extern _DDRD
+               00130         extern _TRISD
+               00131         extern _DDRE
+               00132         extern _TRISE
+               00133         extern _OSCTUNE
+               00134         extern _PIE1
+               00135         extern _PIR1
+               00136         extern _IPR1
+               00137         extern _PIE2
+               00138         extern _PIR2
+               00139         extern _IPR2
+               00140         extern _EECON1
+               00141         extern _EECON2
+               00142         extern _EEDATA
+               00143         extern _EEADR
+               00144         extern _RCSTA
+               00145         extern _TXSTA
+               00146         extern _TXREG
+               00147         extern _RCREG
+               00148         extern _SPBRG
+               00149         extern _SPBRGH
+               00150         extern _T3CON
+               00151         extern _TMR3L
+               00152         extern _TMR3H
+               00153         extern _CMCON
+               00154         extern _CVRCON
+               00155         extern _ECCP1AS
+               00156         extern _PWM1CON
+               00157         extern _BAUDCON
+               00158         extern _BAUDCTL
+               00159         extern _CCP2CON
+               00160         extern _CCPR2
+               00161         extern _CCPR2L
+               00162         extern _CCPR2H
+gpasm-0.13.7 beta               build/default/production/tasks.asm7-19-2011  15:07:13          PAGE  4
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+ 
+               00163         extern _CCP1CON
+               00164         extern _CCPR1
+               00165         extern _CCPR1L
+               00166         extern _CCPR1H
+               00167         extern _ADCON2
+               00168         extern _ADCON1
+               00169         extern _ADCON0
+               00170         extern _ADRES
+               00171         extern _ADRESL
+               00172         extern _ADRESH
+               00173         extern _SSPCON2
+               00174         extern _SSPCON1
+               00175         extern _SSPSTAT
+               00176         extern _SSPADD
+               00177         extern _SSPBUF
+               00178         extern _T2CON
+               00179         extern _PR2
+               00180         extern _TMR2
+               00181         extern _T1CON
+               00182         extern _TMR1L
+               00183         extern _TMR1H
+               00184         extern _RCON
+               00185         extern _WDTCON
+               00186         extern _HLVDCON
+               00187         extern _LVDCON
+               00188         extern _OSCCON
+               00189         extern _T0CON
+               00190         extern _TMR0L
+               00191         extern _TMR0H
+               00192         extern _STATUS
+               00193         extern _FSR2L
+               00194         extern _FSR2H
+               00195         extern _PLUSW2
+               00196         extern _PREINC2
+               00197         extern _POSTDEC2
+               00198         extern _POSTINC2
+               00199         extern _INDF2
+               00200         extern _BSR
+               00201         extern _FSR1L
+               00202         extern _FSR1H
+               00203         extern _PLUSW1
+               00204         extern _PREINC1
+               00205         extern _POSTDEC1
+               00206         extern _POSTINC1
+               00207         extern _INDF1
+               00208         extern _WREG
+               00209         extern _FSR0L
+               00210         extern _FSR0H
+               00211         extern _PLUSW0
+               00212         extern _PREINC0
+               00213         extern _POSTDEC0
+               00214         extern _POSTINC0
+               00215         extern _INDF0
+               00216         extern _INTCON3
+gpasm-0.13.7 beta               build/default/production/tasks.asm7-19-2011  15:07:13          PAGE  5
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+ 
+               00217         extern _INTCON2
+               00218         extern _INTCON
+               00219         extern _PROD
+               00220         extern _PRODL
+               00221         extern _PRODH
+               00222         extern _TABLAT
+               00223         extern _TBLPTR
+               00224         extern _TBLPTRL
+               00225         extern _TBLPTRH
+               00226         extern _TBLPTRU
+               00227         extern _PC
+               00228         extern _PCL
+               00229         extern _PCLATH
+               00230         extern _PCLATU
+               00231         extern _STKPTR
+               00232         extern _TOS
+               00233         extern _TOSL
+               00234         extern _TOSH
+               00235         extern _TOSU
+               00236         extern _OSResetTime
+               00237         extern _OSResetDate
+               00238         extern _OSUpdateUptime
+               00239         extern _DelayTask
+               00240         extern _OSSemPend
+               00241         extern _OSSemPost
+               00242         extern _write_lcd
+               00243         extern _write_numero
+               00244         extern _init_lcd
+               00245         extern _posiciona
+               00246         extern _InicializaAD
+               00247         extern _LeValorAD
+               00248         extern _PriorityMask
+               00249 ;--------------------------------------------------------
+               00250 ;       Equates to used internal registers
+               00251 ;--------------------------------------------------------
+  00000FD8     00252 STATUS  equ     0xfd8
+  00000FE8     00253 WREG    equ     0xfe8
+  00000FE1     00254 FSR1L   equ     0xfe1
+  00000FE2     00255 FSR1H   equ     0xfe2
+  00000FD9     00256 FSR2L   equ     0xfd9
+  00000FDA     00257 FSR2H   equ     0xfda
+  00000FE5     00258 POSTDEC1        equ     0xfe5
+  00000FE4     00259 PREINC1 equ     0xfe4
+  00000FF3     00260 PRODL   equ     0xff3
+               00261 
+               00262 
+               00263 ; Internal registers
+               00264 .registers      udata_ovr       0x0000
+               00265 r0x00   res     1
+               00266 r0x01   res     1
+               00267 r0x02   res     1
+               00268 r0x03   res     1
+               00269 r0x04   res     1
+               00270 r0x05   res     1
+gpasm-0.13.7 beta               build/default/production/tasks.asm7-19-2011  15:07:13          PAGE  6
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+ 
+               00271 r0x06   res     1
+               00272 
+               00273 udata_tasks_0   udata
+               00274 _Task_Serial_pedido_1_1 res     1
+               00275 
+               00276 udata_tasks_1   udata
+               00277 _BufferLCD      res     17
+               00278 
+               00279 ;--------------------------------------------------------
+               00280 ; global & static initialisations
+               00281 ;--------------------------------------------------------
+               00282 ; I code from now on!
+               00283 ; ; Starting pCode block
+               00284 S_tasks__Task_LCD       code
+0000 00285 _Task_LCD:
+               00286 ;       .line   180; tasks.c    void Task_LCD(void)
+0000 CFDA FFE5 00287         MOVFF   FSR2H, POSTDEC1
+0004 CFD9 FFE5 00288         MOVFF   FSR2L, POSTDEC1
+0008 CFE2 FFDA 00289         MOVFF   FSR1H, FSR2H
+000C CFE1 FFD9 00290         MOVFF   FSR1L, FSR2L
+0010 C000 FFE5 00291         MOVFF   r0x00, POSTDEC1
+0014 C000 FFE5 00292         MOVFF   r0x01, POSTDEC1
+0018 C000 FFE5 00293         MOVFF   r0x02, POSTDEC1
+               00294 ;       .line   184; tasks.c    init_lcd();
+001C EC00 F000 00295         CALL    _init_lcd
+               00296 ;       .line   187; tasks.c    BufferLCD[0] = 0xE4;
+0020 0EE4      00297         MOVLW   0xe4
+0022 0000      00298         BANKSEL _BufferLCD
+0024 6F00      00299         MOVWF   _BufferLCD, B
+               00300 ;       .line   189; tasks.c    write_lcd(BufferLCD);
+0026 0E00      00301         MOVLW   HIGH(_BufferLCD)
+0028 6E00      00302         MOVWF   r0x01
+002A 0E00      00303         MOVLW   LOW(_BufferLCD)
+002C 6E00      00304         MOVWF   r0x00
+002E 0E80      00305         MOVLW   0x80
+0030 6E00      00306         MOVWF   r0x02
+0032 5000      00307         MOVF    r0x02, W
+0034 6EE5      00308         MOVWF   POSTDEC1
+0036 5000      00309         MOVF    r0x01, W
+0038 6EE5      00310         MOVWF   POSTDEC1
+003A 5000      00311         MOVF    r0x00, W
+003C 6EE5      00312         MOVWF   POSTDEC1
+003E EC00 F000 00313         CALL    _write_lcd
+0042 0E03      00314         MOVLW   0x03
+0044 26E1      00315         ADDWF   FSR1L, F
+0046 B0D8      00316         BTFSC   STATUS, 0
+0048 2AE2      00317         INCF    FSR1H, F
+               00318 ;       .line   191; tasks.c    posiciona(2, 1);
+004A 0E01      00319         MOVLW   0x01
+004C 6EE5      00320         MOVWF   POSTDEC1
+004E 0E02      00321         MOVLW   0x02
+0050 6EE5      00322         MOVWF   POSTDEC1
+0052 EC00 F000 00323         CALL    _posiciona
+0056 0E02      00324         MOVLW   0x02
+gpasm-0.13.7 beta               build/default/production/tasks.asm7-19-2011  15:07:13          PAGE  7
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+ 
+0058 26E1      00325         ADDWF   FSR1L, F
+005A B0D8      00326         BTFSC   STATUS, 0
+005C 2AE2      00327         INCF    FSR1H, F
+               00328 ;       .line   193; tasks.c    write_lcd(BufferLCD);
+005E 0E00      00329         MOVLW   HIGH(_BufferLCD)
+0060 6E00      00330         MOVWF   r0x01
+0062 0E00      00331         MOVLW   LOW(_BufferLCD)
+0064 6E00      00332         MOVWF   r0x00
+0066 0E80      00333         MOVLW   0x80
+0068 6E00      00334         MOVWF   r0x02
+006A 5000      00335         MOVF    r0x02, W
+006C 6EE5      00336         MOVWF   POSTDEC1
+006E 5000      00337         MOVF    r0x01, W
+0070 6EE5      00338         MOVWF   POSTDEC1
+0072 5000      00339         MOVF    r0x00, W
+0074 6EE5      00340         MOVWF   POSTDEC1
+0076 EC00 F000 00341         CALL    _write_lcd
+007A 0E03      00342         MOVLW   0x03
+007C 26E1      00343         ADDWF   FSR1L, F
+007E B0D8      00344         BTFSC   STATUS, 0
+0080 2AE2      00345         INCF    FSR1H, F
+               00346 ;       .line   196; tasks.c    TRISA = 0xFF;   
+0082 0EFF      00347         MOVLW   0xff
+0084 6E00      00348         MOVWF   _TRISA
+               00349 ;       .line   198; tasks.c    InicializaAD();
+0086 EC00 F000 00350         CALL    _InicializaAD
+               00351 ;       .line   201; tasks.c    LATCbits.LATC5 = 1;
+008A 8A00      00352         BSF     _LATCbits, 5
+               00353 ;       .line   202; tasks.c    TRISCbits.TRISC5 = 0;
+008C 9A00      00354         BCF     _TRISCbits, 5
+               00355 ;       .line   205; tasks.c    LATCbits.LATC2 = 0;
+008E 9400      00356         BCF     _LATCbits, 2
+               00357 ;       .line   206; tasks.c    TRISCbits.TRISC2 = 0;
+0090 9400      00358         BCF     _TRISCbits, 2
+               00359 ;       .line   208; tasks.c    uiValorAD = LeValorAD();
+0092 EC00 F000 00360         CALL    _LeValorAD
+0096 00361 _00163_DS_:
+               00362 ;       .line   215; tasks.c    uiValorAD = LeValorAD();
+0096 EC00 F000 00363         CALL    _LeValorAD
+009A 6E00      00364         MOVWF   r0x00
+009C CFF3 F000 00365         MOVFF   PRODL, r0x01
+               00366 ;       .line   217; tasks.c    if (uiValorAD >= 30)
+00A0 0E00      00367         MOVLW   0x00
+00A2 5C00      00368         SUBWF   r0x01, W
+00A4 E100      00369         BNZ     _00169_DS_
+00A6 0E1E      00370         MOVLW   0x1e
+00A8 5C00      00371         SUBWF   r0x00, W
+00AA 00372 _00169_DS_:
+00AA E300      00373         BNC     _00160_DS_
+               00374 ;       .line   220; tasks.c    LATCbits.LATC2 = 1;    
+00AC 8400      00375         BSF     _LATCbits, 2
+               00376 ;       .line   222; tasks.c    LATCbits.LATC5 = 0;
+00AE 9A00      00377         BCF     _LATCbits, 5
+00B0 D000      00378         BRA     _00161_DS_
+gpasm-0.13.7 beta               build/default/production/tasks.asm7-19-2011  15:07:13          PAGE  8
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+ 
+00B2 00379 _00160_DS_:
+               00380 ;       .line   226; tasks.c    LATCbits.LATC2 = 0;    
+00B2 9400      00381         BCF     _LATCbits, 2
+               00382 ;       .line   228; tasks.c    LATCbits.LATC5 = 1;
+00B4 8A00      00383         BSF     _LATCbits, 5
+00B6 00384 _00161_DS_:
+               00385 ;       .line   231; tasks.c    posiciona(2, 7);
+00B6 0E07      00386         MOVLW   0x07
+00B8 6EE5      00387         MOVWF   POSTDEC1
+00BA 0E02      00388         MOVLW   0x02
+00BC 6EE5      00389         MOVWF   POSTDEC1
+00BE EC00 F000 00390         CALL    _posiciona
+00C2 0E02      00391         MOVLW   0x02
+00C4 26E1      00392         ADDWF   FSR1L, F
+00C6 B0D8      00393         BTFSC   STATUS, 0
+00C8 2AE2      00394         INCF    FSR1H, F
+               00395 ;       .line   232; tasks.c    write_numero(uiValorAD);
+00CA 5000      00396         MOVF    r0x01, W
+00CC 6EE5      00397         MOVWF   POSTDEC1
+00CE 5000      00398         MOVF    r0x00, W
+00D0 6EE5      00399         MOVWF   POSTDEC1
+00D2 EC00 F000 00400         CALL    _write_numero
+00D6 0E02      00401         MOVLW   0x02
+00D8 26E1      00402         ADDWF   FSR1L, F
+00DA B0D8      00403         BTFSC   STATUS, 0
+00DC 2AE2      00404         INCF    FSR1H, F
+               00405 ;       .line   234; tasks.c    BufferLCD[0]=0xDF;
+00DE 0EDF      00406         MOVLW   0xdf
+00E0 0000      00407         BANKSEL _BufferLCD
+00E2 6F00      00408         MOVWF   _BufferLCD, B
+               00409 ;       .line   235; tasks.c    BufferLCD[1]='C';
+00E4 0E43      00410         MOVLW   0x43
+00E6 0000      00411         BANKSEL (_BufferLCD + 1)
+00E8 6F00      00412         MOVWF   (_BufferLCD + 1), B
+00EA 0000      00413         BANKSEL (_BufferLCD + 2)
+               00414 ;       .line   236; tasks.c    BufferLCD[2]=0;
+00EC 6B00      00415         CLRF    (_BufferLCD + 2), B
+               00416 ;       .line   237; tasks.c    write_lcd(BufferLCD);
+00EE 0E00      00417         MOVLW   HIGH(_BufferLCD)
+00F0 6E00      00418         MOVWF   r0x01
+00F2 0E00      00419         MOVLW   LOW(_BufferLCD)
+00F4 6E00      00420         MOVWF   r0x00
+00F6 0E80      00421         MOVLW   0x80
+00F8 6E00      00422         MOVWF   r0x02
+00FA 5000      00423         MOVF    r0x02, W
+00FC 6EE5      00424         MOVWF   POSTDEC1
+00FE 5000      00425         MOVF    r0x01, W
+0100 6EE5      00426         MOVWF   POSTDEC1
+0102 5000      00427         MOVF    r0x00, W
+0104 6EE5      00428         MOVWF   POSTDEC1
+0106 EC00 F000 00429         CALL    _write_lcd
+010A 0E03      00430         MOVLW   0x03
+010C 26E1      00431         ADDWF   FSR1L, F
+010E B0D8      00432         BTFSC   STATUS, 0
+gpasm-0.13.7 beta               build/default/production/tasks.asm7-19-2011  15:07:13          PAGE  9
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+ 
+0110 2AE2      00433         INCF    FSR1H, F
+               00434 ;       .line   239; tasks.c    DelayTask(1000);
+0112 0E03      00435         MOVLW   0x03
+0114 6EE5      00436         MOVWF   POSTDEC1
+0116 0EE8      00437         MOVLW   0xe8
+0118 6EE5      00438         MOVWF   POSTDEC1
+011A EC00 F000 00439         CALL    _DelayTask
+011E 0E02      00440         MOVLW   0x02
+0120 26E1      00441         ADDWF   FSR1L, F
+0122 B0D8      00442         BTFSC   STATUS, 0
+0124 2AE2      00443         INCF    FSR1H, F
+0126 D000      00444         BRA     _00163_DS_
+0128 CFE4 F000 00445         MOVFF   PREINC1, r0x02
+012C CFE4 F000 00446         MOVFF   PREINC1, r0x01
+0130 CFE4 F000 00447         MOVFF   PREINC1, r0x00
+0134 CFE4 FFD9 00448         MOVFF   PREINC1, FSR2L
+0138 CFE4 FFDA 00449         MOVFF   PREINC1, FSR2H
+013C 0012      00450         RETURN  
+               00451 
+               00452 ; ; Starting pCode block
+               00453 S_tasks__Task_Serial    code
+0000 00454 _Task_Serial:
+               00455 ;       .line   105; tasks.c    void Task_Serial(void)
+0000 CFDA FFE5 00456         MOVFF   FSR2H, POSTDEC1
+0004 CFD9 FFE5 00457         MOVFF   FSR2L, POSTDEC1
+0008 CFE2 FFDA 00458         MOVFF   FSR1H, FSR2H
+000C CFE1 FFD9 00459         MOVFF   FSR1L, FSR2L
+0010 0000      00460         BANKSEL _Task_Serial_pedido_1_1
+               00461 ;       .line   108; tasks.c    volatile INT8U pedido = 0;
+0012 6B00      00462         CLRF    _Task_Serial_pedido_1_1, B
+0014 00463 _00152_DS_:
+0014 D000      00464         BRA     _00152_DS_
+0016 CFE4 FFD9 00465         MOVFF   PREINC1, FSR2L
+001A CFE4 FFDA 00466         MOVFF   PREINC1, FSR2H
+001E 0012      00467         RETURN  
+               00468 
+               00469 ; ; Starting pCode block
+               00470 S_tasks__Task_3 code
+0000 00471 _Task_3:
+               00472 ;       .line   69; tasks.c     void Task_3(void)
+0000 CFDA FFE5 00473         MOVFF   FSR2H, POSTDEC1
+0004 CFD9 FFE5 00474         MOVFF   FSR2L, POSTDEC1
+0008 CFE2 FFDA 00475         MOVFF   FSR1H, FSR2H
+000C CFE1 FFD9 00476         MOVFF   FSR1L, FSR2L
+0010 C000 FFE5 00477         MOVFF   r0x00, POSTDEC1
+0014 C000 FFE5 00478         MOVFF   r0x01, POSTDEC1
+               00479 ;       .line   72; tasks.c     INT8U seq1 = 0x08;
+0018 0E08      00480         MOVLW   0x08
+001A 6E00      00481         MOVWF   r0x00
+               00482 ;       .line   73; tasks.c     INT8U sent1 = 0;
+001C 6A00      00483         CLRF    r0x01
+               00484 ;       .line   75; tasks.c     LATB = 0;    
+001E 6A00      00485         CLRF    _LATB
+               00486 ;       .line   76; tasks.c     TRISB = 0;
+gpasm-0.13.7 beta               build/default/production/tasks.asm7-19-2011  15:07:13          PAGE 10
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+ 
+0020 6A00      00487         CLRF    _TRISB
+0022 00488 _00135_DS_:
+               00489 ;       .line   81; tasks.c     LATB=seq1;
+0022 C000 F000 00490         MOVFF   r0x00, _LATB
+               00491 ;       .line   84; tasks.c     if(sent1==0){ seq1<<=1;
+0026 5000      00492         MOVF    r0x01, W
+0028 E100      00493         BNZ     _00132_DS_
+002A 90D8      00494         BCF     STATUS, 0
+002C 3600      00495         RLCF    r0x00, F
+               00496 ;       .line   87; tasks.c     if(seq1==0x80) sent1=1;
+002E 5000      00497         MOVF    r0x00, W
+0030 0A80      00498         XORLW   0x80
+0032 E100      00499         BNZ     _00133_DS_
+0034 0E01      00500         MOVLW   0x01
+0036 6E00      00501         MOVWF   r0x01
+0038 D000      00502         BRA     _00133_DS_
+003A 00503 _00132_DS_:
+               00504 ;       .line   90; tasks.c     else{ seq1>>=1;
+003A 90D8      00505         BCF     STATUS, 0
+003C 3200      00506         RRCF    r0x00, F
+               00507 ;       .line   93; tasks.c     if(seq1==0x01) sent1=0;
+003E 5000      00508         MOVF    r0x00, W
+0040 0A01      00509         XORLW   0x01
+0042 E100      00510         BNZ     _00133_DS_
+0044 6A00      00511         CLRF    r0x01
+0046 00512 _00133_DS_:
+               00513 ;       .line   96; tasks.c     (void)OSSemPend(SemTeste,0);
+0046 0E00      00514         MOVLW   0x00
+0048 6EE5      00515         MOVWF   POSTDEC1
+004A 0E00      00516         MOVLW   0x00
+004C 6EE5      00517         MOVWF   POSTDEC1
+004E 0000      00518         BANKSEL (_SemTeste + 2)
+0050 5100      00519         MOVF    (_SemTeste + 2), W, B
+0052 6EE5      00520         MOVWF   POSTDEC1
+0054 0000      00521         BANKSEL (_SemTeste + 1)
+0056 5100      00522         MOVF    (_SemTeste + 1), W, B
+0058 6EE5      00523         MOVWF   POSTDEC1
+005A 0000      00524         BANKSEL _SemTeste
+005C 5100      00525         MOVF    _SemTeste, W, B
+005E 6EE5      00526         MOVWF   POSTDEC1
+0060 EC00 F000 00527         CALL    _OSSemPend
+0064 0E05      00528         MOVLW   0x05
+0066 26E1      00529         ADDWF   FSR1L, F
+0068 B0D8      00530         BTFSC   STATUS, 0
+006A 2AE2      00531         INCF    FSR1H, F
+006C D000      00532         BRA     _00135_DS_
+006E CFE4 F000 00533         MOVFF   PREINC1, r0x01
+0072 CFE4 F000 00534         MOVFF   PREINC1, r0x00
+0076 CFE4 FFD9 00535         MOVFF   PREINC1, FSR2L
+007A CFE4 FFDA 00536         MOVFF   PREINC1, FSR2H
+007E 0012      00537         RETURN  
+               00538 
+               00539 ; ; Starting pCode block
+               00540 S_tasks__Task_2 code
+gpasm-0.13.7 beta               build/default/production/tasks.asm7-19-2011  15:07:13          PAGE 11
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+ 
+0000 00541 _Task_2:
+               00542 ;       .line   49; tasks.c     void Task_2(void)
+0000 CFDA FFE5 00543         MOVFF   FSR2H, POSTDEC1
+0004 CFD9 FFE5 00544         MOVFF   FSR2L, POSTDEC1
+0008 CFE2 FFDA 00545         MOVFF   FSR1H, FSR2H
+000C CFE1 FFD9 00546         MOVFF   FSR1L, FSR2L
+               00547 ; ;;!!! pic16_aopOp:1071 called for a spillLocation -- assigning WREG instead --- CHECK
+               00548 ;       .line   52; tasks.c     INT8U cont = 0;   
+0010 6AE8      00549         CLRF    WREG
+0012 00550 _00120_DS_:
+               00551 ;       .line   58; tasks.c     (void)DelayTask(35);
+0012 0E00      00552         MOVLW   0x00
+0014 6EE5      00553         MOVWF   POSTDEC1
+0016 0E23      00554         MOVLW   0x23
+0018 6EE5      00555         MOVWF   POSTDEC1
+001A EC00 F000 00556         CALL    _DelayTask
+001E 0E02      00557         MOVLW   0x02
+0020 26E1      00558         ADDWF   FSR1L, F
+0022 B0D8      00559         BTFSC   STATUS, 0
+0024 2AE2      00560         INCF    FSR1H, F
+0026 0000      00561         BANKSEL (_SemTeste + 2)
+               00562 ;       .line   61; tasks.c     (void)OSSemPost(SemTeste);
+0028 5100      00563         MOVF    (_SemTeste + 2), W, B
+002A 6EE5      00564         MOVWF   POSTDEC1
+002C 0000      00565         BANKSEL (_SemTeste + 1)
+002E 5100      00566         MOVF    (_SemTeste + 1), W, B
+0030 6EE5      00567         MOVWF   POSTDEC1
+0032 0000      00568         BANKSEL _SemTeste
+0034 5100      00569         MOVF    _SemTeste, W, B
+0036 6EE5      00570         MOVWF   POSTDEC1
+0038 EC00 F000 00571         CALL    _OSSemPost
+003C 0E03      00572         MOVLW   0x03
+003E 26E1      00573         ADDWF   FSR1L, F
+0040 B0D8      00574         BTFSC   STATUS, 0
+0042 2AE2      00575         INCF    FSR1H, F
+0044 D000      00576         BRA     _00120_DS_
+0046 CFE4 FFD9 00577         MOVFF   PREINC1, FSR2L
+004A CFE4 FFDA 00578         MOVFF   PREINC1, FSR2H
+004E 0012      00579         RETURN  
+               00580 
+               00581 ; ; Starting pCode block
+               00582 S_tasks__System_Time    code
+0000 00583 _System_Time:
+               00584 ;       .line   22; tasks.c     void System_Time(void)
+0000 CFDA FFE5 00585         MOVFF   FSR2H, POSTDEC1
+0004 CFD9 FFE5 00586         MOVFF   FSR2L, POSTDEC1
+0008 CFE2 FFDA 00587         MOVFF   FSR1H, FSR2H
+000C CFE1 FFD9 00588         MOVFF   FSR1L, FSR2L
+0010 C000 FFE5 00589         MOVFF   r0x00, POSTDEC1
+0014 C000 FFE5 00590         MOVFF   r0x01, POSTDEC1
+0018 C000 FFE5 00591         MOVFF   r0x02, POSTDEC1
+001C C000 FFE5 00592         MOVFF   r0x03, POSTDEC1
+0020 C000 FFE5 00593         MOVFF   r0x04, POSTDEC1
+0024 C000 FFE5 00594         MOVFF   r0x05, POSTDEC1
+gpasm-0.13.7 beta               build/default/production/tasks.asm7-19-2011  15:07:13          PAGE 12
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+ 
+0028 C000 FFE5 00595         MOVFF   r0x06, POSTDEC1
+               00596 ;       .line   25; tasks.c     INT8U i = 0;
+002C 6A00      00597         CLRF    r0x00
+               00598 ;       .line   26; tasks.c     OSResetTime(&Hora); 
+002E 0E00      00599         MOVLW   HIGH(_Hora)
+0030 6E00      00600         MOVWF   r0x02
+0032 0E00      00601         MOVLW   LOW(_Hora)
+0034 6E00      00602         MOVWF   r0x01
+0036 0E80      00603         MOVLW   0x80
+0038 6E00      00604         MOVWF   r0x03
+003A 5000      00605         MOVF    r0x03, W
+003C 6EE5      00606         MOVWF   POSTDEC1
+003E 5000      00607         MOVF    r0x02, W
+0040 6EE5      00608         MOVWF   POSTDEC1
+0042 5000      00609         MOVF    r0x01, W
+0044 6EE5      00610         MOVWF   POSTDEC1
+0046 EC00 F000 00611         CALL    _OSResetTime
+004A 0E03      00612         MOVLW   0x03
+004C 26E1      00613         ADDWF   FSR1L, F
+004E B0D8      00614         BTFSC   STATUS, 0
+0050 2AE2      00615         INCF    FSR1H, F
+               00616 ;       .line   27; tasks.c     OSResetDate(&Data);  
+0052 0E00      00617         MOVLW   HIGH(_Data)
+0054 6E00      00618         MOVWF   r0x02
+0056 0E00      00619         MOVLW   LOW(_Data)
+0058 6E00      00620         MOVWF   r0x01
+005A 0E80      00621         MOVLW   0x80
+005C 6E00      00622         MOVWF   r0x03
+005E 5000      00623         MOVF    r0x03, W
+0060 6EE5      00624         MOVWF   POSTDEC1
+0062 5000      00625         MOVF    r0x02, W
+0064 6EE5      00626         MOVWF   POSTDEC1
+0066 5000      00627         MOVF    r0x01, W
+0068 6EE5      00628         MOVWF   POSTDEC1
+006A EC00 F000 00629         CALL    _OSResetDate
+006E 0E03      00630         MOVLW   0x03
+0070 26E1      00631         ADDWF   FSR1L, F
+0072 B0D8      00632         BTFSC   STATUS, 0
+0074 2AE2      00633         INCF    FSR1H, F
+0076 00634 _00108_DS_:
+0076 0004      00635         CLRWDT
+               00636         
+               00637 ;       .line   37; tasks.c     (void)DelayTask(10);
+0078 0E00      00638         MOVLW   0x00
+007A 6EE5      00639         MOVWF   POSTDEC1
+007C 0E0A      00640         MOVLW   0x0a
+007E 6EE5      00641         MOVWF   POSTDEC1
+0080 EC00 F000 00642         CALL    _DelayTask
+0084 0E02      00643         MOVLW   0x02
+0086 26E1      00644         ADDWF   FSR1L, F
+0088 B0D8      00645         BTFSC   STATUS, 0
+008A 2AE2      00646         INCF    FSR1H, F
+               00647 ;       .line   38; tasks.c     i++;
+008C 2A00      00648         INCF    r0x00, F
+gpasm-0.13.7 beta               build/default/production/tasks.asm7-19-2011  15:07:13          PAGE 13
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+ 
+               00649 ;       .line   39; tasks.c     if (i >= 100)
+008E 0E64      00650         MOVLW   0x64
+0090 5C00      00651         SUBWF   r0x00, W
+0092 E300      00652         BNC     _00108_DS_
+               00653 ;       .line   41; tasks.c     OSUpdateUptime(&Hora,&Data);
+0094 0E00      00654         MOVLW   HIGH(_Hora)
+0096 6E00      00655         MOVWF   r0x02
+0098 0E00      00656         MOVLW   LOW(_Hora)
+009A 6E00      00657         MOVWF   r0x01
+009C 0E80      00658         MOVLW   0x80
+009E 6E00      00659         MOVWF   r0x03
+00A0 0E00      00660         MOVLW   HIGH(_Data)
+00A2 6E00      00661         MOVWF   r0x05
+00A4 0E00      00662         MOVLW   LOW(_Data)
+00A6 6E00      00663         MOVWF   r0x04
+00A8 0E80      00664         MOVLW   0x80
+00AA 6E00      00665         MOVWF   r0x06
+00AC 5000      00666         MOVF    r0x06, W
+00AE 6EE5      00667         MOVWF   POSTDEC1
+00B0 5000      00668         MOVF    r0x05, W
+00B2 6EE5      00669         MOVWF   POSTDEC1
+00B4 5000      00670         MOVF    r0x04, W
+00B6 6EE5      00671         MOVWF   POSTDEC1
+00B8 5000      00672         MOVF    r0x03, W
+00BA 6EE5      00673         MOVWF   POSTDEC1
+00BC 5000      00674         MOVF    r0x02, W
+00BE 6EE5      00675         MOVWF   POSTDEC1
+00C0 5000      00676         MOVF    r0x01, W
+00C2 6EE5      00677         MOVWF   POSTDEC1
+00C4 EC00 F000 00678         CALL    _OSUpdateUptime
+00C8 0E06      00679         MOVLW   0x06
+00CA 26E1      00680         ADDWF   FSR1L, F
+00CC B0D8      00681         BTFSC   STATUS, 0
+00CE 2AE2      00682         INCF    FSR1H, F
+               00683 ;       .line   42; tasks.c     i = 0;
+00D0 6A00      00684         CLRF    r0x00
+00D2 D000      00685         BRA     _00108_DS_
+00D4 CFE4 F000 00686         MOVFF   PREINC1, r0x06
+00D8 CFE4 F000 00687         MOVFF   PREINC1, r0x05
+00DC CFE4 F000 00688         MOVFF   PREINC1, r0x04
+00E0 CFE4 F000 00689         MOVFF   PREINC1, r0x03
+00E4 CFE4 F000 00690         MOVFF   PREINC1, r0x02
+00E8 CFE4 F000 00691         MOVFF   PREINC1, r0x01
+00EC CFE4 F000 00692         MOVFF   PREINC1, r0x00
+00F0 CFE4 FFD9 00693         MOVFF   PREINC1, FSR2L
+00F4 CFE4 FFDA 00694         MOVFF   PREINC1, FSR2H
+00F8 0012      00695         RETURN  
+               00696 
+               00697 
+               00698 
+               00699 ; Statistics:
+               00700 ; code size:      810 (0x032a) bytes ( 0.62%)
+               00701 ;                 405 (0x0195) words
+               00702 ; udata size:      18 (0x0012) bytes ( 1.41%)
+gpasm-0.13.7 beta               build/default/production/tasks.asm7-19-2011  15:07:13          PAGE 14
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+ 
+               00703 ; access size:      7 (0x0007) bytes
+               00704 
+               00705 
+gpasm-0.13.7 beta               build/default/production/tasks.asm7-19-2011  15:07:13          PAGE 15
+
+
+SYMBOL TABLE
+  LABEL                             VALUE 
+
+FSR1H                             00000FE2
+FSR1L                             00000FE1
+FSR2H                             00000FDA
+FSR2L                             00000FD9
+POSTDEC1                          00000FE5
+PREINC1                           00000FE4
+PRODL                             00000FF3
+STATUS                            00000FD8
+WREG                              00000FE8
+_00108_DS_                        00000076
+_00120_DS_                        00000012
+_00132_DS_                        0000003A
+_00133_DS_                        00000046
+_00135_DS_                        00000022
+_00152_DS_                        00000014
+_00160_DS_                        000000B2
+_00161_DS_                        000000B6
+_00163_DS_                        00000096
+_00169_DS_                        000000AA
+_ADCON0                           00000000
+_ADCON0bits                       00000000
+_ADCON1                           00000000
+_ADCON1bits                       00000000
+_ADCON2                           00000000
+_ADCON2bits                       00000000
+_ADRES                            00000000
+_ADRESH                           00000000
+_ADRESL                           00000000
+_BAUDCON                          00000000
+_BAUDCONbits                      00000000
+_BAUDCTL                          00000000
+_BAUDCTLbits                      00000000
+_BRTOS_Mutex_Table                00000000
+_BRTOS_Queue_Table                00000000
+_BRTOS_Sem_Table                  00000000
+_BSR                              00000000
+_BufferLCD                        00000000
+_BufferText                       00000000
+_CCP1CON                          00000000
+_CCP1CONbits                      00000000
+_CCP2CON                          00000000
+_CCP2CONbits                      00000000
+_CCPR1                            00000000
+_CCPR1H                           00000000
+_CCPR1L                           00000000
+_CCPR2                            00000000
+_CCPR2H                           00000000
+_CCPR2L                           00000000
+_CMCON                            00000000
+_CMCONbits                        00000000
+_CVRCON                           00000000
+_CVRCONbits                       00000000
+_ContextTask                      00000000
+gpasm-0.13.7 beta               build/default/production/tasks.asm7-19-2011  15:07:13          PAGE 16
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+ 
+_DDRA                             00000000
+_DDRAbits                         00000000
+_DDRB                             00000000
+_DDRBbits                         00000000
+_DDRC                             00000000
+_DDRCbits                         00000000
+_DDRD                             00000000
+_DDRDbits                         00000000
+_DDRE                             00000000
+_DDREbits                         00000000
+_Data                             00000000
+_DelayTask                        00000000
+_ECCP1AS                          00000000
+_ECCP1ASbits                      00000000
+_EEADR                            00000000
+_EECON1                           00000000
+_EECON1bits                       00000000
+_EECON2                           00000000
+_EEDATA                           00000000
+_FSR0H                            00000000
+_FSR0L                            00000000
+_FSR1H                            00000000
+_FSR1L                            00000000
+_FSR2H                            00000000
+_FSR2L                            00000000
+_HLVDCON                          00000000
+_HLVDCONbits                      00000000
+_Head                             00000000
+_Hora                             00000000
+_INDF0                            00000000
+_INDF1                            00000000
+_INDF2                            00000000
+_INTCON                           00000000
+_INTCON2                          00000000
+_INTCON2bits                      00000000
+_INTCON3                          00000000
+_INTCON3bits                      00000000
+_INTCONbits                       00000000
+_IPR1                             00000000
+_IPR1bits                         00000000
+_IPR2                             00000000
+_IPR2bits                         00000000
+_InicializaAD                     00000000
+_LATA                             00000000
+_LATAbits                         00000000
+_LATB                             00000000
+_LATBbits                         00000000
+_LATC                             00000000
+_LATCbits                         00000000
+_LATD                             00000000
+_LATDbits                         00000000
+_LATE                             00000000
+_LATEbits                         00000000
+_LVDCON                           00000000
+gpasm-0.13.7 beta               build/default/production/tasks.asm7-19-2011  15:07:13          PAGE 17
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+ 
+_LVDCONbits                       00000000
+_LastOSDuty                       00000000
+_LeValorAD                        00000000
+_NumberOfInstalledTasks           00000000
+_OSBlockedList                    00000000
+_OSCCON                           00000000
+_OSCCONbits                       00000000
+_OSCTUNE                          00000000
+_OSCTUNEbits                      00000000
+_OSDuty                           00000000
+_OSDutyTmp                        00000000
+_OSReadyList                      00000000
+_OSResetDate                      00000000
+_OSResetTime                      00000000
+_OSSemPend                        00000000
+_OSSemPost                        00000000
+_OSUpdateUptime                   00000000
+_PC                               00000000
+_PCL                              00000000
+_PCLATH                           00000000
+_PCLATU                           00000000
+_PIE1                             00000000
+_PIE1bits                         00000000
+_PIE2                             00000000
+_PIE2bits                         00000000
+_PIR1                             00000000
+_PIR1bits                         00000000
+_PIR2                             00000000
+_PIR2bits                         00000000
+_PLUSW0                           00000000
+_PLUSW1                           00000000
+_PLUSW2                           00000000
+_PORTA                            00000000
+_PORTAbits                        00000000
+_PORTB                            00000000
+_PORTBbits                        00000000
+_PORTC                            00000000
+_PORTCbits                        00000000
+_PORTD                            00000000
+_PORTDbits                        00000000
+_PORTE                            00000000
+_PORTEbits                        00000000
+_POSTDEC0                         00000000
+_POSTDEC1                         00000000
+_POSTDEC2                         00000000
+_POSTINC0                         00000000
+_POSTINC1                         00000000
+_POSTINC2                         00000000
+_PR2                              00000000
+_PREINC0                          00000000
+_PREINC1                          00000000
+_PREINC2                          00000000
+_PROD                             00000000
+_PRODH                            00000000
+gpasm-0.13.7 beta               build/default/production/tasks.asm7-19-2011  15:07:13          PAGE 18
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+ 
+_PRODL                            00000000
+_PWM1CON                          00000000
+_PWM1CONbits                      00000000
+_PriorityMask                     00000000
+_PriorityVector                   00000000
+_QSerialRX                        00000000
+_QUEUE_STACK                      00000000
+_RCON                             00000000
+_RCONbits                         00000000
+_RCREG                            00000000
+_RCSTA                            00000000
+_RCSTAbits                        00000000
+_SPBRG                            00000000
+_SPBRGH                           00000000
+_SPvalue                          00000000
+_SSPADD                           00000000
+_SSPBUF                           00000000
+_SSPCON1                          00000000
+_SSPCON1bits                      00000000
+_SSPCON2                          00000000
+_SSPCON2bits                      00000000
+_SSPSTAT                          00000000
+_SSPSTATbits                      00000000
+_STACK                            00000000
+_STATUS                           00000000
+_STATUSbits                       00000000
+_STKPTR                           00000000
+_STKPTRbits                       00000000
+_SelectedTask                     00000000
+_SemTeste                         00000000
+_StackAddress                     00000000
+_System_Time                      00000000
+_T0CON                            00000000
+_T0CONbits                        00000000
+_T1CON                            00000000
+_T1CONbits                        00000000
+_T2CON                            00000000
+_T2CONbits                        00000000
+_T3CON                            00000000
+_T3CONbits                        00000000
+_TABLAT                           00000000
+_TBLPTR                           00000000
+_TBLPTRH                          00000000
+_TBLPTRL                          00000000
+_TBLPTRU                          00000000
+_TMR0H                            00000000
+_TMR0L                            00000000
+_TMR1H                            00000000
+_TMR1L                            00000000
+_TMR2                             00000000
+_TMR3H                            00000000
+_TMR3L                            00000000
+_TOS                              00000000
+_TOSH                             00000000
+gpasm-0.13.7 beta               build/default/production/tasks.asm7-19-2011  15:07:13          PAGE 19
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+ 
+_TOSL                             00000000
+_TOSU                             00000000
+_TRISA                            00000000
+_TRISAbits                        00000000
+_TRISB                            00000000
+_TRISBbits                        00000000
+_TRISC                            00000000
+_TRISCbits                        00000000
+_TRISD                            00000000
+_TRISDbits                        00000000
+_TRISE                            00000000
+_TRISEbits                        00000000
+_TXREG                            00000000
+_TXSTA                            00000000
+_TXSTAbits                        00000000
+_Tail                             00000000
+_TaskAlloc                        00000000
+_Task_2                           00000000
+_Task_3                           00000000
+_Task_LCD                         00000000
+_Task_Serial                      00000000
+_Task_Serial_pedido_1_1           00000000
+_WDTCON                           00000000
+_WDTCONbits                       00000000
+_WREG                             00000000
+__18F4520                         00000001
+_counter                          00000000
+_currentTask                      00000000
+_iNesting                         00000000
+_iQueueAddress                    00000000
+_iStackAddress                    00000000
+_init_lcd                         00000000
+_posiciona                        00000000
+_version                          00000000
+_write_lcd                        00000000
+_write_numero                     00000000
+r0x00                             00000000
+r0x01                             00000001
+r0x02                             00000002
+r0x03                             00000003
+r0x04                             00000004
+r0x05                             00000005
+r0x06                             00000006
+
+
+Errors   :       0
+Warnings :       0 reported,       0 suppressed
+Messages :       0 reported,       0 suppressed
+

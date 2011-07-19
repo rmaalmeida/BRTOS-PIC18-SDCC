@@ -1,0 +1,513 @@
+gpasm-0.13.7 beta               build/default/production/brtos/mbox.asm7-19-2011  15:07:14          PAGE  1
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+ 
+               00001 ;--------------------------------------------------------
+               00002 ; File Created by SDCC : free open source ANSI-C Compiler
+               00003 ; Version 2.9.0 #5416 (Apr 29 2011) (UNIX)
+               00004 ; This file was generated Tue Jul 19 15:07:14 2011
+               00005 ;--------------------------------------------------------
+               00006 ; PIC16 port for the Microchip 16-bit core micros
+               00007 ;--------------------------------------------------------
+               00008         list    p=18f4520
+               00009 
+               00010         radix dec
+               00011 
+               00012 ;--------------------------------------------------------
+               00013 ; public variables in this module
+               00014 ;--------------------------------------------------------
+               00015 
+               00016 ;--------------------------------------------------------
+               00017 ; extern variables in this module
+               00018 ;--------------------------------------------------------
+               00019         extern _PORTAbits
+               00020         extern _PORTBbits
+               00021         extern _PORTCbits
+               00022         extern _PORTDbits
+               00023         extern _PORTEbits
+               00024         extern _LATAbits
+               00025         extern _LATBbits
+               00026         extern _LATCbits
+               00027         extern _LATDbits
+               00028         extern _LATEbits
+               00029         extern _DDRAbits
+               00030         extern _TRISAbits
+               00031         extern _DDRBbits
+               00032         extern _TRISBbits
+               00033         extern _DDRCbits
+               00034         extern _TRISCbits
+               00035         extern _DDRDbits
+               00036         extern _TRISDbits
+               00037         extern _DDREbits
+               00038         extern _TRISEbits
+               00039         extern _OSCTUNEbits
+               00040         extern _PIE1bits
+               00041         extern _PIR1bits
+               00042         extern _IPR1bits
+               00043         extern _PIE2bits
+               00044         extern _PIR2bits
+               00045         extern _IPR2bits
+               00046         extern _EECON1bits
+               00047         extern _RCSTAbits
+               00048         extern _TXSTAbits
+               00049         extern _T3CONbits
+               00050         extern _CMCONbits
+               00051         extern _CVRCONbits
+               00052         extern _ECCP1ASbits
+               00053         extern _PWM1CONbits
+               00054         extern _BAUDCONbits
+gpasm-0.13.7 beta               build/default/production/brtos/mbox.asm7-19-2011  15:07:14          PAGE  2
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+ 
+               00055         extern _BAUDCTLbits
+               00056         extern _CCP2CONbits
+               00057         extern _CCP1CONbits
+               00058         extern _ADCON2bits
+               00059         extern _ADCON1bits
+               00060         extern _ADCON0bits
+               00061         extern _SSPCON2bits
+               00062         extern _SSPCON1bits
+               00063         extern _SSPSTATbits
+               00064         extern _T2CONbits
+               00065         extern _T1CONbits
+               00066         extern _RCONbits
+               00067         extern _WDTCONbits
+               00068         extern _HLVDCONbits
+               00069         extern _LVDCONbits
+               00070         extern _OSCCONbits
+               00071         extern _T0CONbits
+               00072         extern _STATUSbits
+               00073         extern _INTCON3bits
+               00074         extern _INTCON2bits
+               00075         extern _INTCONbits
+               00076         extern _STKPTRbits
+               00077         extern _SPvalue
+               00078         extern _Hora
+               00079         extern _Data
+               00080         extern _BRTOS_Sem_Table
+               00081         extern _BRTOS_Mutex_Table
+               00082         extern _BRTOS_Queue_Table
+               00083         extern _OSReadyList
+               00084         extern _OSBlockedList
+               00085         extern _Tail
+               00086         extern _Head
+               00087         extern _iNesting
+               00088         extern _currentTask
+               00089         extern _SelectedTask
+               00090         extern _ContextTask
+               00091         extern _iStackAddress
+               00092         extern _NumberOfInstalledTasks
+               00093         extern _counter
+               00094         extern _OSDuty
+               00095         extern _PriorityVector
+               00096         extern _OSDutyTmp
+               00097         extern _LastOSDuty
+               00098         extern _STACK
+               00099         extern _TaskAlloc
+               00100         extern _QUEUE_STACK
+               00101         extern _iQueueAddress
+               00102         extern _version
+               00103         extern _BufferText
+               00104         extern _StackAddress
+               00105         extern _PORTA
+               00106         extern _PORTB
+               00107         extern _PORTC
+               00108         extern _PORTD
+gpasm-0.13.7 beta               build/default/production/brtos/mbox.asm7-19-2011  15:07:14          PAGE  3
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+ 
+               00109         extern _PORTE
+               00110         extern _LATA
+               00111         extern _LATB
+               00112         extern _LATC
+               00113         extern _LATD
+               00114         extern _LATE
+               00115         extern _DDRA
+               00116         extern _TRISA
+               00117         extern _DDRB
+               00118         extern _TRISB
+               00119         extern _DDRC
+               00120         extern _TRISC
+               00121         extern _DDRD
+               00122         extern _TRISD
+               00123         extern _DDRE
+               00124         extern _TRISE
+               00125         extern _OSCTUNE
+               00126         extern _PIE1
+               00127         extern _PIR1
+               00128         extern _IPR1
+               00129         extern _PIE2
+               00130         extern _PIR2
+               00131         extern _IPR2
+               00132         extern _EECON1
+               00133         extern _EECON2
+               00134         extern _EEDATA
+               00135         extern _EEADR
+               00136         extern _RCSTA
+               00137         extern _TXSTA
+               00138         extern _TXREG
+               00139         extern _RCREG
+               00140         extern _SPBRG
+               00141         extern _SPBRGH
+               00142         extern _T3CON
+               00143         extern _TMR3L
+               00144         extern _TMR3H
+               00145         extern _CMCON
+               00146         extern _CVRCON
+               00147         extern _ECCP1AS
+               00148         extern _PWM1CON
+               00149         extern _BAUDCON
+               00150         extern _BAUDCTL
+               00151         extern _CCP2CON
+               00152         extern _CCPR2
+               00153         extern _CCPR2L
+               00154         extern _CCPR2H
+               00155         extern _CCP1CON
+               00156         extern _CCPR1
+               00157         extern _CCPR1L
+               00158         extern _CCPR1H
+               00159         extern _ADCON2
+               00160         extern _ADCON1
+               00161         extern _ADCON0
+               00162         extern _ADRES
+gpasm-0.13.7 beta               build/default/production/brtos/mbox.asm7-19-2011  15:07:14          PAGE  4
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+ 
+               00163         extern _ADRESL
+               00164         extern _ADRESH
+               00165         extern _SSPCON2
+               00166         extern _SSPCON1
+               00167         extern _SSPSTAT
+               00168         extern _SSPADD
+               00169         extern _SSPBUF
+               00170         extern _T2CON
+               00171         extern _PR2
+               00172         extern _TMR2
+               00173         extern _T1CON
+               00174         extern _TMR1L
+               00175         extern _TMR1H
+               00176         extern _RCON
+               00177         extern _WDTCON
+               00178         extern _HLVDCON
+               00179         extern _LVDCON
+               00180         extern _OSCCON
+               00181         extern _T0CON
+               00182         extern _TMR0L
+               00183         extern _TMR0H
+               00184         extern _STATUS
+               00185         extern _FSR2L
+               00186         extern _FSR2H
+               00187         extern _PLUSW2
+               00188         extern _PREINC2
+               00189         extern _POSTDEC2
+               00190         extern _POSTINC2
+               00191         extern _INDF2
+               00192         extern _BSR
+               00193         extern _FSR1L
+               00194         extern _FSR1H
+               00195         extern _PLUSW1
+               00196         extern _PREINC1
+               00197         extern _POSTDEC1
+               00198         extern _POSTINC1
+               00199         extern _INDF1
+               00200         extern _WREG
+               00201         extern _FSR0L
+               00202         extern _FSR0H
+               00203         extern _PLUSW0
+               00204         extern _PREINC0
+               00205         extern _POSTDEC0
+               00206         extern _POSTINC0
+               00207         extern _INDF0
+               00208         extern _INTCON3
+               00209         extern _INTCON2
+               00210         extern _INTCON
+               00211         extern _PROD
+               00212         extern _PRODL
+               00213         extern _PRODH
+               00214         extern _TABLAT
+               00215         extern _TBLPTR
+               00216         extern _TBLPTRL
+gpasm-0.13.7 beta               build/default/production/brtos/mbox.asm7-19-2011  15:07:14          PAGE  5
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+ 
+               00217         extern _TBLPTRH
+               00218         extern _TBLPTRU
+               00219         extern _PC
+               00220         extern _PCL
+               00221         extern _PCLATH
+               00222         extern _PCLATU
+               00223         extern _STKPTR
+               00224         extern _TOS
+               00225         extern _TOSL
+               00226         extern _TOSH
+               00227         extern _TOSU
+               00228         extern _PriorityMask
+               00229 
+               00230 ;--------------------------------------------------------
+               00231 ; global & static initialisations
+               00232 ;--------------------------------------------------------
+               00233 ; I code from now on!
+               00234 
+               00235 
+               00236 ; Statistics:
+               00237 ; code size:       -1 (0xffffffff) bytes (3276800.00%)
+               00238 ;               2147483647 (0x7fffffff) words
+               00239 ; udata size:       0 (0x0000) bytes ( 0.00%)
+               00240 ; access size:      0 (0x0000) bytes
+               00241 
+               00242 
+gpasm-0.13.7 beta               build/default/production/brtos/mbox.asm7-19-2011  15:07:14          PAGE  6
+
+
+SYMBOL TABLE
+  LABEL                             VALUE 
+
+_ADCON0                           00000000
+_ADCON0bits                       00000000
+_ADCON1                           00000000
+_ADCON1bits                       00000000
+_ADCON2                           00000000
+_ADCON2bits                       00000000
+_ADRES                            00000000
+_ADRESH                           00000000
+_ADRESL                           00000000
+_BAUDCON                          00000000
+_BAUDCONbits                      00000000
+_BAUDCTL                          00000000
+_BAUDCTLbits                      00000000
+_BRTOS_Mutex_Table                00000000
+_BRTOS_Queue_Table                00000000
+_BRTOS_Sem_Table                  00000000
+_BSR                              00000000
+_BufferText                       00000000
+_CCP1CON                          00000000
+_CCP1CONbits                      00000000
+_CCP2CON                          00000000
+_CCP2CONbits                      00000000
+_CCPR1                            00000000
+_CCPR1H                           00000000
+_CCPR1L                           00000000
+_CCPR2                            00000000
+_CCPR2H                           00000000
+_CCPR2L                           00000000
+_CMCON                            00000000
+_CMCONbits                        00000000
+_CVRCON                           00000000
+_CVRCONbits                       00000000
+_ContextTask                      00000000
+_DDRA                             00000000
+_DDRAbits                         00000000
+_DDRB                             00000000
+_DDRBbits                         00000000
+_DDRC                             00000000
+_DDRCbits                         00000000
+_DDRD                             00000000
+_DDRDbits                         00000000
+_DDRE                             00000000
+_DDREbits                         00000000
+_Data                             00000000
+_ECCP1AS                          00000000
+_ECCP1ASbits                      00000000
+_EEADR                            00000000
+_EECON1                           00000000
+_EECON1bits                       00000000
+_EECON2                           00000000
+_EEDATA                           00000000
+_FSR0H                            00000000
+_FSR0L                            00000000
+gpasm-0.13.7 beta               build/default/production/brtos/mbox.asm7-19-2011  15:07:14          PAGE  7
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+ 
+_FSR1H                            00000000
+_FSR1L                            00000000
+_FSR2H                            00000000
+_FSR2L                            00000000
+_HLVDCON                          00000000
+_HLVDCONbits                      00000000
+_Head                             00000000
+_Hora                             00000000
+_INDF0                            00000000
+_INDF1                            00000000
+_INDF2                            00000000
+_INTCON                           00000000
+_INTCON2                          00000000
+_INTCON2bits                      00000000
+_INTCON3                          00000000
+_INTCON3bits                      00000000
+_INTCONbits                       00000000
+_IPR1                             00000000
+_IPR1bits                         00000000
+_IPR2                             00000000
+_IPR2bits                         00000000
+_LATA                             00000000
+_LATAbits                         00000000
+_LATB                             00000000
+_LATBbits                         00000000
+_LATC                             00000000
+_LATCbits                         00000000
+_LATD                             00000000
+_LATDbits                         00000000
+_LATE                             00000000
+_LATEbits                         00000000
+_LVDCON                           00000000
+_LVDCONbits                       00000000
+_LastOSDuty                       00000000
+_NumberOfInstalledTasks           00000000
+_OSBlockedList                    00000000
+_OSCCON                           00000000
+_OSCCONbits                       00000000
+_OSCTUNE                          00000000
+_OSCTUNEbits                      00000000
+_OSDuty                           00000000
+_OSDutyTmp                        00000000
+_OSReadyList                      00000000
+_PC                               00000000
+_PCL                              00000000
+_PCLATH                           00000000
+_PCLATU                           00000000
+_PIE1                             00000000
+_PIE1bits                         00000000
+_PIE2                             00000000
+_PIE2bits                         00000000
+_PIR1                             00000000
+_PIR1bits                         00000000
+_PIR2                             00000000
+gpasm-0.13.7 beta               build/default/production/brtos/mbox.asm7-19-2011  15:07:14          PAGE  8
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+ 
+_PIR2bits                         00000000
+_PLUSW0                           00000000
+_PLUSW1                           00000000
+_PLUSW2                           00000000
+_PORTA                            00000000
+_PORTAbits                        00000000
+_PORTB                            00000000
+_PORTBbits                        00000000
+_PORTC                            00000000
+_PORTCbits                        00000000
+_PORTD                            00000000
+_PORTDbits                        00000000
+_PORTE                            00000000
+_PORTEbits                        00000000
+_POSTDEC0                         00000000
+_POSTDEC1                         00000000
+_POSTDEC2                         00000000
+_POSTINC0                         00000000
+_POSTINC1                         00000000
+_POSTINC2                         00000000
+_PR2                              00000000
+_PREINC0                          00000000
+_PREINC1                          00000000
+_PREINC2                          00000000
+_PROD                             00000000
+_PRODH                            00000000
+_PRODL                            00000000
+_PWM1CON                          00000000
+_PWM1CONbits                      00000000
+_PriorityMask                     00000000
+_PriorityVector                   00000000
+_QUEUE_STACK                      00000000
+_RCON                             00000000
+_RCONbits                         00000000
+_RCREG                            00000000
+_RCSTA                            00000000
+_RCSTAbits                        00000000
+_SPBRG                            00000000
+_SPBRGH                           00000000
+_SPvalue                          00000000
+_SSPADD                           00000000
+_SSPBUF                           00000000
+_SSPCON1                          00000000
+_SSPCON1bits                      00000000
+_SSPCON2                          00000000
+_SSPCON2bits                      00000000
+_SSPSTAT                          00000000
+_SSPSTATbits                      00000000
+_STACK                            00000000
+_STATUS                           00000000
+_STATUSbits                       00000000
+_STKPTR                           00000000
+_STKPTRbits                       00000000
+_SelectedTask                     00000000
+gpasm-0.13.7 beta               build/default/production/brtos/mbox.asm7-19-2011  15:07:14          PAGE  9
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+ 
+_StackAddress                     00000000
+_T0CON                            00000000
+_T0CONbits                        00000000
+_T1CON                            00000000
+_T1CONbits                        00000000
+_T2CON                            00000000
+_T2CONbits                        00000000
+_T3CON                            00000000
+_T3CONbits                        00000000
+_TABLAT                           00000000
+_TBLPTR                           00000000
+_TBLPTRH                          00000000
+_TBLPTRL                          00000000
+_TBLPTRU                          00000000
+_TMR0H                            00000000
+_TMR0L                            00000000
+_TMR1H                            00000000
+_TMR1L                            00000000
+_TMR2                             00000000
+_TMR3H                            00000000
+_TMR3L                            00000000
+_TOS                              00000000
+_TOSH                             00000000
+_TOSL                             00000000
+_TOSU                             00000000
+_TRISA                            00000000
+_TRISAbits                        00000000
+_TRISB                            00000000
+_TRISBbits                        00000000
+_TRISC                            00000000
+_TRISCbits                        00000000
+_TRISD                            00000000
+_TRISDbits                        00000000
+_TRISE                            00000000
+_TRISEbits                        00000000
+_TXREG                            00000000
+_TXSTA                            00000000
+_TXSTAbits                        00000000
+_Tail                             00000000
+_TaskAlloc                        00000000
+_WDTCON                           00000000
+_WDTCONbits                       00000000
+_WREG                             00000000
+__18F4520                         00000001
+_counter                          00000000
+_currentTask                      00000000
+_iNesting                         00000000
+_iQueueAddress                    00000000
+_iStackAddress                    00000000
+_version                          00000000
+
+
+Errors   :       0
+Warnings :       0 reported,       0 suppressed
+Messages :       0 reported,       0 suppressed
+

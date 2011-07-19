@@ -1,0 +1,1292 @@
+gpasm-0.13.7 beta               build/default/production/drivers/lcd.asm7-19-2011  15:07:14          PAGE  1
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+ 
+               00001 ;--------------------------------------------------------
+               00002 ; File Created by SDCC : free open source ANSI-C Compiler
+               00003 ; Version 2.9.0 #5416 (Apr 29 2011) (UNIX)
+               00004 ; This file was generated Tue Jul 19 15:07:14 2011
+               00005 ;--------------------------------------------------------
+               00006 ; PIC16 port for the Microchip 16-bit core micros
+               00007 ;--------------------------------------------------------
+               00008         list    p=18f4520
+               00009 
+               00010         radix dec
+               00011 
+               00012 ;--------------------------------------------------------
+               00013 ; public variables in this module
+               00014 ;--------------------------------------------------------
+               00015         global _task_LCD
+               00016         global _testa_bit
+               00017         global _LCD
+               00018         global _acquireLCD
+               00019         global _releaseLCD
+               00020         global _write_lcd
+               00021         global _write_numero
+               00022         global _instr
+               00023         global _caractere
+               00024         global _init_lcd
+               00025         global _init_lcd_resource
+               00026         global _posiciona
+               00027         global _limpa_lcd
+               00028 
+               00029 ;--------------------------------------------------------
+               00030 ; extern variables in this module
+               00031 ;--------------------------------------------------------
+               00032         extern __gptrget1
+               00033         extern _PORTAbits
+               00034         extern _PORTBbits
+               00035         extern _PORTCbits
+               00036         extern _PORTDbits
+               00037         extern _PORTEbits
+               00038         extern _LATAbits
+               00039         extern _LATBbits
+               00040         extern _LATCbits
+               00041         extern _LATDbits
+               00042         extern _LATEbits
+               00043         extern _DDRAbits
+               00044         extern _TRISAbits
+               00045         extern _DDRBbits
+               00046         extern _TRISBbits
+               00047         extern _DDRCbits
+               00048         extern _TRISCbits
+               00049         extern _DDRDbits
+               00050         extern _TRISDbits
+               00051         extern _DDREbits
+               00052         extern _TRISEbits
+               00053         extern _OSCTUNEbits
+               00054         extern _PIE1bits
+gpasm-0.13.7 beta               build/default/production/drivers/lcd.asm7-19-2011  15:07:14          PAGE  2
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+ 
+               00055         extern _PIR1bits
+               00056         extern _IPR1bits
+               00057         extern _PIE2bits
+               00058         extern _PIR2bits
+               00059         extern _IPR2bits
+               00060         extern _EECON1bits
+               00061         extern _RCSTAbits
+               00062         extern _TXSTAbits
+               00063         extern _T3CONbits
+               00064         extern _CMCONbits
+               00065         extern _CVRCONbits
+               00066         extern _ECCP1ASbits
+               00067         extern _PWM1CONbits
+               00068         extern _BAUDCONbits
+               00069         extern _BAUDCTLbits
+               00070         extern _CCP2CONbits
+               00071         extern _CCP1CONbits
+               00072         extern _ADCON2bits
+               00073         extern _ADCON1bits
+               00074         extern _ADCON0bits
+               00075         extern _SSPCON2bits
+               00076         extern _SSPCON1bits
+               00077         extern _SSPSTATbits
+               00078         extern _T2CONbits
+               00079         extern _T1CONbits
+               00080         extern _RCONbits
+               00081         extern _WDTCONbits
+               00082         extern _HLVDCONbits
+               00083         extern _LVDCONbits
+               00084         extern _OSCCONbits
+               00085         extern _T0CONbits
+               00086         extern _STATUSbits
+               00087         extern _INTCON3bits
+               00088         extern _INTCON2bits
+               00089         extern _INTCONbits
+               00090         extern _STKPTRbits
+               00091         extern _SPvalue
+               00092         extern _Hora
+               00093         extern _Data
+               00094         extern _BRTOS_Sem_Table
+               00095         extern _BRTOS_Mutex_Table
+               00096         extern _BRTOS_Queue_Table
+               00097         extern _OSReadyList
+               00098         extern _OSBlockedList
+               00099         extern _Tail
+               00100         extern _Head
+               00101         extern _iNesting
+               00102         extern _currentTask
+               00103         extern _SelectedTask
+               00104         extern _ContextTask
+               00105         extern _iStackAddress
+               00106         extern _NumberOfInstalledTasks
+               00107         extern _counter
+               00108         extern _OSDuty
+gpasm-0.13.7 beta               build/default/production/drivers/lcd.asm7-19-2011  15:07:14          PAGE  3
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+ 
+               00109         extern _PriorityVector
+               00110         extern _OSDutyTmp
+               00111         extern _LastOSDuty
+               00112         extern _STACK
+               00113         extern _TaskAlloc
+               00114         extern _QUEUE_STACK
+               00115         extern _iQueueAddress
+               00116         extern _version
+               00117         extern _BufferText
+               00118         extern _StackAddress
+               00119         extern _PORTA
+               00120         extern _PORTB
+               00121         extern _PORTC
+               00122         extern _PORTD
+               00123         extern _PORTE
+               00124         extern _LATA
+               00125         extern _LATB
+               00126         extern _LATC
+               00127         extern _LATD
+               00128         extern _LATE
+               00129         extern _DDRA
+               00130         extern _TRISA
+               00131         extern _DDRB
+               00132         extern _TRISB
+               00133         extern _DDRC
+               00134         extern _TRISC
+               00135         extern _DDRD
+               00136         extern _TRISD
+               00137         extern _DDRE
+               00138         extern _TRISE
+               00139         extern _OSCTUNE
+               00140         extern _PIE1
+               00141         extern _PIR1
+               00142         extern _IPR1
+               00143         extern _PIE2
+               00144         extern _PIR2
+               00145         extern _IPR2
+               00146         extern _EECON1
+               00147         extern _EECON2
+               00148         extern _EEDATA
+               00149         extern _EEADR
+               00150         extern _RCSTA
+               00151         extern _TXSTA
+               00152         extern _TXREG
+               00153         extern _RCREG
+               00154         extern _SPBRG
+               00155         extern _SPBRGH
+               00156         extern _T3CON
+               00157         extern _TMR3L
+               00158         extern _TMR3H
+               00159         extern _CMCON
+               00160         extern _CVRCON
+               00161         extern _ECCP1AS
+               00162         extern _PWM1CON
+gpasm-0.13.7 beta               build/default/production/drivers/lcd.asm7-19-2011  15:07:14          PAGE  4
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+ 
+               00163         extern _BAUDCON
+               00164         extern _BAUDCTL
+               00165         extern _CCP2CON
+               00166         extern _CCPR2
+               00167         extern _CCPR2L
+               00168         extern _CCPR2H
+               00169         extern _CCP1CON
+               00170         extern _CCPR1
+               00171         extern _CCPR1L
+               00172         extern _CCPR1H
+               00173         extern _ADCON2
+               00174         extern _ADCON1
+               00175         extern _ADCON0
+               00176         extern _ADRES
+               00177         extern _ADRESL
+               00178         extern _ADRESH
+               00179         extern _SSPCON2
+               00180         extern _SSPCON1
+               00181         extern _SSPSTAT
+               00182         extern _SSPADD
+               00183         extern _SSPBUF
+               00184         extern _T2CON
+               00185         extern _PR2
+               00186         extern _TMR2
+               00187         extern _T1CON
+               00188         extern _TMR1L
+               00189         extern _TMR1H
+               00190         extern _RCON
+               00191         extern _WDTCON
+               00192         extern _HLVDCON
+               00193         extern _LVDCON
+               00194         extern _OSCCON
+               00195         extern _T0CON
+               00196         extern _TMR0L
+               00197         extern _TMR0H
+               00198         extern _STATUS
+               00199         extern _FSR2L
+               00200         extern _FSR2H
+               00201         extern _PLUSW2
+               00202         extern _PREINC2
+               00203         extern _POSTDEC2
+               00204         extern _POSTINC2
+               00205         extern _INDF2
+               00206         extern _BSR
+               00207         extern _FSR1L
+               00208         extern _FSR1H
+               00209         extern _PLUSW1
+               00210         extern _PREINC1
+               00211         extern _POSTDEC1
+               00212         extern _POSTINC1
+               00213         extern _INDF1
+               00214         extern _WREG
+               00215         extern _FSR0L
+               00216         extern _FSR0H
+gpasm-0.13.7 beta               build/default/production/drivers/lcd.asm7-19-2011  15:07:14          PAGE  5
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+ 
+               00217         extern _PLUSW0
+               00218         extern _PREINC0
+               00219         extern _POSTDEC0
+               00220         extern _POSTINC0
+               00221         extern _INDF0
+               00222         extern _INTCON3
+               00223         extern _INTCON2
+               00224         extern _INTCON
+               00225         extern _PROD
+               00226         extern _PRODL
+               00227         extern _PRODH
+               00228         extern _TABLAT
+               00229         extern _TBLPTR
+               00230         extern _TBLPTRL
+               00231         extern _TBLPTRH
+               00232         extern _TBLPTRU
+               00233         extern _PC
+               00234         extern _PCL
+               00235         extern _PCLATH
+               00236         extern _PCLATU
+               00237         extern _STKPTR
+               00238         extern _TOS
+               00239         extern _TOSL
+               00240         extern _TOSH
+               00241         extern _TOSU
+               00242         extern _DelayTask
+               00243         extern _OSMutexCreate
+               00244         extern _OSMutexAcquire
+               00245         extern _OSMutexRelease
+               00246         extern __divuint
+               00247         extern _PriorityMask
+               00248 ;--------------------------------------------------------
+               00249 ;       Equates to used internal registers
+               00250 ;--------------------------------------------------------
+  00000FD8     00251 STATUS  equ     0xfd8
+  00000FE8     00252 WREG    equ     0xfe8
+  00000FE9     00253 FSR0L   equ     0xfe9
+  00000FE1     00254 FSR1L   equ     0xfe1
+  00000FE2     00255 FSR1H   equ     0xfe2
+  00000FD9     00256 FSR2L   equ     0xfd9
+  00000FDA     00257 FSR2H   equ     0xfda
+  00000FE5     00258 POSTDEC1        equ     0xfe5
+  00000FE4     00259 PREINC1 equ     0xfe4
+  00000FDB     00260 PLUSW2  equ     0xfdb
+  00000FF3     00261 PRODL   equ     0xff3
+               00262 
+               00263 
+               00264         idata
+               00265 _task_LCD       db      0x00
+               00266 
+               00267 
+               00268 ; Internal registers
+               00269 .registers      udata_ovr       0x0000
+               00270 r0x00   res     1
+gpasm-0.13.7 beta               build/default/production/drivers/lcd.asm7-19-2011  15:07:14          PAGE  6
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+ 
+               00271 r0x01   res     1
+               00272 r0x02   res     1
+               00273 r0x03   res     1
+               00274 
+               00275 udata_lcd_0     udata
+               00276 _LCD    res     3
+               00277 
+               00278 ;--------------------------------------------------------
+               00279 ; global & static initialisations
+               00280 ;--------------------------------------------------------
+               00281 ; I code from now on!
+               00282 ; ; Starting pCode block
+               00283 S_lcd__testa_bit        code
+0000 00284 _testa_bit:
+               00285 ;       .line   313; drivers/lcd.c      void testa_bit(void)
+0000 CFDA FFE5 00286         MOVFF   FSR2H, POSTDEC1
+0004 CFD9 FFE5 00287         MOVFF   FSR2L, POSTDEC1
+0008 CFE2 FFDA 00288         MOVFF   FSR1H, FSR2H
+000C CFE1 FFD9 00289         MOVFF   FSR1L, FSR2L
+               00290 ;       .line   315; drivers/lcd.c      DelayTask(2);
+0010 0E00      00291         MOVLW   0x00
+0012 6EE5      00292         MOVWF   POSTDEC1
+0014 0E02      00293         MOVLW   0x02
+0016 6EE5      00294         MOVWF   POSTDEC1
+0018 EC00 F000 00295         CALL    _DelayTask
+001C 0E02      00296         MOVLW   0x02
+001E 26E1      00297         ADDWF   FSR1L, F
+0020 B0D8      00298         BTFSC   STATUS, 0
+0022 2AE2      00299         INCF    FSR1H, F
+0024 CFE4 FFD9 00300         MOVFF   PREINC1, FSR2L
+0028 CFE4 FFDA 00301         MOVFF   PREINC1, FSR2H
+002C 0012      00302         RETURN  
+               00303 
+               00304 ; ; Starting pCode block
+               00305 S_lcd__limpa_lcd        code
+0000 00306 _limpa_lcd:
+               00307 ;       .line   282; drivers/lcd.c      void limpa_lcd(void)
+0000 CFDA FFE5 00308         MOVFF   FSR2H, POSTDEC1
+0004 CFD9 FFE5 00309         MOVFF   FSR2L, POSTDEC1
+0008 CFE2 FFDA 00310         MOVFF   FSR1H, FSR2H
+000C CFE1 FFD9 00311         MOVFF   FSR1L, FSR2L
+               00312 ;       .line   285; drivers/lcd.c      testa_bit();
+0010 EC00 F000 00313         CALL    _testa_bit
+               00314 ;       .line   286; drivers/lcd.c      RS = 0;
+0014 9400      00315         BCF     _LATEbits, 2
+               00316 ;       .line   288; drivers/lcd.c      dados = 0x01;
+0016 0E01      00317         MOVLW   0x01
+0018 6E00      00318         MOVWF   _LATD
+               00319 ;       .line   289; drivers/lcd.c      E = 1;
+001A 8200      00320         BSF     _LATEbits, 1
+001C 0000      00321         nop
+001E 0000      00322         nop
+0020 0000      00323         nop
+0022 0000      00324         nop
+gpasm-0.13.7 beta               build/default/production/drivers/lcd.asm7-19-2011  15:07:14          PAGE  7
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+ 
+0024 0000      00325         nop
+0026 0000      00326         nop
+0028 0000      00327         nop
+002A 0000      00328         nop
+002C 0000      00329         nop
+002E 0000      00330         nop
+0030 0000      00331         nop
+0032 0000      00332         nop
+0034 0000      00333         nop
+0036 0000      00334         nop
+0038 0000      00335         nop
+               00336         
+               00337 ;       .line   307; drivers/lcd.c      E = 0;
+003A 9200      00338         BCF     _LATEbits, 1
+003C CFE4 FFD9 00339         MOVFF   PREINC1, FSR2L
+0040 CFE4 FFDA 00340         MOVFF   PREINC1, FSR2H
+0044 0012      00341         RETURN  
+               00342 
+               00343 ; ; Starting pCode block
+               00344 S_lcd__posiciona        code
+0000 00345 _posiciona:
+               00346 ;       .line   241; drivers/lcd.c      void posiciona(INT8U linha, INT8U coluna)
+0000 CFDA FFE5 00347         MOVFF   FSR2H, POSTDEC1
+0004 CFD9 FFE5 00348         MOVFF   FSR2L, POSTDEC1
+0008 CFE2 FFDA 00349         MOVFF   FSR1H, FSR2H
+000C CFE1 FFD9 00350         MOVFF   FSR1L, FSR2L
+0010 C000 FFE5 00351         MOVFF   r0x00, POSTDEC1
+0014 C000 FFE5 00352         MOVFF   r0x01, POSTDEC1
+0018 0E03      00353         MOVLW   0x03
+001A CFDB F000 00354         MOVFF   PLUSW2, r0x00
+001E 0E04      00355         MOVLW   0x04
+0020 CFDB F000 00356         MOVFF   PLUSW2, r0x01
+               00357 ;       .line   243; drivers/lcd.c      testa_bit();
+0024 EC00 F000 00358         CALL    _testa_bit
+               00359 ;       .line   244; drivers/lcd.c      RS = 0;
+0028 9400      00360         BCF     _LATEbits, 2
+               00361 ;       .line   246; drivers/lcd.c      switch(linha){
+002A 5000      00362         MOVF    r0x00, W
+002C 0A01      00363         XORLW   0x01
+002E E000      00364         BZ      _00153_DS_
+0030 5000      00365         MOVF    r0x00, W
+0032 0A02      00366         XORLW   0x02
+0034 E000      00367         BZ      _00154_DS_
+0036 D000      00368         BRA     _00155_DS_
+0038 00369 _00153_DS_:
+               00370 ;       .line   248; drivers/lcd.c      coluna--;
+0038 0600      00371         DECF    r0x01, F
+               00372 ;       .line   249; drivers/lcd.c      dados = 0x80 + coluna;
+003A 0E80      00373         MOVLW   0x80
+003C 2400      00374         ADDWF   r0x01, W
+003E 6E00      00375         MOVWF   _LATD
+               00376 ;       .line   250; drivers/lcd.c      break;
+0040 D000      00377         BRA     _00156_DS_
+0042 00378 _00154_DS_:
+gpasm-0.13.7 beta               build/default/production/drivers/lcd.asm7-19-2011  15:07:14          PAGE  8
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+ 
+               00379 ;       .line   252; drivers/lcd.c      coluna--;
+0042 0600      00380         DECF    r0x01, F
+               00381 ;       .line   253; drivers/lcd.c      dados = 0xC0 + coluna;
+0044 0EC0      00382         MOVLW   0xc0
+0046 2400      00383         ADDWF   r0x01, W
+0048 6E00      00384         MOVWF   _LATD
+               00385 ;       .line   254; drivers/lcd.c      break;
+004A D000      00386         BRA     _00156_DS_
+004C 00387 _00155_DS_:
+               00388 ;       .line   256; drivers/lcd.c      return;
+004C D000      00389         BRA     _00157_DS_
+004E 00390 _00156_DS_:
+               00391 ;       .line   258; drivers/lcd.c      E = 1;
+004E 8200      00392         BSF     _LATEbits, 1
+0050 0000      00393         nop
+0052 0000      00394         nop
+0054 0000      00395         nop
+0056 0000      00396         nop
+0058 0000      00397         nop
+005A 0000      00398         nop
+005C 0000      00399         nop
+005E 0000      00400         nop
+0060 0000      00401         nop
+0062 0000      00402         nop
+0064 0000      00403         nop
+0066 0000      00404         nop
+0068 0000      00405         nop
+006A 0000      00406         nop
+006C 0000      00407         nop
+               00408         
+               00409 ;       .line   276; drivers/lcd.c      E = 0;
+006E 9200      00410         BCF     _LATEbits, 1
+0070 00411 _00157_DS_:
+0070 CFE4 F000 00412         MOVFF   PREINC1, r0x01
+0074 CFE4 F000 00413         MOVFF   PREINC1, r0x00
+0078 CFE4 FFD9 00414         MOVFF   PREINC1, FSR2L
+007C CFE4 FFDA 00415         MOVFF   PREINC1, FSR2H
+0080 0012      00416         RETURN  
+               00417 
+               00418 ; ; Starting pCode block
+               00419 S_lcd__init_lcd_resource        code
+0000 00420 _init_lcd_resource:
+               00421 ;       .line   226; drivers/lcd.c      void init_lcd_resource(INT8U priority)
+0000 CFDA FFE5 00422         MOVFF   FSR2H, POSTDEC1
+0004 CFD9 FFE5 00423         MOVFF   FSR2L, POSTDEC1
+0008 CFE2 FFDA 00424         MOVFF   FSR1H, FSR2H
+000C CFE1 FFD9 00425         MOVFF   FSR1L, FSR2L
+0010 C000 FFE5 00426         MOVFF   r0x00, POSTDEC1
+0014 C000 FFE5 00427         MOVFF   r0x01, POSTDEC1
+0018 C000 FFE5 00428         MOVFF   r0x02, POSTDEC1
+001C C000 FFE5 00429         MOVFF   r0x03, POSTDEC1
+0020 0E03      00430         MOVLW   0x03
+0022 CFDB F000 00431         MOVFF   PLUSW2, r0x00
+               00432 ;       .line   231; drivers/lcd.c      if (OSMutexCreate(&LCD,priority) != ALLOC_EVENT_OK)
+gpasm-0.13.7 beta               build/default/production/drivers/lcd.asm7-19-2011  15:07:14          PAGE  9
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+ 
+0026 0E00      00433         MOVLW   HIGH(_LCD)
+0028 6E00      00434         MOVWF   r0x02
+002A 0E00      00435         MOVLW   LOW(_LCD)
+002C 6E00      00436         MOVWF   r0x01
+002E 0E80      00437         MOVLW   0x80
+0030 6E00      00438         MOVWF   r0x03
+0032 5000      00439         MOVF    r0x00, W
+0034 6EE5      00440         MOVWF   POSTDEC1
+0036 5000      00441         MOVF    r0x03, W
+0038 6EE5      00442         MOVWF   POSTDEC1
+003A 5000      00443         MOVF    r0x02, W
+003C 6EE5      00444         MOVWF   POSTDEC1
+003E 5000      00445         MOVF    r0x01, W
+0040 6EE5      00446         MOVWF   POSTDEC1
+0042 EC00 F000 00447         CALL    _OSMutexCreate
+0046 6E00      00448         MOVWF   r0x00
+0048 0E04      00449         MOVLW   0x04
+004A 26E1      00450         ADDWF   FSR1L, F
+004C B0D8      00451         BTFSC   STATUS, 0
+004E 2AE2      00452         INCF    FSR1H, F
+0050 5000      00453         MOVF    r0x00, W
+0052 E000      00454         BZ      _00148_DS_
+0054 00455 _00144_DS_:
+               00456 ;       .line   235; drivers/lcd.c      while(1){};
+0054 D000      00457         BRA     _00144_DS_
+0056 00458 _00148_DS_:
+0056 CFE4 F000 00459         MOVFF   PREINC1, r0x03
+005A CFE4 F000 00460         MOVFF   PREINC1, r0x02
+005E CFE4 F000 00461         MOVFF   PREINC1, r0x01
+0062 CFE4 F000 00462         MOVFF   PREINC1, r0x00
+0066 CFE4 FFD9 00463         MOVFF   PREINC1, FSR2L
+006A CFE4 FFDA 00464         MOVFF   PREINC1, FSR2H
+006E 0012      00465         RETURN  
+               00466 
+               00467 ; ; Starting pCode block
+               00468 S_lcd__init_lcd code
+0000 00469 _init_lcd:
+               00470 ;       .line   206; drivers/lcd.c      void init_lcd(void){
+0000 CFDA FFE5 00471         MOVFF   FSR2H, POSTDEC1
+0004 CFD9 FFE5 00472         MOVFF   FSR2L, POSTDEC1
+0008 CFE2 FFDA 00473         MOVFF   FSR1H, FSR2H
+000C CFE1 FFD9 00474         MOVFF   FSR1L, FSR2L
+               00475 ;       .line   207; drivers/lcd.c      dados = 0;
+0010 6A00      00476         CLRF    _LATD
+               00477 ;       .line   208; drivers/lcd.c      direcao = 0;
+0012 6A00      00478         CLRF    _TRISD
+               00479 ;       .line   209; drivers/lcd.c      controle = 0;
+0014 6A00      00480         CLRF    _LATE
+               00481 ;       .line   210; drivers/lcd.c      controle_dir = ~0x06;
+0016 0EF9      00482         MOVLW   0xf9
+0018 6E00      00483         MOVWF   _TRISE
+               00484 ;       .line   211; drivers/lcd.c      instr(0x38);
+001A 0E38      00485         MOVLW   0x38
+001C 6EE5      00486         MOVWF   POSTDEC1
+gpasm-0.13.7 beta               build/default/production/drivers/lcd.asm7-19-2011  15:07:14          PAGE 10
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+ 
+001E EC00 F000 00487         CALL    _instr
+0022 2AE1      00488         INCF    FSR1L, F
+0024 B0D8      00489         BTFSC   STATUS, 0
+0026 2AE2      00490         INCF    FSR1H, F
+               00491 ;       .line   212; drivers/lcd.c      DelayTask(20);
+0028 0E00      00492         MOVLW   0x00
+002A 6EE5      00493         MOVWF   POSTDEC1
+002C 0E14      00494         MOVLW   0x14
+002E 6EE5      00495         MOVWF   POSTDEC1
+0030 EC00 F000 00496         CALL    _DelayTask
+0034 0E02      00497         MOVLW   0x02
+0036 26E1      00498         ADDWF   FSR1L, F
+0038 B0D8      00499         BTFSC   STATUS, 0
+003A 2AE2      00500         INCF    FSR1H, F
+               00501 ;       .line   213; drivers/lcd.c      instr(0x38);
+003C 0E38      00502         MOVLW   0x38
+003E 6EE5      00503         MOVWF   POSTDEC1
+0040 EC00 F000 00504         CALL    _instr
+0044 2AE1      00505         INCF    FSR1L, F
+0046 B0D8      00506         BTFSC   STATUS, 0
+0048 2AE2      00507         INCF    FSR1H, F
+               00508 ;       .line   214; drivers/lcd.c      DelayTask(20);
+004A 0E00      00509         MOVLW   0x00
+004C 6EE5      00510         MOVWF   POSTDEC1
+004E 0E14      00511         MOVLW   0x14
+0050 6EE5      00512         MOVWF   POSTDEC1
+0052 EC00 F000 00513         CALL    _DelayTask
+0056 0E02      00514         MOVLW   0x02
+0058 26E1      00515         ADDWF   FSR1L, F
+005A B0D8      00516         BTFSC   STATUS, 0
+005C 2AE2      00517         INCF    FSR1H, F
+               00518 ;       .line   215; drivers/lcd.c      instr(0x06);
+005E 0E06      00519         MOVLW   0x06
+0060 6EE5      00520         MOVWF   POSTDEC1
+0062 EC00 F000 00521         CALL    _instr
+0066 2AE1      00522         INCF    FSR1L, F
+0068 B0D8      00523         BTFSC   STATUS, 0
+006A 2AE2      00524         INCF    FSR1H, F
+               00525 ;       .line   216; drivers/lcd.c      DelayTask(20);
+006C 0E00      00526         MOVLW   0x00
+006E 6EE5      00527         MOVWF   POSTDEC1
+0070 0E14      00528         MOVLW   0x14
+0072 6EE5      00529         MOVWF   POSTDEC1
+0074 EC00 F000 00530         CALL    _DelayTask
+0078 0E02      00531         MOVLW   0x02
+007A 26E1      00532         ADDWF   FSR1L, F
+007C B0D8      00533         BTFSC   STATUS, 0
+007E 2AE2      00534         INCF    FSR1H, F
+               00535 ;       .line   217; drivers/lcd.c      instr(0x0c);
+0080 0E0C      00536         MOVLW   0x0c
+0082 6EE5      00537         MOVWF   POSTDEC1
+0084 EC00 F000 00538         CALL    _instr
+0088 2AE1      00539         INCF    FSR1L, F
+008A B0D8      00540         BTFSC   STATUS, 0
+gpasm-0.13.7 beta               build/default/production/drivers/lcd.asm7-19-2011  15:07:14          PAGE 11
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+ 
+008C 2AE2      00541         INCF    FSR1H, F
+               00542 ;       .line   218; drivers/lcd.c      DelayTask(20);
+008E 0E00      00543         MOVLW   0x00
+0090 6EE5      00544         MOVWF   POSTDEC1
+0092 0E14      00545         MOVLW   0x14
+0094 6EE5      00546         MOVWF   POSTDEC1
+0096 EC00 F000 00547         CALL    _DelayTask
+009A 0E02      00548         MOVLW   0x02
+009C 26E1      00549         ADDWF   FSR1L, F
+009E B0D8      00550         BTFSC   STATUS, 0
+00A0 2AE2      00551         INCF    FSR1H, F
+               00552 ;       .line   219; drivers/lcd.c      instr(0x01);  
+00A2 0E01      00553         MOVLW   0x01
+00A4 6EE5      00554         MOVWF   POSTDEC1
+00A6 EC00 F000 00555         CALL    _instr
+00AA 2AE1      00556         INCF    FSR1L, F
+00AC B0D8      00557         BTFSC   STATUS, 0
+00AE 2AE2      00558         INCF    FSR1H, F
+               00559 ;       .line   220; drivers/lcd.c      DelayTask(20);
+00B0 0E00      00560         MOVLW   0x00
+00B2 6EE5      00561         MOVWF   POSTDEC1
+00B4 0E14      00562         MOVLW   0x14
+00B6 6EE5      00563         MOVWF   POSTDEC1
+00B8 EC00 F000 00564         CALL    _DelayTask
+00BC 0E02      00565         MOVLW   0x02
+00BE 26E1      00566         ADDWF   FSR1L, F
+00C0 B0D8      00567         BTFSC   STATUS, 0
+00C2 2AE2      00568         INCF    FSR1H, F
+00C4 CFE4 FFD9 00569         MOVFF   PREINC1, FSR2L
+00C8 CFE4 FFDA 00570         MOVFF   PREINC1, FSR2H
+00CC 0012      00571         RETURN  
+               00572 
+               00573 ; ; Starting pCode block
+               00574 S_lcd__caractere        code
+0000 00575 _caractere:
+               00576 ;       .line   174; drivers/lcd.c      void caractere(char dado)
+0000 CFDA FFE5 00577         MOVFF   FSR2H, POSTDEC1
+0004 CFD9 FFE5 00578         MOVFF   FSR2L, POSTDEC1
+0008 CFE2 FFDA 00579         MOVFF   FSR1H, FSR2H
+000C CFE1 FFD9 00580         MOVFF   FSR1L, FSR2L
+0010 C000 FFE5 00581         MOVFF   r0x00, POSTDEC1
+0014 0E03      00582         MOVLW   0x03
+0016 CFDB F000 00583         MOVFF   PLUSW2, r0x00
+               00584 ;       .line   177; drivers/lcd.c      testa_bit();
+001A EC00 F000 00585         CALL    _testa_bit
+               00586 ;       .line   178; drivers/lcd.c      RS = 1;
+001E 8400      00587         BSF     _LATEbits, 2
+               00588 ;       .line   180; drivers/lcd.c      dados = dado;
+0020 C000 F000 00589         MOVFF   r0x00, _LATD
+               00590 ;       .line   181; drivers/lcd.c      E = 1;
+0024 8200      00591         BSF     _LATEbits, 1
+0026 0000      00592         nop
+0028 0000      00593         nop
+002A 0000      00594         nop
+gpasm-0.13.7 beta               build/default/production/drivers/lcd.asm7-19-2011  15:07:14          PAGE 12
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+ 
+002C 0000      00595         nop
+002E 0000      00596         nop
+0030 0000      00597         nop
+0032 0000      00598         nop
+0034 0000      00599         nop
+0036 0000      00600         nop
+0038 0000      00601         nop
+003A 0000      00602         nop
+003C 0000      00603         nop
+003E 0000      00604         nop
+0040 0000      00605         nop
+0042 0000      00606         nop
+               00607         
+               00608 ;       .line   199; drivers/lcd.c      E = 0;
+0044 9200      00609         BCF     _LATEbits, 1
+0046 CFE4 F000 00610         MOVFF   PREINC1, r0x00
+004A CFE4 FFD9 00611         MOVFF   PREINC1, FSR2L
+004E CFE4 FFDA 00612         MOVFF   PREINC1, FSR2H
+0052 0012      00613         RETURN  
+               00614 
+               00615 ; ; Starting pCode block
+               00616 S_lcd__instr    code
+0000 00617 _instr:
+               00618 ;       .line   146; drivers/lcd.c      void instr(char comando){
+0000 CFDA FFE5 00619         MOVFF   FSR2H, POSTDEC1
+0004 CFD9 FFE5 00620         MOVFF   FSR2L, POSTDEC1
+0008 CFE2 FFDA 00621         MOVFF   FSR1H, FSR2H
+000C CFE1 FFD9 00622         MOVFF   FSR1L, FSR2L
+0010 C000 FFE5 00623         MOVFF   r0x00, POSTDEC1
+0014 0E03      00624         MOVLW   0x03
+0016 CFDB F000 00625         MOVFF   PLUSW2, r0x00
+               00626 ;       .line   147; drivers/lcd.c      testa_bit();
+001A EC00 F000 00627         CALL    _testa_bit
+               00628 ;       .line   148; drivers/lcd.c      RS = 0;
+001E 9400      00629         BCF     _LATEbits, 2
+               00630 ;       .line   150; drivers/lcd.c      dados = comando;
+0020 C000 F000 00631         MOVFF   r0x00, _LATD
+               00632 ;       .line   151; drivers/lcd.c      E = 1;
+0024 8200      00633         BSF     _LATEbits, 1
+0026 0000      00634         nop
+0028 0000      00635         nop
+002A 0000      00636         nop
+002C 0000      00637         nop
+002E 0000      00638         nop
+0030 0000      00639         nop
+0032 0000      00640         nop
+0034 0000      00641         nop
+0036 0000      00642         nop
+0038 0000      00643         nop
+003A 0000      00644         nop
+003C 0000      00645         nop
+003E 0000      00646         nop
+0040 0000      00647         nop
+0042 0000      00648         nop
+gpasm-0.13.7 beta               build/default/production/drivers/lcd.asm7-19-2011  15:07:14          PAGE 13
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+ 
+               00649         
+               00650 ;       .line   169; drivers/lcd.c      E = 0;
+0044 9200      00651         BCF     _LATEbits, 1
+0046 CFE4 F000 00652         MOVFF   PREINC1, r0x00
+004A CFE4 FFD9 00653         MOVFF   PREINC1, FSR2L
+004E CFE4 FFDA 00654         MOVFF   PREINC1, FSR2H
+0052 0012      00655         RETURN  
+               00656 
+               00657 ; ; Starting pCode block
+               00658 S_lcd__write_numero     code
+0000 00659 _write_numero:
+               00660 ;       .line   90; drivers/lcd.c       void write_numero(unsigned int numero)
+0000 CFDA FFE5 00661         MOVFF   FSR2H, POSTDEC1
+0004 CFD9 FFE5 00662         MOVFF   FSR2L, POSTDEC1
+0008 CFE2 FFDA 00663         MOVFF   FSR1H, FSR2H
+000C CFE1 FFD9 00664         MOVFF   FSR1L, FSR2L
+0010 C000 FFE5 00665         MOVFF   r0x00, POSTDEC1
+0014 C000 FFE5 00666         MOVFF   r0x01, POSTDEC1
+0018 C000 FFE5 00667         MOVFF   r0x02, POSTDEC1
+001C C000 FFE5 00668         MOVFF   r0x03, POSTDEC1
+0020 0E03      00669         MOVLW   0x03
+0022 CFDB F000 00670         MOVFF   PLUSW2, r0x00
+0026 0E04      00671         MOVLW   0x04
+0028 CFDB F000 00672         MOVFF   PLUSW2, r0x01
+               00673 ;       .line   94; drivers/lcd.c       testa_bit();
+002C EC00 F000 00674         CALL    _testa_bit
+               00675 ;       .line   95; drivers/lcd.c       RS = 1;
+0030 8400      00676         BSF     _LATEbits, 2
+               00677 ;       .line   97; drivers/lcd.c       i = (numero / 10);
+0032 0E00      00678         MOVLW   0x00
+0034 6EE5      00679         MOVWF   POSTDEC1
+0036 0E0A      00680         MOVLW   0x0a
+0038 6EE5      00681         MOVWF   POSTDEC1
+003A 5000      00682         MOVF    r0x01, W
+003C 6EE5      00683         MOVWF   POSTDEC1
+003E 5000      00684         MOVF    r0x00, W
+0040 6EE5      00685         MOVWF   POSTDEC1
+0042 EC00 F000 00686         CALL    __divuint
+0046 6E00      00687         MOVWF   r0x02
+0048 CFF3 F000 00688         MOVFF   PRODL, r0x03
+004C 0E04      00689         MOVLW   0x04
+004E 26E1      00690         ADDWF   FSR1L, F
+0050 B0D8      00691         BTFSC   STATUS, 0
+0052 2AE2      00692         INCF    FSR1H, F
+               00693 ;       .line   98; drivers/lcd.c       dados = 48 + (unsigned char)i;
+0054 0E30      00694         MOVLW   0x30
+0056 2400      00695         ADDWF   r0x02, W
+0058 6E00      00696         MOVWF   _LATD
+               00697 ;       .line   99; drivers/lcd.c       E = 1;
+005A 8200      00698         BSF     _LATEbits, 1
+005C 0000      00699         nop
+005E 0000      00700         nop
+0060 0000      00701         nop
+0062 0000      00702         nop
+gpasm-0.13.7 beta               build/default/production/drivers/lcd.asm7-19-2011  15:07:14          PAGE 14
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+ 
+0064 0000      00703         nop
+0066 0000      00704         nop
+0068 0000      00705         nop
+006A 0000      00706         nop
+006C 0000      00707         nop
+006E 0000      00708         nop
+0070 0000      00709         nop
+0072 0000      00710         nop
+0074 0000      00711         nop
+0076 0000      00712         nop
+0078 0000      00713         nop
+               00714         
+               00715 ;       .line   117; drivers/lcd.c      E = 0;
+007A 9200      00716         BCF     _LATEbits, 1
+               00717 ;       .line   119; drivers/lcd.c      testa_bit();
+007C EC00 F000 00718         CALL    _testa_bit
+               00719 ;       .line   120; drivers/lcd.c      RS = 1;
+0080 8400      00720         BSF     _LATEbits, 2
+               00721 ; ;multiply lit val:0x0a by variable r0x02 and store in r0x02
+               00722 ; ;Unrolled 8 X 8 multiplication
+               00723 ; ;FIXME: the function does not support result==WREG
+               00724 ;       .line   122; drivers/lcd.c      dados = 48 + (unsigned char)(numero - (unsigned int)(i * 10));
+0082 5000      00725         MOVF    r0x02, W
+0084 0D0A      00726         MULLW   0x0a
+0086 CFF3 F000 00727         MOVFF   PRODL, r0x02
+008A 5000      00728         MOVF    r0x02, W
+008C 5E00      00729         SUBWF   r0x00, F
+008E 0E30      00730         MOVLW   0x30
+0090 2400      00731         ADDWF   r0x00, W
+0092 6E00      00732         MOVWF   _LATD
+               00733 ;       .line   123; drivers/lcd.c      E = 1;
+0094 8200      00734         BSF     _LATEbits, 1
+0096 0000      00735         nop
+0098 0000      00736         nop
+009A 0000      00737         nop
+009C 0000      00738         nop
+009E 0000      00739         nop
+00A0 0000      00740         nop
+00A2 0000      00741         nop
+00A4 0000      00742         nop
+00A6 0000      00743         nop
+00A8 0000      00744         nop
+00AA 0000      00745         nop
+00AC 0000      00746         nop
+00AE 0000      00747         nop
+00B0 0000      00748         nop
+00B2 0000      00749         nop
+               00750         
+               00751 ;       .line   141; drivers/lcd.c      E = 0;   
+00B4 9200      00752         BCF     _LATEbits, 1
+00B6 CFE4 F000 00753         MOVFF   PREINC1, r0x03
+00BA CFE4 F000 00754         MOVFF   PREINC1, r0x02
+00BE CFE4 F000 00755         MOVFF   PREINC1, r0x01
+00C2 CFE4 F000 00756         MOVFF   PREINC1, r0x00
+gpasm-0.13.7 beta               build/default/production/drivers/lcd.asm7-19-2011  15:07:14          PAGE 15
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+ 
+00C6 CFE4 FFD9 00757         MOVFF   PREINC1, FSR2L
+00CA CFE4 FFDA 00758         MOVFF   PREINC1, FSR2H
+00CE 0012      00759         RETURN  
+               00760 
+               00761 ; ; Starting pCode block
+               00762 S_lcd__write_lcd        code
+0000 00763 _write_lcd:
+               00764 ;       .line   54; drivers/lcd.c       void write_lcd(char *string){
+0000 CFDA FFE5 00765         MOVFF   FSR2H, POSTDEC1
+0004 CFD9 FFE5 00766         MOVFF   FSR2L, POSTDEC1
+0008 CFE2 FFDA 00767         MOVFF   FSR1H, FSR2H
+000C CFE1 FFD9 00768         MOVFF   FSR1L, FSR2L
+0010 C000 FFE5 00769         MOVFF   r0x00, POSTDEC1
+0014 C000 FFE5 00770         MOVFF   r0x01, POSTDEC1
+0018 C000 FFE5 00771         MOVFF   r0x02, POSTDEC1
+001C C000 FFE5 00772         MOVFF   r0x03, POSTDEC1
+0020 0E03      00773         MOVLW   0x03
+0022 CFDB F000 00774         MOVFF   PLUSW2, r0x00
+0026 0E04      00775         MOVLW   0x04
+0028 CFDB F000 00776         MOVFF   PLUSW2, r0x01
+002C 0E05      00777         MOVLW   0x05
+002E CFDB F000 00778         MOVFF   PLUSW2, r0x02
+0032 00779 _00115_DS_:
+               00780 ;       .line   56; drivers/lcd.c       while(*string)
+0032 C000 FFE9 00781         MOVFF   r0x00, FSR0L
+0036 C000 FFF3 00782         MOVFF   r0x01, PRODL
+003A 5000      00783         MOVF    r0x02, W
+003C EC00 F000 00784         CALL    __gptrget1
+0040 6E00      00785         MOVWF   r0x03
+0042 5000      00786         MOVF    r0x03, W
+0044 E000      00787         BZ      _00118_DS_
+               00788 ;       .line   58; drivers/lcd.c       testa_bit();
+0046 EC00 F000 00789         CALL    _testa_bit
+               00790 ;       .line   59; drivers/lcd.c       RS = 1;
+004A 8400      00791         BSF     _LATEbits, 2
+               00792 ;       .line   61; drivers/lcd.c       dados = *string;
+004C C000 FFE9 00793         MOVFF   r0x00, FSR0L
+0050 C000 FFF3 00794         MOVFF   r0x01, PRODL
+0054 5000      00795         MOVF    r0x02, W
+0056 EC00 F000 00796         CALL    __gptrget1
+005A 6E00      00797         MOVWF   _LATD
+               00798 ;       .line   62; drivers/lcd.c       E = 1;
+005C 8200      00799         BSF     _LATEbits, 1
+005E 0000      00800         nop
+0060 0000      00801         nop
+0062 0000      00802         nop
+0064 0000      00803         nop
+0066 0000      00804         nop
+0068 0000      00805         nop
+006A 0000      00806         nop
+006C 0000      00807         nop
+006E 0000      00808         nop
+0070 0000      00809         nop
+0072 0000      00810         nop
+gpasm-0.13.7 beta               build/default/production/drivers/lcd.asm7-19-2011  15:07:14          PAGE 16
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+ 
+0074 0000      00811         nop
+0076 0000      00812         nop
+0078 0000      00813         nop
+007A 0000      00814         nop
+               00815         
+               00816 ;       .line   82; drivers/lcd.c       E = 0;
+007C 9200      00817         BCF     _LATEbits, 1
+               00818 ;       .line   83; drivers/lcd.c       string++;
+007E 2A00      00819         INCF    r0x00, F
+0080 B0D8      00820         BTFSC   STATUS, 0
+0082 2A00      00821         INCF    r0x01, F
+0084 B0D8      00822         BTFSC   STATUS, 0
+0086 2A00      00823         INCF    r0x02, F
+0088 D000      00824         BRA     _00115_DS_
+008A 00825 _00118_DS_:
+008A CFE4 F000 00826         MOVFF   PREINC1, r0x03
+008E CFE4 F000 00827         MOVFF   PREINC1, r0x02
+0092 CFE4 F000 00828         MOVFF   PREINC1, r0x01
+0096 CFE4 F000 00829         MOVFF   PREINC1, r0x00
+009A CFE4 FFD9 00830         MOVFF   PREINC1, FSR2L
+009E CFE4 FFDA 00831         MOVFF   PREINC1, FSR2H
+00A2 0012      00832         RETURN  
+               00833 
+               00834 ; ; Starting pCode block
+               00835 S_lcd__releaseLCD       code
+0000 00836 _releaseLCD:
+               00837 ;       .line   47; drivers/lcd.c       INT8U releaseLCD(void)
+0000 CFDA FFE5 00838         MOVFF   FSR2H, POSTDEC1
+0004 CFD9 FFE5 00839         MOVFF   FSR2L, POSTDEC1
+0008 CFE2 FFDA 00840         MOVFF   FSR1H, FSR2H
+000C CFE1 FFD9 00841         MOVFF   FSR1L, FSR2L
+0010 C000 FFE5 00842         MOVFF   r0x00, POSTDEC1
+0014 0000      00843         BANKSEL (_LCD + 2)
+               00844 ;       .line   50; drivers/lcd.c       return OSMutexRelease (LCD);
+0016 5100      00845         MOVF    (_LCD + 2), W, B
+0018 6EE5      00846         MOVWF   POSTDEC1
+001A 0000      00847         BANKSEL (_LCD + 1)
+001C 5100      00848         MOVF    (_LCD + 1), W, B
+001E 6EE5      00849         MOVWF   POSTDEC1
+0020 0000      00850         BANKSEL _LCD
+0022 5100      00851         MOVF    _LCD, W, B
+0024 6EE5      00852         MOVWF   POSTDEC1
+0026 EC00 F000 00853         CALL    _OSMutexRelease
+002A 6E00      00854         MOVWF   r0x00
+002C 0E03      00855         MOVLW   0x03
+002E 26E1      00856         ADDWF   FSR1L, F
+0030 B0D8      00857         BTFSC   STATUS, 0
+0032 2AE2      00858         INCF    FSR1H, F
+0034 5000      00859         MOVF    r0x00, W
+0036 CFE4 F000 00860         MOVFF   PREINC1, r0x00
+003A CFE4 FFD9 00861         MOVFF   PREINC1, FSR2L
+003E CFE4 FFDA 00862         MOVFF   PREINC1, FSR2H
+0042 0012      00863         RETURN  
+               00864 
+gpasm-0.13.7 beta               build/default/production/drivers/lcd.asm7-19-2011  15:07:14          PAGE 17
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+ 
+               00865 ; ; Starting pCode block
+               00866 S_lcd__acquireLCD       code
+0000 00867 _acquireLCD:
+               00868 ;       .line   40; drivers/lcd.c       void acquireLCD(void)
+0000 CFDA FFE5 00869         MOVFF   FSR2H, POSTDEC1
+0004 CFD9 FFE5 00870         MOVFF   FSR2L, POSTDEC1
+0008 CFE2 FFDA 00871         MOVFF   FSR1H, FSR2H
+000C CFE1 FFD9 00872         MOVFF   FSR1L, FSR2L
+0010 0000      00873         BANKSEL (_LCD + 2)
+               00874 ;       .line   43; drivers/lcd.c       OSMutexAcquire(LCD);
+0012 5100      00875         MOVF    (_LCD + 2), W, B
+0014 6EE5      00876         MOVWF   POSTDEC1
+0016 0000      00877         BANKSEL (_LCD + 1)
+0018 5100      00878         MOVF    (_LCD + 1), W, B
+001A 6EE5      00879         MOVWF   POSTDEC1
+001C 0000      00880         BANKSEL _LCD
+001E 5100      00881         MOVF    _LCD, W, B
+0020 6EE5      00882         MOVWF   POSTDEC1
+0022 EC00 F000 00883         CALL    _OSMutexAcquire
+0026 0E03      00884         MOVLW   0x03
+0028 26E1      00885         ADDWF   FSR1L, F
+002A B0D8      00886         BTFSC   STATUS, 0
+002C 2AE2      00887         INCF    FSR1H, F
+002E CFE4 FFD9 00888         MOVFF   PREINC1, FSR2L
+0032 CFE4 FFDA 00889         MOVFF   PREINC1, FSR2H
+0036 0012      00890         RETURN  
+               00891 
+               00892 
+               00893 
+               00894 ; Statistics:
+               00895 ; code size:     1242 (0x04da) bytes ( 0.95%)
+               00896 ;                 621 (0x026d) words
+               00897 ; udata size:       3 (0x0003) bytes ( 0.23%)
+               00898 ; access size:      4 (0x0004) bytes
+               00899 
+               00900 
+gpasm-0.13.7 beta               build/default/production/drivers/lcd.asm7-19-2011  15:07:14          PAGE 18
+
+
+SYMBOL TABLE
+  LABEL                             VALUE 
+
+FSR0L                             00000FE9
+FSR1H                             00000FE2
+FSR1L                             00000FE1
+FSR2H                             00000FDA
+FSR2L                             00000FD9
+PLUSW2                            00000FDB
+POSTDEC1                          00000FE5
+PREINC1                           00000FE4
+PRODL                             00000FF3
+STATUS                            00000FD8
+WREG                              00000FE8
+_00115_DS_                        00000032
+_00118_DS_                        0000008A
+_00144_DS_                        00000054
+_00148_DS_                        00000056
+_00153_DS_                        00000038
+_00154_DS_                        00000042
+_00155_DS_                        0000004C
+_00156_DS_                        0000004E
+_00157_DS_                        00000070
+_ADCON0                           00000000
+_ADCON0bits                       00000000
+_ADCON1                           00000000
+_ADCON1bits                       00000000
+_ADCON2                           00000000
+_ADCON2bits                       00000000
+_ADRES                            00000000
+_ADRESH                           00000000
+_ADRESL                           00000000
+_BAUDCON                          00000000
+_BAUDCONbits                      00000000
+_BAUDCTL                          00000000
+_BAUDCTLbits                      00000000
+_BRTOS_Mutex_Table                00000000
+_BRTOS_Queue_Table                00000000
+_BRTOS_Sem_Table                  00000000
+_BSR                              00000000
+_BufferText                       00000000
+_CCP1CON                          00000000
+_CCP1CONbits                      00000000
+_CCP2CON                          00000000
+_CCP2CONbits                      00000000
+_CCPR1                            00000000
+_CCPR1H                           00000000
+_CCPR1L                           00000000
+_CCPR2                            00000000
+_CCPR2H                           00000000
+_CCPR2L                           00000000
+_CMCON                            00000000
+_CMCONbits                        00000000
+_CVRCON                           00000000
+_CVRCONbits                       00000000
+_ContextTask                      00000000
+gpasm-0.13.7 beta               build/default/production/drivers/lcd.asm7-19-2011  15:07:14          PAGE 19
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+ 
+_DDRA                             00000000
+_DDRAbits                         00000000
+_DDRB                             00000000
+_DDRBbits                         00000000
+_DDRC                             00000000
+_DDRCbits                         00000000
+_DDRD                             00000000
+_DDRDbits                         00000000
+_DDRE                             00000000
+_DDREbits                         00000000
+_Data                             00000000
+_DelayTask                        00000000
+_ECCP1AS                          00000000
+_ECCP1ASbits                      00000000
+_EEADR                            00000000
+_EECON1                           00000000
+_EECON1bits                       00000000
+_EECON2                           00000000
+_EEDATA                           00000000
+_FSR0H                            00000000
+_FSR0L                            00000000
+_FSR1H                            00000000
+_FSR1L                            00000000
+_FSR2H                            00000000
+_FSR2L                            00000000
+_HLVDCON                          00000000
+_HLVDCONbits                      00000000
+_Head                             00000000
+_Hora                             00000000
+_INDF0                            00000000
+_INDF1                            00000000
+_INDF2                            00000000
+_INTCON                           00000000
+_INTCON2                          00000000
+_INTCON2bits                      00000000
+_INTCON3                          00000000
+_INTCON3bits                      00000000
+_INTCONbits                       00000000
+_IPR1                             00000000
+_IPR1bits                         00000000
+_IPR2                             00000000
+_IPR2bits                         00000000
+_LATA                             00000000
+_LATAbits                         00000000
+_LATB                             00000000
+_LATBbits                         00000000
+_LATC                             00000000
+_LATCbits                         00000000
+_LATD                             00000000
+_LATDbits                         00000000
+_LATE                             00000000
+_LATEbits                         00000000
+_LCD                              00000000
+_LVDCON                           00000000
+gpasm-0.13.7 beta               build/default/production/drivers/lcd.asm7-19-2011  15:07:14          PAGE 20
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+ 
+_LVDCONbits                       00000000
+_LastOSDuty                       00000000
+_NumberOfInstalledTasks           00000000
+_OSBlockedList                    00000000
+_OSCCON                           00000000
+_OSCCONbits                       00000000
+_OSCTUNE                          00000000
+_OSCTUNEbits                      00000000
+_OSDuty                           00000000
+_OSDutyTmp                        00000000
+_OSMutexAcquire                   00000000
+_OSMutexCreate                    00000000
+_OSMutexRelease                   00000000
+_OSReadyList                      00000000
+_PC                               00000000
+_PCL                              00000000
+_PCLATH                           00000000
+_PCLATU                           00000000
+_PIE1                             00000000
+_PIE1bits                         00000000
+_PIE2                             00000000
+_PIE2bits                         00000000
+_PIR1                             00000000
+_PIR1bits                         00000000
+_PIR2                             00000000
+_PIR2bits                         00000000
+_PLUSW0                           00000000
+_PLUSW1                           00000000
+_PLUSW2                           00000000
+_PORTA                            00000000
+_PORTAbits                        00000000
+_PORTB                            00000000
+_PORTBbits                        00000000
+_PORTC                            00000000
+_PORTCbits                        00000000
+_PORTD                            00000000
+_PORTDbits                        00000000
+_PORTE                            00000000
+_PORTEbits                        00000000
+_POSTDEC0                         00000000
+_POSTDEC1                         00000000
+_POSTDEC2                         00000000
+_POSTINC0                         00000000
+_POSTINC1                         00000000
+_POSTINC2                         00000000
+_PR2                              00000000
+_PREINC0                          00000000
+_PREINC1                          00000000
+_PREINC2                          00000000
+_PROD                             00000000
+_PRODH                            00000000
+_PRODL                            00000000
+_PWM1CON                          00000000
+_PWM1CONbits                      00000000
+gpasm-0.13.7 beta               build/default/production/drivers/lcd.asm7-19-2011  15:07:14          PAGE 21
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+ 
+_PriorityMask                     00000000
+_PriorityVector                   00000000
+_QUEUE_STACK                      00000000
+_RCON                             00000000
+_RCONbits                         00000000
+_RCREG                            00000000
+_RCSTA                            00000000
+_RCSTAbits                        00000000
+_SPBRG                            00000000
+_SPBRGH                           00000000
+_SPvalue                          00000000
+_SSPADD                           00000000
+_SSPBUF                           00000000
+_SSPCON1                          00000000
+_SSPCON1bits                      00000000
+_SSPCON2                          00000000
+_SSPCON2bits                      00000000
+_SSPSTAT                          00000000
+_SSPSTATbits                      00000000
+_STACK                            00000000
+_STATUS                           00000000
+_STATUSbits                       00000000
+_STKPTR                           00000000
+_STKPTRbits                       00000000
+_SelectedTask                     00000000
+_StackAddress                     00000000
+_T0CON                            00000000
+_T0CONbits                        00000000
+_T1CON                            00000000
+_T1CONbits                        00000000
+_T2CON                            00000000
+_T2CONbits                        00000000
+_T3CON                            00000000
+_T3CONbits                        00000000
+_TABLAT                           00000000
+_TBLPTR                           00000000
+_TBLPTRH                          00000000
+_TBLPTRL                          00000000
+_TBLPTRU                          00000000
+_TMR0H                            00000000
+_TMR0L                            00000000
+_TMR1H                            00000000
+_TMR1L                            00000000
+_TMR2                             00000000
+_TMR3H                            00000000
+_TMR3L                            00000000
+_TOS                              00000000
+_TOSH                             00000000
+_TOSL                             00000000
+_TOSU                             00000000
+_TRISA                            00000000
+_TRISAbits                        00000000
+_TRISB                            00000000
+_TRISBbits                        00000000
+gpasm-0.13.7 beta               build/default/production/drivers/lcd.asm7-19-2011  15:07:14          PAGE 22
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+ 
+_TRISC                            00000000
+_TRISCbits                        00000000
+_TRISD                            00000000
+_TRISDbits                        00000000
+_TRISE                            00000000
+_TRISEbits                        00000000
+_TXREG                            00000000
+_TXSTA                            00000000
+_TXSTAbits                        00000000
+_Tail                             00000000
+_TaskAlloc                        00000000
+_WDTCON                           00000000
+_WDTCONbits                       00000000
+_WREG                             00000000
+__18F4520                         00000001
+__divuint                         00000000
+__gptrget1                        00000000
+_acquireLCD                       00000000
+_caractere                        00000000
+_counter                          00000000
+_currentTask                      00000000
+_iNesting                         00000000
+_iQueueAddress                    00000000
+_iStackAddress                    00000000
+_init_lcd                         00000000
+_init_lcd_resource                00000000
+_instr                            00000000
+_limpa_lcd                        00000000
+_posiciona                        00000000
+_releaseLCD                       00000000
+_task_LCD                         00000000
+_testa_bit                        00000000
+_version                          00000000
+_write_lcd                        00000000
+_write_numero                     00000000
+r0x00                             00000000
+r0x01                             00000001
+r0x02                             00000002
+r0x03                             00000003
+
+
+Errors   :       0
+Warnings :       0 reported,       0 suppressed
+Messages :       0 reported,       0 suppressed
+

@@ -1,0 +1,246 @@
+gpasm-0.13.7 beta               build/default/production/drivers/adc.asm7-19-2011  15:07:13          PAGE  1
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+ 
+               00001 ;--------------------------------------------------------
+               00002 ; File Created by SDCC : free open source ANSI-C Compiler
+               00003 ; Version 2.9.0 #5416 (Apr 29 2011) (UNIX)
+               00004 ; This file was generated Tue Jul 19 15:07:13 2011
+               00005 ;--------------------------------------------------------
+               00006 ; PIC16 port for the Microchip 16-bit core micros
+               00007 ;--------------------------------------------------------
+               00008         list    p=18f4520
+               00009 
+               00010         radix dec
+               00011 
+               00012 ;--------------------------------------------------------
+               00013 ; public variables in this module
+               00014 ;--------------------------------------------------------
+               00015         global _InicializaAD
+               00016         global _LeValorAD
+               00017 ;--------------------------------------------------------
+               00018 ;       Equates to used internal registers
+               00019 ;--------------------------------------------------------
+  00000FE8     00020 WREG    equ     0xfe8
+  00000FE9     00021 FSR0L   equ     0xfe9
+  00000FEA     00022 FSR0H   equ     0xfea
+  00000FE1     00023 FSR1L   equ     0xfe1
+  00000FE2     00024 FSR1H   equ     0xfe2
+  00000FD9     00025 FSR2L   equ     0xfd9
+  00000FDA     00026 FSR2H   equ     0xfda
+  00000FEF     00027 INDF0   equ     0xfef
+  00000FE5     00028 POSTDEC1        equ     0xfe5
+  00000FE4     00029 PREINC1 equ     0xfe4
+  00000FF3     00030 PRODL   equ     0xff3
+               00031 
+               00032 
+               00033 ; Internal registers
+               00034 .registers      udata_ovr       0x0000
+               00035 r0x00   res     1
+               00036 r0x01   res     1
+               00037 r0x02   res     1
+               00038 r0x03   res     1
+               00039 
+               00040 ;--------------------------------------------------------
+               00041 ; global & static initialisations
+               00042 ;--------------------------------------------------------
+               00043 ; I code from now on!
+               00044 ; ; Starting pCode block
+               00045 S_adc__LeValorAD        code
+0000 00046 _LeValorAD:
+               00047 ;       .line   32; drivers/adc.c       int LeValorAD(void)
+0000 CFDA FFE5 00048         MOVFF   FSR2H, POSTDEC1
+0004 CFD9 FFE5 00049         MOVFF   FSR2L, POSTDEC1
+0008 CFE2 FFDA 00050         MOVFF   FSR1H, FSR2H
+000C CFE1 FFD9 00051         MOVFF   FSR1L, FSR2L
+0010 C000 FFE5 00052         MOVFF   r0x00, POSTDEC1
+0014 C000 FFE5 00053         MOVFF   r0x01, POSTDEC1
+0018 C000 FFE5 00054         MOVFF   r0x02, POSTDEC1
+gpasm-0.13.7 beta               build/default/production/drivers/adc.asm7-19-2011  15:07:13          PAGE  2
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+ 
+001C C000 FFE5 00055         MOVFF   r0x03, POSTDEC1
+               00056 ;       .line   35; drivers/adc.c       ADCON0 |= 0b00000010;     //inicia conversao
+0020 0EC2      00057         MOVLW   0xc2
+0022 6E00      00058         MOVWF   r0x00
+0024 0E0F      00059         MOVLW   0x0f
+0026 6E00      00060         MOVWF   r0x01
+0028 0EC2      00061         MOVLW   0xc2
+002A 6E00      00062         MOVWF   r0x02
+002C 0E0F      00063         MOVLW   0x0f
+002E 6E00      00064         MOVWF   r0x03
+0030 C000 FFE9 00065         MOVFF   r0x02, FSR0L
+0034 C000 FFEA 00066         MOVFF   r0x03, FSR0H
+0038 CFEF F000 00067         MOVFF   INDF0, r0x02
+003C 8200      00068         BSF     r0x02, 1
+003E C000 FFE9 00069         MOVFF   r0x00, FSR0L
+0042 C000 FFEA 00070         MOVFF   r0x01, FSR0H
+0046 C000 FFEF 00071         MOVFF   r0x02, INDF0
+004A 00072 _00110_DS_:
+               00073 ;       .line   37; drivers/adc.c       while(BitTst(ADCON0,1)); // espera terminar a convers�o;
+004A 0EC2      00074         MOVLW   0xc2
+004C 6E00      00075         MOVWF   r0x00
+004E 0E0F      00076         MOVLW   0x0f
+0050 6E00      00077         MOVWF   r0x01
+0052 C000 FFE9 00078         MOVFF   r0x00, FSR0L
+0056 C000 FFEA 00079         MOVFF   r0x01, FSR0H
+005A CFEF F000 00080         MOVFF   INDF0, r0x00
+005E B200      00081         BTFSC   r0x00, 1
+0060 D000      00082         BRA     _00110_DS_
+               00083 ;       .line   39; drivers/adc.c       ADvalor = ADRESH ; // le o resultado
+0062 0EC4      00084         MOVLW   0xc4
+0064 6E00      00085         MOVWF   r0x00
+0066 0E0F      00086         MOVLW   0x0f
+0068 6E00      00087         MOVWF   r0x01
+006A C000 FFE9 00088         MOVFF   r0x00, FSR0L
+006E C000 FFEA 00089         MOVFF   r0x01, FSR0H
+0072 CFEF F000 00090         MOVFF   INDF0, r0x00
+0076 6A00      00091         CLRF    r0x01
+               00092 ;       .line   40; drivers/adc.c       ADvalor <<= 8;
+0078 5000      00093         MOVF    r0x00, W
+007A 6E00      00094         MOVWF   r0x01
+007C 6A00      00095         CLRF    r0x00
+               00096 ;       .line   41; drivers/adc.c       ADvalor += ADRESL;
+007E 0EC3      00097         MOVLW   0xc3
+0080 6E00      00098         MOVWF   r0x02
+0082 0E0F      00099         MOVLW   0x0f
+0084 6E00      00100         MOVWF   r0x03
+0086 C000 FFE9 00101         MOVFF   r0x02, FSR0L
+008A C000 FFEA 00102         MOVFF   r0x03, FSR0H
+008E CFEF F000 00103         MOVFF   INDF0, r0x02
+0092 6A00      00104         CLRF    r0x03
+0094 5000      00105         MOVF    r0x02, W
+0096 2600      00106         ADDWF   r0x00, F
+0098 5000      00107         MOVF    r0x03, W
+009A 2200      00108         ADDWFC  r0x01, F
+gpasm-0.13.7 beta               build/default/production/drivers/adc.asm7-19-2011  15:07:13          PAGE  3
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+ 
+               00109 ;       .line   42; drivers/adc.c       return ADvalor;
+009C C000 FFF3 00110         MOVFF   r0x01, PRODL
+00A0 5000      00111         MOVF    r0x00, W
+00A2 CFE4 F000 00112         MOVFF   PREINC1, r0x03
+00A6 CFE4 F000 00113         MOVFF   PREINC1, r0x02
+00AA CFE4 F000 00114         MOVFF   PREINC1, r0x01
+00AE CFE4 F000 00115         MOVFF   PREINC1, r0x00
+00B2 CFE4 FFD9 00116         MOVFF   PREINC1, FSR2L
+00B6 CFE4 FFDA 00117         MOVFF   PREINC1, FSR2H
+00BA 0012      00118         RETURN  
+               00119 
+               00120 ; ; Starting pCode block
+               00121 S_adc__InicializaAD     code
+0000 00122 _InicializaAD:
+               00123 ;       .line   23; drivers/adc.c       void InicializaAD(void)
+0000 CFDA FFE5 00124         MOVFF   FSR2H, POSTDEC1
+0004 CFD9 FFE5 00125         MOVFF   FSR2L, POSTDEC1
+0008 CFE2 FFDA 00126         MOVFF   FSR1H, FSR2H
+000C CFE1 FFD9 00127         MOVFF   FSR1L, FSR2L
+0010 C000 FFE5 00128         MOVFF   r0x00, POSTDEC1
+0014 C000 FFE5 00129         MOVFF   r0x01, POSTDEC1
+0018 C000 FFE5 00130         MOVFF   r0x02, POSTDEC1
+001C C000 FFE5 00131         MOVFF   r0x03, POSTDEC1
+               00132 ;       .line   25; drivers/adc.c       BitSet(TRISA,0); //seta o bit 0 como entrada
+0020 0E92      00133         MOVLW   0x92
+0022 6E00      00134         MOVWF   r0x00
+0024 0E0F      00135         MOVLW   0x0f
+0026 6E00      00136         MOVWF   r0x01
+0028 0E92      00137         MOVLW   0x92
+002A 6E00      00138         MOVWF   r0x02
+002C 0E0F      00139         MOVLW   0x0f
+002E 6E00      00140         MOVWF   r0x03
+0030 C000 FFE9 00141         MOVFF   r0x02, FSR0L
+0034 C000 FFEA 00142         MOVFF   r0x03, FSR0H
+0038 CFEF F000 00143         MOVFF   INDF0, r0x02
+003C 8000      00144         BSF     r0x02, 0
+003E C000 FFE9 00145         MOVFF   r0x00, FSR0L
+0042 C000 FFEA 00146         MOVFF   r0x01, FSR0H
+0046 C000 FFEF 00147         MOVFF   r0x02, INDF0
+               00148 ;       .line   27; drivers/adc.c       ADCON0 = 0b00000001; //seleciona o canal 0 e liga o ad
+004A 0EC2      00149         MOVLW   0xc2
+004C 6E00      00150         MOVWF   r0x00
+004E 0E0F      00151         MOVLW   0x0f
+0050 6E00      00152         MOVWF   r0x01
+0052 C000 FFE9 00153         MOVFF   r0x00, FSR0L
+0056 C000 FFEA 00154         MOVFF   r0x01, FSR0H
+005A 0E01      00155         MOVLW   0x01
+005C 6EEF      00156         MOVWF   INDF0
+               00157 ;       .line   28; drivers/adc.c       ADCON1 = 0b00001110; //apenas AN0 � analogico, a referencia � baseada na fonte
+005E 0EC1      00158         MOVLW   0xc1
+0060 6E00      00159         MOVWF   r0x00
+0062 0E0F      00160         MOVLW   0x0f
+0064 6E00      00161         MOVWF   r0x01
+0066 C000 FFE9 00162         MOVFF   r0x00, FSR0L
+gpasm-0.13.7 beta               build/default/production/drivers/adc.asm7-19-2011  15:07:13          PAGE  4
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+ 
+006A C000 FFEA 00163         MOVFF   r0x01, FSR0H
+006E 0E0E      00164         MOVLW   0x0e
+0070 6EEF      00165         MOVWF   INDF0
+               00166 ;       .line   29; drivers/adc.c       ADCON2 = 0b10101010; //FOSC /32, Alinhamento � direita e tempo de conv = 12 TAD
+0072 0EC0      00167         MOVLW   0xc0
+0074 6E00      00168         MOVWF   r0x00
+0076 0E0F      00169         MOVLW   0x0f
+0078 6E00      00170         MOVWF   r0x01
+007A C000 FFE9 00171         MOVFF   r0x00, FSR0L
+007E C000 FFEA 00172         MOVFF   r0x01, FSR0H
+0082 0EAA      00173         MOVLW   0xaa
+0084 6EEF      00174         MOVWF   INDF0
+0086 CFE4 F000 00175         MOVFF   PREINC1, r0x03
+008A CFE4 F000 00176         MOVFF   PREINC1, r0x02
+008E CFE4 F000 00177         MOVFF   PREINC1, r0x01
+0092 CFE4 F000 00178         MOVFF   PREINC1, r0x00
+0096 CFE4 FFD9 00179         MOVFF   PREINC1, FSR2L
+009A CFE4 FFDA 00180         MOVFF   PREINC1, FSR2H
+009E 0012      00181         RETURN  
+               00182 
+               00183 
+               00184 
+               00185 ; Statistics:
+               00186 ; code size:      348 (0x015c) bytes ( 0.27%)
+               00187 ;                 174 (0x00ae) words
+               00188 ; udata size:       0 (0x0000) bytes ( 0.00%)
+               00189 ; access size:      4 (0x0004) bytes
+               00190 
+               00191 
+gpasm-0.13.7 beta               build/default/production/drivers/adc.asm7-19-2011  15:07:13          PAGE  5
+
+
+SYMBOL TABLE
+  LABEL                             VALUE 
+
+FSR0H                             00000FEA
+FSR0L                             00000FE9
+FSR1H                             00000FE2
+FSR1L                             00000FE1
+FSR2H                             00000FDA
+FSR2L                             00000FD9
+INDF0                             00000FEF
+POSTDEC1                          00000FE5
+PREINC1                           00000FE4
+PRODL                             00000FF3
+WREG                              00000FE8
+_00110_DS_                        0000004A
+_InicializaAD                     00000000
+_LeValorAD                        00000000
+__18F4520                         00000001
+r0x00                             00000000
+r0x01                             00000001
+r0x02                             00000002
+r0x03                             00000003
+
+
+Errors   :       0
+Warnings :       0 reported,       0 suppressed
+Messages :       0 reported,       0 suppressed
+

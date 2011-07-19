@@ -1,0 +1,2112 @@
+gpasm-0.13.7 beta               build/default/production/brtos/semaphore.asm7-19-2011  15:07:13          PAGE  1
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+ 
+               00001 ;--------------------------------------------------------
+               00002 ; File Created by SDCC : free open source ANSI-C Compiler
+               00003 ; Version 2.9.0 #5416 (Apr 29 2011) (UNIX)
+               00004 ; This file was generated Tue Jul 19 15:07:13 2011
+               00005 ;--------------------------------------------------------
+               00006 ; PIC16 port for the Microchip 16-bit core micros
+               00007 ;--------------------------------------------------------
+               00008         list    p=18f4520
+               00009 
+               00010         radix dec
+               00011 
+               00012 ;--------------------------------------------------------
+               00013 ; public variables in this module
+               00014 ;--------------------------------------------------------
+               00015         global _OSSemCreate
+               00016         global _OSSemDelete
+               00017         global _OSSemPend
+               00018         global _OSSemPost
+               00019 
+               00020 ;--------------------------------------------------------
+               00021 ; extern variables in this module
+               00022 ;--------------------------------------------------------
+               00023         extern __gptrput1
+               00024         extern __gptrput2
+               00025         extern __gptrput3
+               00026         extern __gptrget3
+               00027         extern __gptrget1
+               00028         extern __gptrget2
+               00029         extern _PORTAbits
+               00030         extern _PORTBbits
+               00031         extern _PORTCbits
+               00032         extern _PORTDbits
+               00033         extern _PORTEbits
+               00034         extern _LATAbits
+               00035         extern _LATBbits
+               00036         extern _LATCbits
+               00037         extern _LATDbits
+               00038         extern _LATEbits
+               00039         extern _DDRAbits
+               00040         extern _TRISAbits
+               00041         extern _DDRBbits
+               00042         extern _TRISBbits
+               00043         extern _DDRCbits
+               00044         extern _TRISCbits
+               00045         extern _DDRDbits
+               00046         extern _TRISDbits
+               00047         extern _DDREbits
+               00048         extern _TRISEbits
+               00049         extern _OSCTUNEbits
+               00050         extern _PIE1bits
+               00051         extern _PIR1bits
+               00052         extern _IPR1bits
+               00053         extern _PIE2bits
+               00054         extern _PIR2bits
+gpasm-0.13.7 beta               build/default/production/brtos/semaphore.asm7-19-2011  15:07:13          PAGE  2
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+ 
+               00055         extern _IPR2bits
+               00056         extern _EECON1bits
+               00057         extern _RCSTAbits
+               00058         extern _TXSTAbits
+               00059         extern _T3CONbits
+               00060         extern _CMCONbits
+               00061         extern _CVRCONbits
+               00062         extern _ECCP1ASbits
+               00063         extern _PWM1CONbits
+               00064         extern _BAUDCONbits
+               00065         extern _BAUDCTLbits
+               00066         extern _CCP2CONbits
+               00067         extern _CCP1CONbits
+               00068         extern _ADCON2bits
+               00069         extern _ADCON1bits
+               00070         extern _ADCON0bits
+               00071         extern _SSPCON2bits
+               00072         extern _SSPCON1bits
+               00073         extern _SSPSTATbits
+               00074         extern _T2CONbits
+               00075         extern _T1CONbits
+               00076         extern _RCONbits
+               00077         extern _WDTCONbits
+               00078         extern _HLVDCONbits
+               00079         extern _LVDCONbits
+               00080         extern _OSCCONbits
+               00081         extern _T0CONbits
+               00082         extern _STATUSbits
+               00083         extern _INTCON3bits
+               00084         extern _INTCON2bits
+               00085         extern _INTCONbits
+               00086         extern _STKPTRbits
+               00087         extern _SPvalue
+               00088         extern _Hora
+               00089         extern _Data
+               00090         extern _BRTOS_Sem_Table
+               00091         extern _BRTOS_Mutex_Table
+               00092         extern _BRTOS_Queue_Table
+               00093         extern _OSReadyList
+               00094         extern _OSBlockedList
+               00095         extern _Tail
+               00096         extern _Head
+               00097         extern _iNesting
+               00098         extern _currentTask
+               00099         extern _SelectedTask
+               00100         extern _ContextTask
+               00101         extern _iStackAddress
+               00102         extern _NumberOfInstalledTasks
+               00103         extern _counter
+               00104         extern _OSDuty
+               00105         extern _PriorityVector
+               00106         extern _OSDutyTmp
+               00107         extern _LastOSDuty
+               00108         extern _STACK
+gpasm-0.13.7 beta               build/default/production/brtos/semaphore.asm7-19-2011  15:07:13          PAGE  3
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+ 
+               00109         extern _TaskAlloc
+               00110         extern _QUEUE_STACK
+               00111         extern _iQueueAddress
+               00112         extern _version
+               00113         extern _BufferText
+               00114         extern _StackAddress
+               00115         extern _PORTA
+               00116         extern _PORTB
+               00117         extern _PORTC
+               00118         extern _PORTD
+               00119         extern _PORTE
+               00120         extern _LATA
+               00121         extern _LATB
+               00122         extern _LATC
+               00123         extern _LATD
+               00124         extern _LATE
+               00125         extern _DDRA
+               00126         extern _TRISA
+               00127         extern _DDRB
+               00128         extern _TRISB
+               00129         extern _DDRC
+               00130         extern _TRISC
+               00131         extern _DDRD
+               00132         extern _TRISD
+               00133         extern _DDRE
+               00134         extern _TRISE
+               00135         extern _OSCTUNE
+               00136         extern _PIE1
+               00137         extern _PIR1
+               00138         extern _IPR1
+               00139         extern _PIE2
+               00140         extern _PIR2
+               00141         extern _IPR2
+               00142         extern _EECON1
+               00143         extern _EECON2
+               00144         extern _EEDATA
+               00145         extern _EEADR
+               00146         extern _RCSTA
+               00147         extern _TXSTA
+               00148         extern _TXREG
+               00149         extern _RCREG
+               00150         extern _SPBRG
+               00151         extern _SPBRGH
+               00152         extern _T3CON
+               00153         extern _TMR3L
+               00154         extern _TMR3H
+               00155         extern _CMCON
+               00156         extern _CVRCON
+               00157         extern _ECCP1AS
+               00158         extern _PWM1CON
+               00159         extern _BAUDCON
+               00160         extern _BAUDCTL
+               00161         extern _CCP2CON
+               00162         extern _CCPR2
+gpasm-0.13.7 beta               build/default/production/brtos/semaphore.asm7-19-2011  15:07:13          PAGE  4
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+ 
+               00163         extern _CCPR2L
+               00164         extern _CCPR2H
+               00165         extern _CCP1CON
+               00166         extern _CCPR1
+               00167         extern _CCPR1L
+               00168         extern _CCPR1H
+               00169         extern _ADCON2
+               00170         extern _ADCON1
+               00171         extern _ADCON0
+               00172         extern _ADRES
+               00173         extern _ADRESL
+               00174         extern _ADRESH
+               00175         extern _SSPCON2
+               00176         extern _SSPCON1
+               00177         extern _SSPSTAT
+               00178         extern _SSPADD
+               00179         extern _SSPBUF
+               00180         extern _T2CON
+               00181         extern _PR2
+               00182         extern _TMR2
+               00183         extern _T1CON
+               00184         extern _TMR1L
+               00185         extern _TMR1H
+               00186         extern _RCON
+               00187         extern _WDTCON
+               00188         extern _HLVDCON
+               00189         extern _LVDCON
+               00190         extern _OSCCON
+               00191         extern _T0CON
+               00192         extern _TMR0L
+               00193         extern _TMR0H
+               00194         extern _STATUS
+               00195         extern _FSR2L
+               00196         extern _FSR2H
+               00197         extern _PLUSW2
+               00198         extern _PREINC2
+               00199         extern _POSTDEC2
+               00200         extern _POSTINC2
+               00201         extern _INDF2
+               00202         extern _BSR
+               00203         extern _FSR1L
+               00204         extern _FSR1H
+               00205         extern _PLUSW1
+               00206         extern _PREINC1
+               00207         extern _POSTDEC1
+               00208         extern _POSTINC1
+               00209         extern _INDF1
+               00210         extern _WREG
+               00211         extern _FSR0L
+               00212         extern _FSR0H
+               00213         extern _PLUSW0
+               00214         extern _PREINC0
+               00215         extern _POSTDEC0
+               00216         extern _POSTINC0
+gpasm-0.13.7 beta               build/default/production/brtos/semaphore.asm7-19-2011  15:07:13          PAGE  5
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+ 
+               00217         extern _INDF0
+               00218         extern _INTCON3
+               00219         extern _INTCON2
+               00220         extern _INTCON
+               00221         extern _PROD
+               00222         extern _PRODL
+               00223         extern _PRODH
+               00224         extern _TABLAT
+               00225         extern _TBLPTR
+               00226         extern _TBLPTRL
+               00227         extern _TBLPTRH
+               00228         extern _TBLPTRU
+               00229         extern _PC
+               00230         extern _PCL
+               00231         extern _PCLATH
+               00232         extern _PCLATU
+               00233         extern _STKPTR
+               00234         extern _TOS
+               00235         extern _TOSL
+               00236         extern _TOSH
+               00237         extern _TOSU
+               00238         extern _SwitchContext
+               00239         extern _SAScheduler
+               00240         extern _PriorityMask
+               00241 ;--------------------------------------------------------
+               00242 ;       Equates to used internal registers
+               00243 ;--------------------------------------------------------
+  00000FD8     00244 STATUS  equ     0xfd8
+  00000FE8     00245 WREG    equ     0xfe8
+  00000FF6     00246 TBLPTRL equ     0xff6
+  00000FF7     00247 TBLPTRH equ     0xff7
+  00000FF8     00248 TBLPTRU equ     0xff8
+  00000FF5     00249 TABLAT  equ     0xff5
+  00000FE9     00250 FSR0L   equ     0xfe9
+  00000FEA     00251 FSR0H   equ     0xfea
+  00000FE1     00252 FSR1L   equ     0xfe1
+  00000FE2     00253 FSR1H   equ     0xfe2
+  00000FD9     00254 FSR2L   equ     0xfd9
+  00000FDA     00255 FSR2H   equ     0xfda
+  00000FEF     00256 INDF0   equ     0xfef
+  00000FE5     00257 POSTDEC1        equ     0xfe5
+  00000FE4     00258 PREINC1 equ     0xfe4
+  00000FDB     00259 PLUSW2  equ     0xfdb
+  00000FF3     00260 PRODL   equ     0xff3
+  00000FF4     00261 PRODH   equ     0xff4
+               00262 
+               00263 
+               00264 ; Internal registers
+               00265 .registers      udata_ovr       0x0000
+               00266 r0x00   res     1
+               00267 r0x01   res     1
+               00268 r0x02   res     1
+               00269 r0x03   res     1
+               00270 r0x04   res     1
+gpasm-0.13.7 beta               build/default/production/brtos/semaphore.asm7-19-2011  15:07:13          PAGE  6
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+ 
+               00271 r0x05   res     1
+               00272 r0x06   res     1
+               00273 r0x07   res     1
+               00274 r0x08   res     1
+               00275 r0x09   res     1
+               00276 r0x0a   res     1
+               00277 r0x0b   res     1
+               00278 r0x0c   res     1
+               00279 r0x0d   res     1
+               00280 r0x0e   res     1
+               00281 r0x0f   res     1
+               00282 r0x10   res     1
+               00283 r0x11   res     1
+               00284 r0x12   res     1
+               00285 r0x13   res     1
+               00286 r0x14   res     1
+               00287 r0x15   res     1
+               00288 r0x16   res     1
+               00289 
+               00290 ;--------------------------------------------------------
+               00291 ; global & static initialisations
+               00292 ;--------------------------------------------------------
+               00293 ; I code from now on!
+               00294 ; ; Starting pCode block
+               00295 S_semaphore__OSSemPost  code
+0000 00296 _OSSemPost:
+               00297 ;       .line   348; brtos/semaphore.c  INT8U OSSemPost(BRTOS_Sem *pont_event)
+0000 CFDA FFE5 00298         MOVFF   FSR2H, POSTDEC1
+0004 CFD9 FFE5 00299         MOVFF   FSR2L, POSTDEC1
+0008 CFE2 FFDA 00300         MOVFF   FSR1H, FSR2H
+000C CFE1 FFD9 00301         MOVFF   FSR1L, FSR2L
+0010 C000 FFE5 00302         MOVFF   r0x00, POSTDEC1
+0014 C000 FFE5 00303         MOVFF   r0x01, POSTDEC1
+0018 C000 FFE5 00304         MOVFF   r0x02, POSTDEC1
+001C C000 FFE5 00305         MOVFF   r0x03, POSTDEC1
+0020 C000 FFE5 00306         MOVFF   r0x04, POSTDEC1
+0024 C000 FFE5 00307         MOVFF   r0x05, POSTDEC1
+0028 C000 FFE5 00308         MOVFF   r0x06, POSTDEC1
+002C C000 FFE5 00309         MOVFF   r0x07, POSTDEC1
+0030 C000 FFE5 00310         MOVFF   r0x08, POSTDEC1
+0034 C000 FFE5 00311         MOVFF   r0x09, POSTDEC1
+0038 C000 FFE5 00312         MOVFF   r0x0a, POSTDEC1
+003C C000 FFE5 00313         MOVFF   r0x0b, POSTDEC1
+0040 C000 FFE5 00314         MOVFF   r0x0c, POSTDEC1
+0044 C000 FFE5 00315         MOVFF   r0x0d, POSTDEC1
+0048 C000 FFE5 00316         MOVFF   r0x0e, POSTDEC1
+004C 0E03      00317         MOVLW   0x03
+004E CFDB F000 00318         MOVFF   PLUSW2, r0x00
+0052 0E04      00319         MOVLW   0x04
+0054 CFDB F000 00320         MOVFF   PLUSW2, r0x01
+0058 0E05      00321         MOVLW   0x05
+005A CFDB F000 00322         MOVFF   PLUSW2, r0x02
+005E 0000      00323         BANKSEL _iNesting
+               00324 ;       .line   366; brtos/semaphore.c  if (!iNesting)
+gpasm-0.13.7 beta               build/default/production/brtos/semaphore.asm7-19-2011  15:07:13          PAGE  7
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+ 
+0060 5100      00325         MOVF    _iNesting, W, B
+0062 E100      00326         BNZ     _00202_DS_
+               00327 ;       .line   368; brtos/semaphore.c  OSEnterCritical();
+0064 9E00      00328         BCF     _INTCONbits, 7
+0066 00329 _00202_DS_:
+               00330 ;       .line   397; brtos/semaphore.c  if (pont_event->OSEventWait != 0)
+0066 5000      00331         MOVF    r0x00, W
+0068 0F02      00332         ADDLW   0x02
+006A 6E00      00333         MOVWF   r0x03
+006C 0E00      00334         MOVLW   0x00
+006E 2000      00335         ADDWFC  r0x01, W
+0070 6E00      00336         MOVWF   r0x04
+0072 0E00      00337         MOVLW   0x00
+0074 2000      00338         ADDWFC  r0x02, W
+0076 6E00      00339         MOVWF   r0x05
+0078 C000 FFE9 00340         MOVFF   r0x03, FSR0L
+007C C000 FFF3 00341         MOVFF   r0x04, PRODL
+0080 5000      00342         MOVF    r0x05, W
+0082 EC00 F000 00343         CALL    __gptrget1
+0086 6E00      00344         MOVWF   r0x06
+0088 5000      00345         MOVF    r0x06, W
+008A B4D8      00346         BTFSC   STATUS, 2
+008C D000      00347         BRA     _00208_DS_
+               00348 ;       .line   400; brtos/semaphore.c  iPriority = SAScheduler(pont_event->OSEventWaitList);    
+008E 5000      00349         MOVF    r0x00, W
+0090 0F03      00350         ADDLW   0x03
+0092 6E00      00351         MOVWF   r0x06
+0094 0E00      00352         MOVLW   0x00
+0096 2000      00353         ADDWFC  r0x01, W
+0098 6E00      00354         MOVWF   r0x07
+009A 0E00      00355         MOVLW   0x00
+009C 2000      00356         ADDWFC  r0x02, W
+009E 6E00      00357         MOVWF   r0x08
+00A0 C000 FFE9 00358         MOVFF   r0x06, FSR0L
+00A4 C000 FFF3 00359         MOVFF   r0x07, PRODL
+00A8 5000      00360         MOVF    r0x08, W
+00AA EC00 F000 00361         CALL    __gptrget2
+00AE 6E00      00362         MOVWF   r0x09
+00B0 CFF3 F000 00363         MOVFF   PRODL, r0x0a
+00B4 5000      00364         MOVF    r0x0a, W
+00B6 6EE5      00365         MOVWF   POSTDEC1
+00B8 5000      00366         MOVF    r0x09, W
+00BA 6EE5      00367         MOVWF   POSTDEC1
+00BC EC00 F000 00368         CALL    _SAScheduler
+00C0 6E00      00369         MOVWF   r0x09
+00C2 0E02      00370         MOVLW   0x02
+00C4 26E1      00371         ADDWF   FSR1L, F
+00C6 B0D8      00372         BTFSC   STATUS, 0
+00C8 2AE2      00373         INCF    FSR1H, F
+               00374 ;       .line   403; brtos/semaphore.c  pont_event->OSEventWaitList = pont_event->OSEventWaitList & ~(PriorityMask[iPriority]);
+00CA C000 FFE9 00375         MOVFF   r0x06, FSR0L
+00CE C000 FFF3 00376         MOVFF   r0x07, PRODL
+00D2 5000      00377         MOVF    r0x08, W
+00D4 EC00 F000 00378         CALL    __gptrget2
+gpasm-0.13.7 beta               build/default/production/brtos/semaphore.asm7-19-2011  15:07:13          PAGE  8
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+ 
+00D8 6E00      00379         MOVWF   r0x0a
+00DA CFF3 F000 00380         MOVFF   PRODL, r0x0b
+               00381 ; ;multiply lit val:0x02 by variable r0x09 and store in r0x09
+               00382 ; ;Unrolled 8 X 8 multiplication
+               00383 ; ;FIXME: the function does not support result==WREG
+00DE 90D8      00384         BCF     STATUS, 0
+00E0 3600      00385         RLCF    r0x09, F
+00E2 6A00      00386         CLRF    r0x0c
+00E4 6A00      00387         CLRF    r0x0d
+00E6 0E00      00388         MOVLW   LOW(_PriorityMask)
+00E8 2600      00389         ADDWF   r0x09, F
+00EA 0E00      00390         MOVLW   HIGH(_PriorityMask)
+00EC 2200      00391         ADDWFC  r0x0c, F
+00EE 0E00      00392         MOVLW   UPPER(_PriorityMask)
+00F0 2200      00393         ADDWFC  r0x0d, F
+00F2 C000 FFF6 00394         MOVFF   r0x09, TBLPTRL
+00F6 C000 FFF7 00395         MOVFF   r0x0c, TBLPTRH
+00FA C000 FFF8 00396         MOVFF   r0x0d, TBLPTRU
+00FE 0009      00397         TBLRD*+ 
+0100 CFF5 F000 00398         MOVFF   TABLAT, r0x09
+0104 0009      00399         TBLRD*+ 
+0106 CFF5 F000 00400         MOVFF   TABLAT, r0x0c
+010A 1C00      00401         COMF    r0x09, W
+010C 6E00      00402         MOVWF   r0x0d
+010E 1C00      00403         COMF    r0x0c, W
+0110 6E00      00404         MOVWF   r0x0e
+0112 5000      00405         MOVF    r0x0d, W
+0114 1600      00406         ANDWF   r0x0a, F
+0116 5000      00407         MOVF    r0x0e, W
+0118 1600      00408         ANDWF   r0x0b, F
+011A C000 FFE5 00409         MOVFF   r0x0a, POSTDEC1
+011E C000 FFF4 00410         MOVFF   r0x0b, PRODH
+0122 C000 FFE9 00411         MOVFF   r0x06, FSR0L
+0126 C000 FFF3 00412         MOVFF   r0x07, PRODL
+012A 5000      00413         MOVF    r0x08, W
+012C EC00 F000 00414         CALL    __gptrput2
+               00415 ;       .line   406; brtos/semaphore.c  pont_event->OSEventWait--;
+0130 C000 FFE9 00416         MOVFF   r0x03, FSR0L
+0134 C000 FFF3 00417         MOVFF   r0x04, PRODL
+0138 5000      00418         MOVF    r0x05, W
+013A EC00 F000 00419         CALL    __gptrget1
+013E 6E00      00420         MOVWF   r0x06
+0140 0600      00421         DECF    r0x06, F
+0142 C000 FFE5 00422         MOVFF   r0x06, POSTDEC1
+0146 C000 FFE9 00423         MOVFF   r0x03, FSR0L
+014A C000 FFF3 00424         MOVFF   r0x04, PRODL
+014E 5000      00425         MOVF    r0x05, W
+0150 EC00 F000 00426         CALL    __gptrput1
+               00427 ;       .line   414; brtos/semaphore.c  OSReadyList = OSReadyList | (PriorityMask[iPriority]);
+0154 5000      00428         MOVF    r0x09, W
+0156 0000      00429         BANKSEL _OSReadyList
+0158 1300      00430         IORWF   _OSReadyList, F, B
+015A 5000      00431         MOVF    r0x0c, W
+015C 0000      00432         BANKSEL (_OSReadyList + 1)
+gpasm-0.13.7 beta               build/default/production/brtos/semaphore.asm7-19-2011  15:07:13          PAGE  9
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+ 
+015E 1300      00433         IORWF   (_OSReadyList + 1), F, B
+0160 0000      00434         BANKSEL _iNesting
+               00435 ;       .line   418; brtos/semaphore.c  if (!iNesting)
+0162 5100      00436         MOVF    _iNesting, W, B
+0164 E100      00437         BNZ     _00204_DS_
+               00438 ;       .line   421; brtos/semaphore.c  ChangeContext();      
+0166 EC00 F000 00439         CALL    _SwitchContext
+016A 00440 _00204_DS_:
+016A 0000      00441         BANKSEL _iNesting
+               00442 ;       .line   426; brtos/semaphore.c  if (!iNesting)
+016C 5100      00443         MOVF    _iNesting, W, B
+016E E100      00444         BNZ     _00206_DS_
+               00445 ;       .line   428; brtos/semaphore.c  OSExitCritical();
+0170 8E00      00446         BSF     _INTCONbits, 7
+0172 00447 _00206_DS_:
+               00448 ;       .line   430; brtos/semaphore.c  return OK;
+0172 6AE8      00449         CLRF    WREG
+0174 D000      00450         BRA     _00216_DS_
+0176 00451 _00208_DS_:
+               00452 ;       .line   434; brtos/semaphore.c  if (pont_event->OSEventCount < 255)
+0176 2A00      00453         INCF    r0x00, F
+0178 B0D8      00454         BTFSC   STATUS, 0
+017A 2A00      00455         INCF    r0x01, F
+017C B0D8      00456         BTFSC   STATUS, 0
+017E 2A00      00457         INCF    r0x02, F
+0180 C000 FFE9 00458         MOVFF   r0x00, FSR0L
+0184 C000 FFF3 00459         MOVFF   r0x01, PRODL
+0188 5000      00460         MOVF    r0x02, W
+018A EC00 F000 00461         CALL    __gptrget1
+018E 6E00      00462         MOVWF   r0x03
+0190 0EFF      00463         MOVLW   0xff
+0192 5C00      00464         SUBWF   r0x03, W
+0194 E200      00465         BC      _00214_DS_
+               00466 ;       .line   437; brtos/semaphore.c  pont_event->OSEventCount++;
+0196 2A00      00467         INCF    r0x03, F
+0198 C000 FFE5 00468         MOVFF   r0x03, POSTDEC1
+019C C000 FFE9 00469         MOVFF   r0x00, FSR0L
+01A0 C000 FFF3 00470         MOVFF   r0x01, PRODL
+01A4 5000      00471         MOVF    r0x02, W
+01A6 EC00 F000 00472         CALL    __gptrput1
+01AA 0000      00473         BANKSEL _iNesting
+               00474 ;       .line   441; brtos/semaphore.c  if (!iNesting)
+01AC 5100      00475         MOVF    _iNesting, W, B
+01AE E100      00476         BNZ     _00210_DS_
+               00477 ;       .line   443; brtos/semaphore.c  OSExitCritical();
+01B0 8E00      00478         BSF     _INTCONbits, 7
+01B2 00479 _00210_DS_:
+               00480 ;       .line   444; brtos/semaphore.c  return OK;
+01B2 6AE8      00481         CLRF    WREG
+01B4 D000      00482         BRA     _00216_DS_
+01B6 00483 _00214_DS_:
+01B6 0000      00484         BANKSEL _iNesting
+               00485 ;       .line   450; brtos/semaphore.c  if (!iNesting)
+01B8 5100      00486         MOVF    _iNesting, W, B
+gpasm-0.13.7 beta               build/default/production/brtos/semaphore.asm7-19-2011  15:07:13          PAGE 10
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+ 
+01BA E100      00487         BNZ     _00212_DS_
+               00488 ;       .line   452; brtos/semaphore.c  OSExitCritical();
+01BC 8E00      00489         BSF     _INTCONbits, 7
+01BE 00490 _00212_DS_:
+               00491 ;       .line   455; brtos/semaphore.c  return ERR_SEM_OVF;
+01BE 0E03      00492         MOVLW   0x03
+01C0 00493 _00216_DS_:
+01C0 CFE4 F000 00494         MOVFF   PREINC1, r0x0e
+01C4 CFE4 F000 00495         MOVFF   PREINC1, r0x0d
+01C8 CFE4 F000 00496         MOVFF   PREINC1, r0x0c
+01CC CFE4 F000 00497         MOVFF   PREINC1, r0x0b
+01D0 CFE4 F000 00498         MOVFF   PREINC1, r0x0a
+01D4 CFE4 F000 00499         MOVFF   PREINC1, r0x09
+01D8 CFE4 F000 00500         MOVFF   PREINC1, r0x08
+01DC CFE4 F000 00501         MOVFF   PREINC1, r0x07
+01E0 CFE4 F000 00502         MOVFF   PREINC1, r0x06
+01E4 CFE4 F000 00503         MOVFF   PREINC1, r0x05
+01E8 CFE4 F000 00504         MOVFF   PREINC1, r0x04
+01EC CFE4 F000 00505         MOVFF   PREINC1, r0x03
+01F0 CFE4 F000 00506         MOVFF   PREINC1, r0x02
+01F4 CFE4 F000 00507         MOVFF   PREINC1, r0x01
+01F8 CFE4 F000 00508         MOVFF   PREINC1, r0x00
+01FC CFE4 FFD9 00509         MOVFF   PREINC1, FSR2L
+0200 CFE4 FFDA 00510         MOVFF   PREINC1, FSR2H
+0204 0012      00511         RETURN  
+               00512 
+               00513 ; ; Starting pCode block
+               00514 S_semaphore__OSSemPend  code
+0000 00515 _OSSemPend:
+               00516 ;       .line   188; brtos/semaphore.c  INT8U OSSemPend (BRTOS_Sem *pont_event, INT16U time_wait)
+0000 CFDA FFE5 00517         MOVFF   FSR2H, POSTDEC1
+0004 CFD9 FFE5 00518         MOVFF   FSR2L, POSTDEC1
+0008 CFE2 FFDA 00519         MOVFF   FSR1H, FSR2H
+000C CFE1 FFD9 00520         MOVFF   FSR1L, FSR2L
+0010 C000 FFE5 00521         MOVFF   r0x00, POSTDEC1
+0014 C000 FFE5 00522         MOVFF   r0x01, POSTDEC1
+0018 C000 FFE5 00523         MOVFF   r0x02, POSTDEC1
+001C C000 FFE5 00524         MOVFF   r0x03, POSTDEC1
+0020 C000 FFE5 00525         MOVFF   r0x04, POSTDEC1
+0024 C000 FFE5 00526         MOVFF   r0x05, POSTDEC1
+0028 C000 FFE5 00527         MOVFF   r0x06, POSTDEC1
+002C C000 FFE5 00528         MOVFF   r0x07, POSTDEC1
+0030 C000 FFE5 00529         MOVFF   r0x08, POSTDEC1
+0034 C000 FFE5 00530         MOVFF   r0x09, POSTDEC1
+0038 C000 FFE5 00531         MOVFF   r0x0a, POSTDEC1
+003C C000 FFE5 00532         MOVFF   r0x0b, POSTDEC1
+0040 C000 FFE5 00533         MOVFF   r0x0c, POSTDEC1
+0044 C000 FFE5 00534         MOVFF   r0x0d, POSTDEC1
+0048 C000 FFE5 00535         MOVFF   r0x0e, POSTDEC1
+004C C000 FFE5 00536         MOVFF   r0x0f, POSTDEC1
+0050 C000 FFE5 00537         MOVFF   r0x10, POSTDEC1
+0054 C000 FFE5 00538         MOVFF   r0x11, POSTDEC1
+0058 C000 FFE5 00539         MOVFF   r0x12, POSTDEC1
+005C C000 FFE5 00540         MOVFF   r0x13, POSTDEC1
+gpasm-0.13.7 beta               build/default/production/brtos/semaphore.asm7-19-2011  15:07:13          PAGE 11
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+ 
+0060 C000 FFE5 00541         MOVFF   r0x14, POSTDEC1
+0064 C000 FFE5 00542         MOVFF   r0x15, POSTDEC1
+0068 C000 FFE5 00543         MOVFF   r0x16, POSTDEC1
+006C 0E03      00544         MOVLW   0x03
+006E CFDB F000 00545         MOVFF   PLUSW2, r0x00
+0072 0E04      00546         MOVLW   0x04
+0074 CFDB F000 00547         MOVFF   PLUSW2, r0x01
+0078 0E05      00548         MOVLW   0x05
+007A CFDB F000 00549         MOVFF   PLUSW2, r0x02
+007E 0E06      00550         MOVLW   0x06
+0080 CFDB F000 00551         MOVFF   PLUSW2, r0x03
+0084 0E07      00552         MOVLW   0x07
+0086 CFDB F000 00553         MOVFF   PLUSW2, r0x04
+               00554 ;       .line   210; brtos/semaphore.c  OSEnterCritical();
+008A 9E00      00555         BCF     _INTCONbits, 7
+               00556 ;       .line   232; brtos/semaphore.c  if (pont_event->OSEventCount > 0)
+008C 5000      00557         MOVF    r0x00, W
+008E 0F01      00558         ADDLW   0x01
+0090 6E00      00559         MOVWF   r0x05
+0092 0E00      00560         MOVLW   0x00
+0094 2000      00561         ADDWFC  r0x01, W
+0096 6E00      00562         MOVWF   r0x06
+0098 0E00      00563         MOVLW   0x00
+009A 2000      00564         ADDWFC  r0x02, W
+009C 6E00      00565         MOVWF   r0x07
+009E C000 FFE9 00566         MOVFF   r0x05, FSR0L
+00A2 C000 FFF3 00567         MOVFF   r0x06, PRODL
+00A6 5000      00568         MOVF    r0x07, W
+00A8 EC00 F000 00569         CALL    __gptrget1
+00AC 6E00      00570         MOVWF   r0x08
+00AE 5000      00571         MOVF    r0x08, W
+00B0 E000      00572         BZ      _00147_DS_
+               00573 ;       .line   235; brtos/semaphore.c  pont_event->OSEventCount--;
+00B2 0600      00574         DECF    r0x08, F
+00B4 C000 FFE5 00575         MOVFF   r0x08, POSTDEC1
+00B8 C000 FFE9 00576         MOVFF   r0x05, FSR0L
+00BC C000 FFF3 00577         MOVFF   r0x06, PRODL
+00C0 5000      00578         MOVF    r0x07, W
+00C2 EC00 F000 00579         CALL    __gptrput1
+               00580 ;       .line   238; brtos/semaphore.c  OSExitCritical();
+00C6 8E00      00581         BSF     _INTCONbits, 7
+               00582 ;       .line   239; brtos/semaphore.c  return OK;
+00C8 6AE8      00583         CLRF    WREG
+00CA EF00 F000 00584         GOTO    _00173_DS_
+               00585 ; ;multiply lit val:0x10 by variable _currentTask and store in r0x05
+               00586 ; ;Unrolled 8 X 8 multiplication
+               00587 ; ;FIXME: the function does not support result==WREG
+00CE 00588 _00147_DS_:
+00CE 0000      00589         BANKSEL _currentTask
+               00590 ;       .line   242; brtos/semaphore.c  Task = &ContextTask[currentTask];
+00D0 5100      00591         MOVF    _currentTask, W, B
+00D2 0D10      00592         MULLW   0x10
+00D4 CFF3 F000 00593         MOVFF   PRODL, r0x05
+00D8 6A00      00594         CLRF    r0x06
+gpasm-0.13.7 beta               build/default/production/brtos/semaphore.asm7-19-2011  15:07:13          PAGE 12
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+ 
+00DA 0E00      00595         MOVLW   LOW(_ContextTask)
+00DC 2600      00596         ADDWF   r0x05, F
+00DE 0E00      00597         MOVLW   HIGH(_ContextTask)
+00E0 2200      00598         ADDWFC  r0x06, F
+00E2 5000      00599         MOVF    r0x06, W
+00E4 6E00      00600         MOVWF   r0x06
+00E6 5000      00601         MOVF    r0x05, W
+00E8 6E00      00602         MOVWF   r0x05
+00EA 0E80      00603         MOVLW   0x80
+00EC 6E00      00604         MOVWF   r0x07
+               00605 ;       .line   245; brtos/semaphore.c  iPriority = Task->Priority;
+00EE 5000      00606         MOVF    r0x05, W
+00F0 0F09      00607         ADDLW   0x09
+00F2 6E00      00608         MOVWF   r0x08
+00F4 0E00      00609         MOVLW   0x00
+00F6 2000      00610         ADDWFC  r0x06, W
+00F8 6E00      00611         MOVWF   r0x09
+00FA 0E00      00612         MOVLW   0x00
+00FC 2000      00613         ADDWFC  r0x07, W
+00FE 6E00      00614         MOVWF   r0x0a
+0100 C000 FFE9 00615         MOVFF   r0x08, FSR0L
+0104 C000 FFF3 00616         MOVFF   r0x09, PRODL
+0108 5000      00617         MOVF    r0x0a, W
+010A EC00 F000 00618         CALL    __gptrget1
+010E 6E00      00619         MOVWF   r0x08
+               00620 ;       .line   247; brtos/semaphore.c  pont_event->OSEventWait++;
+0110 5000      00621         MOVF    r0x00, W
+0112 0F02      00622         ADDLW   0x02
+0114 6E00      00623         MOVWF   r0x09
+0116 0E00      00624         MOVLW   0x00
+0118 2000      00625         ADDWFC  r0x01, W
+011A 6E00      00626         MOVWF   r0x0a
+011C 0E00      00627         MOVLW   0x00
+011E 2000      00628         ADDWFC  r0x02, W
+0120 6E00      00629         MOVWF   r0x0b
+0122 C000 FFE9 00630         MOVFF   r0x09, FSR0L
+0126 C000 FFF3 00631         MOVFF   r0x0a, PRODL
+012A 5000      00632         MOVF    r0x0b, W
+012C EC00 F000 00633         CALL    __gptrget1
+0130 6E00      00634         MOVWF   r0x0c
+0132 2A00      00635         INCF    r0x0c, F
+0134 C000 FFE5 00636         MOVFF   r0x0c, POSTDEC1
+0138 C000 FFE9 00637         MOVFF   r0x09, FSR0L
+013C C000 FFF3 00638         MOVFF   r0x0a, PRODL
+0140 5000      00639         MOVF    r0x0b, W
+0142 EC00 F000 00640         CALL    __gptrput1
+               00641 ;       .line   250; brtos/semaphore.c  pont_event->OSEventWaitList = pont_event->OSEventWaitList | (PriorityMask[iPriority]);
+0146 0E03      00642         MOVLW   0x03
+0148 2600      00643         ADDWF   r0x00, F
+014A 0E00      00644         MOVLW   0x00
+014C 2200      00645         ADDWFC  r0x01, F
+014E 0E00      00646         MOVLW   0x00
+0150 2200      00647         ADDWFC  r0x02, F
+0152 C000 FFE9 00648         MOVFF   r0x00, FSR0L
+gpasm-0.13.7 beta               build/default/production/brtos/semaphore.asm7-19-2011  15:07:13          PAGE 13
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+ 
+0156 C000 FFF3 00649         MOVFF   r0x01, PRODL
+015A 5000      00650         MOVF    r0x02, W
+015C EC00 F000 00651         CALL    __gptrget2
+0160 6E00      00652         MOVWF   r0x0c
+0162 CFF3 F000 00653         MOVFF   PRODL, r0x0d
+               00654 ; ;multiply lit val:0x02 by variable r0x08 and store in r0x0e
+               00655 ; ;Unrolled 8 X 8 multiplication
+               00656 ; ;FIXME: the function does not support result==WREG
+0166 90D8      00657         BCF     STATUS, 0
+0168 3400      00658         RLCF    r0x08, W
+016A 6E00      00659         MOVWF   r0x0e
+016C 6A00      00660         CLRF    r0x0f
+016E 6A00      00661         CLRF    r0x10
+0170 0E00      00662         MOVLW   LOW(_PriorityMask)
+0172 2600      00663         ADDWF   r0x0e, F
+0174 0E00      00664         MOVLW   HIGH(_PriorityMask)
+0176 2200      00665         ADDWFC  r0x0f, F
+0178 0E00      00666         MOVLW   UPPER(_PriorityMask)
+017A 2200      00667         ADDWFC  r0x10, F
+017C C000 FFF6 00668         MOVFF   r0x0e, TBLPTRL
+0180 C000 FFF7 00669         MOVFF   r0x0f, TBLPTRH
+0184 C000 FFF8 00670         MOVFF   r0x10, TBLPTRU
+0188 0009      00671         TBLRD*+ 
+018A CFF5 F000 00672         MOVFF   TABLAT, r0x0e
+018E 0009      00673         TBLRD*+ 
+0190 CFF5 F000 00674         MOVFF   TABLAT, r0x0f
+0194 5000      00675         MOVF    r0x0e, W
+0196 1200      00676         IORWF   r0x0c, F
+0198 5000      00677         MOVF    r0x0f, W
+019A 1200      00678         IORWF   r0x0d, F
+019C C000 FFE5 00679         MOVFF   r0x0c, POSTDEC1
+01A0 C000 FFF4 00680         MOVFF   r0x0d, PRODH
+01A4 C000 FFE9 00681         MOVFF   r0x00, FSR0L
+01A8 C000 FFF3 00682         MOVFF   r0x01, PRODL
+01AC 5000      00683         MOVF    r0x02, W
+01AE EC00 F000 00684         CALL    __gptrput2
+               00685 ;       .line   259; brtos/semaphore.c  OSReadyList = OSReadyList & ~(PriorityMask[iPriority]);
+01B2 1E00      00686         COMF    r0x0e, F
+01B4 1E00      00687         COMF    r0x0f, F
+01B6 5000      00688         MOVF    r0x0e, W
+01B8 0000      00689         BANKSEL _OSReadyList
+01BA 1700      00690         ANDWF   _OSReadyList, F, B
+01BC 5000      00691         MOVF    r0x0f, W
+01BE 0000      00692         BANKSEL (_OSReadyList + 1)
+01C0 1700      00693         ANDWF   (_OSReadyList + 1), F, B
+               00694 ;       .line   262; brtos/semaphore.c  if (time_wait)
+01C2 5000      00695         MOVF    r0x03, W
+01C4 1000      00696         IORWF   r0x04, W
+01C6 B4D8      00697         BTFSC   STATUS, 2
+01C8 D000      00698         BRA     _00155_DS_
+               00699 ;       .line   264; brtos/semaphore.c  timeout = (INT32U)((INT32U)counter + (INT32U)time_wait);
+01CA C000 F000 00700         MOVFF   _counter, r0x0c
+01CE C000 F000 00701         MOVFF   (_counter + 1), r0x0d
+01D2 6A00      00702         CLRF    r0x0e
+gpasm-0.13.7 beta               build/default/production/brtos/semaphore.asm7-19-2011  15:07:13          PAGE 14
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+ 
+01D4 6A00      00703         CLRF    r0x0f
+01D6 C000 F000 00704         MOVFF   r0x03, r0x10
+01DA C000 F000 00705         MOVFF   r0x04, r0x11
+01DE 6A00      00706         CLRF    r0x12
+01E0 6A00      00707         CLRF    r0x13
+01E2 5000      00708         MOVF    r0x10, W
+01E4 2600      00709         ADDWF   r0x0c, F
+01E6 5000      00710         MOVF    r0x11, W
+01E8 2200      00711         ADDWFC  r0x0d, F
+01EA 5000      00712         MOVF    r0x12, W
+01EC 2200      00713         ADDWFC  r0x0e, F
+01EE 5000      00714         MOVF    r0x13, W
+01F0 2200      00715         ADDWFC  r0x0f, F
+               00716 ;       .line   266; brtos/semaphore.c  if (timeout >= TickCountOverFlow)
+01F2 0E00      00717         MOVLW   0x00
+01F4 5C00      00718         SUBWF   r0x0f, W
+01F6 E100      00719         BNZ     _00187_DS_
+01F8 0E00      00720         MOVLW   0x00
+01FA 5C00      00721         SUBWF   r0x0e, W
+01FC E100      00722         BNZ     _00187_DS_
+01FE 0EFA      00723         MOVLW   0xfa
+0200 5C00      00724         SUBWF   r0x0d, W
+0202 E100      00725         BNZ     _00187_DS_
+0204 0E00      00726         MOVLW   0x00
+0206 5C00      00727         SUBWF   r0x0c, W
+0208 00728 _00187_DS_:
+0208 E300      00729         BNC     _00149_DS_
+               00730 ;       .line   268; brtos/semaphore.c  Task->TimeToWait = (INT16U)(timeout - TickCountOverFlow);
+020A 5000      00731         MOVF    r0x05, W
+020C 0F07      00732         ADDLW   0x07
+020E 6E00      00733         MOVWF   r0x10
+0210 0E00      00734         MOVLW   0x00
+0212 2000      00735         ADDWFC  r0x06, W
+0214 6E00      00736         MOVWF   r0x11
+0216 0E00      00737         MOVLW   0x00
+0218 2000      00738         ADDWFC  r0x07, W
+021A 6E00      00739         MOVWF   r0x12
+021C 5000      00740         MOVF    r0x0c, W
+021E 6E00      00741         MOVWF   r0x13
+0220 0E06      00742         MOVLW   0x06
+0222 2400      00743         ADDWF   r0x0d, W
+0224 6E00      00744         MOVWF   r0x14
+0226 0EFF      00745         MOVLW   0xff
+0228 2000      00746         ADDWFC  r0x0e, W
+022A 6E00      00747         MOVWF   r0x15
+022C 0EFF      00748         MOVLW   0xff
+022E 2000      00749         ADDWFC  r0x0f, W
+0230 6E00      00750         MOVWF   r0x16
+0232 C000 FFE5 00751         MOVFF   r0x13, POSTDEC1
+0236 C000 FFF4 00752         MOVFF   r0x14, PRODH
+023A C000 FFE9 00753         MOVFF   r0x10, FSR0L
+023E C000 FFF3 00754         MOVFF   r0x11, PRODL
+0242 5000      00755         MOVF    r0x12, W
+0244 EC00 F000 00756         CALL    __gptrput2
+gpasm-0.13.7 beta               build/default/production/brtos/semaphore.asm7-19-2011  15:07:13          PAGE 15
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+ 
+0248 D000      00757         BRA     _00150_DS_
+024A 00758 _00149_DS_:
+               00759 ;       .line   272; brtos/semaphore.c  Task->TimeToWait = (INT16U)timeout;
+024A 5000      00760         MOVF    r0x05, W
+024C 0F07      00761         ADDLW   0x07
+024E 6E00      00762         MOVWF   r0x10
+0250 0E00      00763         MOVLW   0x00
+0252 2000      00764         ADDWFC  r0x06, W
+0254 6E00      00765         MOVWF   r0x11
+0256 0E00      00766         MOVLW   0x00
+0258 2000      00767         ADDWFC  r0x07, W
+025A 6E00      00768         MOVWF   r0x12
+025C C000 FFE5 00769         MOVFF   r0x0c, POSTDEC1
+0260 C000 FFF4 00770         MOVFF   r0x0d, PRODH
+0264 C000 FFE9 00771         MOVFF   r0x10, FSR0L
+0268 C000 FFF3 00772         MOVFF   r0x11, PRODL
+026C 5000      00773         MOVF    r0x12, W
+026E EC00 F000 00774         CALL    __gptrput2
+0272 00775 _00150_DS_:
+0272 0000      00776         BANKSEL _Tail
+               00777 ;       .line   276; brtos/semaphore.c  IncludeTaskIntoDelayList();
+0274 5100      00778         MOVF    _Tail, W, B
+0276 0000      00779         BANKSEL (_Tail + 1)
+0278 1100      00780         IORWF   (_Tail + 1), W, B
+027A 0000      00781         BANKSEL (_Tail + 2)
+027C 1100      00782         IORWF   (_Tail + 2), W, B
+027E B4D8      00783         BTFSC   STATUS, 2
+0280 D000      00784         BRA     _00152_DS_
+0282 C000 F000 00785         MOVFF   _Tail, r0x0c
+0286 C000 F000 00786         MOVFF   (_Tail + 1), r0x0d
+028A C000 F000 00787         MOVFF   (_Tail + 2), r0x0e
+028E 0E0A      00788         MOVLW   0x0a
+0290 2600      00789         ADDWF   r0x0c, F
+0292 0E00      00790         MOVLW   0x00
+0294 2200      00791         ADDWFC  r0x0d, F
+0296 0E00      00792         MOVLW   0x00
+0298 2200      00793         ADDWFC  r0x0e, F
+029A C000 FFE5 00794         MOVFF   r0x05, POSTDEC1
+029E C000 FFF4 00795         MOVFF   r0x06, PRODH
+02A2 C000 FFF6 00796         MOVFF   r0x07, TBLPTRL
+02A6 C000 FFE9 00797         MOVFF   r0x0c, FSR0L
+02AA C000 FFF3 00798         MOVFF   r0x0d, PRODL
+02AE 5000      00799         MOVF    r0x0e, W
+02B0 EC00 F000 00800         CALL    __gptrput3
+02B4 5000      00801         MOVF    r0x05, W
+02B6 0F0D      00802         ADDLW   0x0d
+02B8 6E00      00803         MOVWF   r0x0c
+02BA 0E00      00804         MOVLW   0x00
+02BC 2000      00805         ADDWFC  r0x06, W
+02BE 6E00      00806         MOVWF   r0x0d
+02C0 0E00      00807         MOVLW   0x00
+02C2 2000      00808         ADDWFC  r0x07, W
+02C4 6E00      00809         MOVWF   r0x0e
+02C6 C000 FFE5 00810         MOVFF   _Tail, POSTDEC1
+gpasm-0.13.7 beta               build/default/production/brtos/semaphore.asm7-19-2011  15:07:13          PAGE 16
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+ 
+02CA C000 FFF4 00811         MOVFF   (_Tail + 1), PRODH
+02CE C000 FFF6 00812         MOVFF   (_Tail + 2), TBLPTRL
+02D2 C000 FFE9 00813         MOVFF   r0x0c, FSR0L
+02D6 C000 FFF3 00814         MOVFF   r0x0d, PRODL
+02DA 5000      00815         MOVF    r0x0e, W
+02DC EC00 F000 00816         CALL    __gptrput3
+02E0 C000 F000 00817         MOVFF   r0x05, _Tail
+02E4 C000 F000 00818         MOVFF   r0x06, (_Tail + 1)
+02E8 C000 F000 00819         MOVFF   r0x07, (_Tail + 2)
+02EC C000 F000 00820         MOVFF   _Tail, r0x0c
+02F0 C000 F000 00821         MOVFF   (_Tail + 1), r0x0d
+02F4 C000 F000 00822         MOVFF   (_Tail + 2), r0x0e
+02F8 0E0A      00823         MOVLW   0x0a
+02FA 2600      00824         ADDWF   r0x0c, F
+02FC 0E00      00825         MOVLW   0x00
+02FE 2200      00826         ADDWFC  r0x0d, F
+0300 0E00      00827         MOVLW   0x00
+0302 2200      00828         ADDWFC  r0x0e, F
+0304 0E00      00829         MOVLW   0x00
+0306 6EE5      00830         MOVWF   POSTDEC1
+0308 0E00      00831         MOVLW   0x00
+030A 6EF4      00832         MOVWF   PRODH
+030C 0E00      00833         MOVLW   0x00
+030E 6EF6      00834         MOVWF   TBLPTRL
+0310 C000 FFE9 00835         MOVFF   r0x0c, FSR0L
+0314 C000 FFF3 00836         MOVFF   r0x0d, PRODL
+0318 5000      00837         MOVF    r0x0e, W
+031A EC00 F000 00838         CALL    __gptrput3
+031E D000      00839         BRA     _00156_DS_
+0320 00840 _00152_DS_:
+0320 C000 F000 00841         MOVFF   r0x05, _Tail
+0324 C000 F000 00842         MOVFF   r0x06, (_Tail + 1)
+0328 C000 F000 00843         MOVFF   r0x07, (_Tail + 2)
+032C C000 F000 00844         MOVFF   r0x05, _Head
+0330 C000 F000 00845         MOVFF   r0x06, (_Head + 1)
+0334 C000 F000 00846         MOVFF   r0x07, (_Head + 2)
+0338 5000      00847         MOVF    r0x05, W
+033A 0F0A      00848         ADDLW   0x0a
+033C 6E00      00849         MOVWF   r0x0c
+033E 0E00      00850         MOVLW   0x00
+0340 2000      00851         ADDWFC  r0x06, W
+0342 6E00      00852         MOVWF   r0x0d
+0344 0E00      00853         MOVLW   0x00
+0346 2000      00854         ADDWFC  r0x07, W
+0348 6E00      00855         MOVWF   r0x0e
+034A 0E00      00856         MOVLW   0x00
+034C 6EE5      00857         MOVWF   POSTDEC1
+034E 0E00      00858         MOVLW   0x00
+0350 6EF4      00859         MOVWF   PRODH
+0352 0E00      00860         MOVLW   0x00
+0354 6EF6      00861         MOVWF   TBLPTRL
+0356 C000 FFE9 00862         MOVFF   r0x0c, FSR0L
+035A C000 FFF3 00863         MOVFF   r0x0d, PRODL
+035E 5000      00864         MOVF    r0x0e, W
+gpasm-0.13.7 beta               build/default/production/brtos/semaphore.asm7-19-2011  15:07:13          PAGE 17
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+ 
+0360 EC00 F000 00865         CALL    __gptrput3
+0364 5000      00866         MOVF    r0x05, W
+0366 0F0D      00867         ADDLW   0x0d
+0368 6E00      00868         MOVWF   r0x0c
+036A 0E00      00869         MOVLW   0x00
+036C 2000      00870         ADDWFC  r0x06, W
+036E 6E00      00871         MOVWF   r0x0d
+0370 0E00      00872         MOVLW   0x00
+0372 2000      00873         ADDWFC  r0x07, W
+0374 6E00      00874         MOVWF   r0x0e
+0376 0E00      00875         MOVLW   0x00
+0378 6EE5      00876         MOVWF   POSTDEC1
+037A 0E00      00877         MOVLW   0x00
+037C 6EF4      00878         MOVWF   PRODH
+037E 0E00      00879         MOVLW   0x00
+0380 6EF6      00880         MOVWF   TBLPTRL
+0382 C000 FFE9 00881         MOVFF   r0x0c, FSR0L
+0386 C000 FFF3 00882         MOVFF   r0x0d, PRODL
+038A 5000      00883         MOVF    r0x0e, W
+038C EC00 F000 00884         CALL    __gptrput3
+0390 D000      00885         BRA     _00156_DS_
+0392 00886 _00155_DS_:
+               00887 ;       .line   279; brtos/semaphore.c  Task->TimeToWait = NO_TIMEOUT;
+0392 5000      00888         MOVF    r0x05, W
+0394 0F07      00889         ADDLW   0x07
+0396 6E00      00890         MOVWF   r0x0c
+0398 0E00      00891         MOVLW   0x00
+039A 2000      00892         ADDWFC  r0x06, W
+039C 6E00      00893         MOVWF   r0x0d
+039E 0E00      00894         MOVLW   0x00
+03A0 2000      00895         ADDWFC  r0x07, W
+03A2 6E00      00896         MOVWF   r0x0e
+03A4 0EE8      00897         MOVLW   0xe8
+03A6 6EE5      00898         MOVWF   POSTDEC1
+03A8 0EFD      00899         MOVLW   0xfd
+03AA 6EF4      00900         MOVWF   PRODH
+03AC C000 FFE9 00901         MOVFF   r0x0c, FSR0L
+03B0 C000 FFF3 00902         MOVFF   r0x0d, PRODL
+03B4 5000      00903         MOVF    r0x0e, W
+03B6 EC00 F000 00904         CALL    __gptrput2
+03BA 00905 _00156_DS_:
+               00906 ;       .line   283; brtos/semaphore.c  ChangeContext();
+03BA EC00 F000 00907         CALL    _SwitchContext
+               00908 ;       .line   286; brtos/semaphore.c  if (time_wait)
+03BE 5000      00909         MOVF    r0x03, W
+03C0 1000      00910         IORWF   r0x04, W
+03C2 B4D8      00911         BTFSC   STATUS, 2
+03C4 D000      00912         BRA     _00172_DS_
+               00913 ;       .line   292; brtos/semaphore.c  OSExitCritical();
+03C6 8E00      00914         BSF     _INTCONbits, 7
+               00915 ;       .line   294; brtos/semaphore.c  OSEnterCritical();
+03C8 9E00      00916         BCF     _INTCONbits, 7
+               00917 ;       .line   299; brtos/semaphore.c  if(Task->TimeToWait == EXIT_BY_TIMEOUT)
+03CA 5000      00918         MOVF    r0x05, W
+gpasm-0.13.7 beta               build/default/production/brtos/semaphore.asm7-19-2011  15:07:13          PAGE 18
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+ 
+03CC 0F07      00919         ADDLW   0x07
+03CE 6E00      00920         MOVWF   r0x03
+03D0 0E00      00921         MOVLW   0x00
+03D2 2000      00922         ADDWFC  r0x06, W
+03D4 6E00      00923         MOVWF   r0x04
+03D6 0E00      00924         MOVLW   0x00
+03D8 2000      00925         ADDWFC  r0x07, W
+03DA 6E00      00926         MOVWF   r0x0c
+03DC C000 FFE9 00927         MOVFF   r0x03, FSR0L
+03E0 C000 FFF3 00928         MOVFF   r0x04, PRODL
+03E4 5000      00929         MOVF    r0x0c, W
+03E6 EC00 F000 00930         CALL    __gptrget2
+03EA 6E00      00931         MOVWF   r0x0d
+03EC CFF3 F000 00932         MOVFF   PRODL, r0x0e
+03F0 5000      00933         MOVF    r0x0d, W
+03F2 0AE9      00934         XORLW   0xe9
+03F4 E100      00935         BNZ     _00188_DS_
+03F6 5000      00936         MOVF    r0x0e, W
+03F8 0AFD      00937         XORLW   0xfd
+03FA E000      00938         BZ      _00189_DS_
+03FC 00939 _00188_DS_:
+03FC D000      00940         BRA     _00169_DS_
+03FE 00941 _00189_DS_:
+               00942 ;       .line   302; brtos/semaphore.c  if ((pont_event->OSEventWaitList & PriorityMask[iPriority]))
+03FE C000 FFE9 00943         MOVFF   r0x00, FSR0L
+0402 C000 FFF3 00944         MOVFF   r0x01, PRODL
+0406 5000      00945         MOVF    r0x02, W
+0408 EC00 F000 00946         CALL    __gptrget2
+040C 6E00      00947         MOVWF   r0x0d
+040E CFF3 F000 00948         MOVFF   PRODL, r0x0e
+               00949 ; ;multiply lit val:0x02 by variable r0x08 and store in r0x08
+               00950 ; ;Unrolled 8 X 8 multiplication
+               00951 ; ;FIXME: the function does not support result==WREG
+0412 90D8      00952         BCF     STATUS, 0
+0414 3600      00953         RLCF    r0x08, F
+0416 6A00      00954         CLRF    r0x0f
+0418 6A00      00955         CLRF    r0x10
+041A 0E00      00956         MOVLW   LOW(_PriorityMask)
+041C 2600      00957         ADDWF   r0x08, F
+041E 0E00      00958         MOVLW   HIGH(_PriorityMask)
+0420 2200      00959         ADDWFC  r0x0f, F
+0422 0E00      00960         MOVLW   UPPER(_PriorityMask)
+0424 2200      00961         ADDWFC  r0x10, F
+0426 C000 FFF6 00962         MOVFF   r0x08, TBLPTRL
+042A C000 FFF7 00963         MOVFF   r0x0f, TBLPTRH
+042E C000 FFF8 00964         MOVFF   r0x10, TBLPTRU
+0432 0009      00965         TBLRD*+ 
+0434 CFF5 F000 00966         MOVFF   TABLAT, r0x08
+0438 0009      00967         TBLRD*+ 
+043A CFF5 F000 00968         MOVFF   TABLAT, r0x0f
+043E 5000      00969         MOVF    r0x08, W
+0440 1600      00970         ANDWF   r0x0d, F
+0442 5000      00971         MOVF    r0x0f, W
+0444 1600      00972         ANDWF   r0x0e, F
+gpasm-0.13.7 beta               build/default/production/brtos/semaphore.asm7-19-2011  15:07:13          PAGE 19
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+ 
+0446 5000      00973         MOVF    r0x0d, W
+0448 1000      00974         IORWF   r0x0e, W
+044A B4D8      00975         BTFSC   STATUS, 2
+044C D000      00976         BRA     _00172_DS_
+               00977 ;       .line   305; brtos/semaphore.c  pont_event->OSEventWaitList = pont_event->OSEventWaitList & ~(PriorityMask[iPriority]);
+044E C000 FFE9 00978         MOVFF   r0x00, FSR0L
+0452 C000 FFF3 00979         MOVFF   r0x01, PRODL
+0456 5000      00980         MOVF    r0x02, W
+0458 EC00 F000 00981         CALL    __gptrget2
+045C 6E00      00982         MOVWF   r0x0d
+045E CFF3 F000 00983         MOVFF   PRODL, r0x0e
+0462 1E00      00984         COMF    r0x08, F
+0464 1E00      00985         COMF    r0x0f, F
+0466 5000      00986         MOVF    r0x08, W
+0468 1600      00987         ANDWF   r0x0d, F
+046A 5000      00988         MOVF    r0x0f, W
+046C 1600      00989         ANDWF   r0x0e, F
+046E C000 FFE5 00990         MOVFF   r0x0d, POSTDEC1
+0472 C000 FFF4 00991         MOVFF   r0x0e, PRODH
+0476 C000 FFE9 00992         MOVFF   r0x00, FSR0L
+047A C000 FFF3 00993         MOVFF   r0x01, PRODL
+047E 5000      00994         MOVF    r0x02, W
+0480 EC00 F000 00995         CALL    __gptrput2
+               00996 ;       .line   308; brtos/semaphore.c  pont_event->OSEventWait--;
+0484 C000 FFE9 00997         MOVFF   r0x09, FSR0L
+0488 C000 FFF3 00998         MOVFF   r0x0a, PRODL
+048C 5000      00999         MOVF    r0x0b, W
+048E EC00 F000 01000         CALL    __gptrget1
+0492 6E00      01001         MOVWF   r0x00
+0494 0600      01002         DECF    r0x00, F
+0496 C000 FFE5 01003         MOVFF   r0x00, POSTDEC1
+049A C000 FFE9 01004         MOVFF   r0x09, FSR0L
+049E C000 FFF3 01005         MOVFF   r0x0a, PRODL
+04A2 5000      01006         MOVF    r0x0b, W
+04A4 EC00 F000 01007         CALL    __gptrput1
+               01008 ;       .line   311; brtos/semaphore.c  OSExitCritical();
+04A8 8E00      01009         BSF     _INTCONbits, 7
+               01010 ;       .line   314; brtos/semaphore.c  return TIMEOUT;
+04AA 0E06      01011         MOVLW   0x06
+04AC D000      01012         BRA     _00173_DS_
+04AE 01013 _00169_DS_:
+               01014 ;       .line   320; brtos/semaphore.c  Task->TimeToWait = NO_TIMEOUT;
+04AE 0EE8      01015         MOVLW   0xe8
+04B0 6EE5      01016         MOVWF   POSTDEC1
+04B2 0EFD      01017         MOVLW   0xfd
+04B4 6EF4      01018         MOVWF   PRODH
+04B6 C000 FFE9 01019         MOVFF   r0x03, FSR0L
+04BA C000 FFF3 01020         MOVFF   r0x04, PRODL
+04BE 5000      01021         MOVF    r0x0c, W
+04C0 EC00 F000 01022         CALL    __gptrput2
+               01023 ;       .line   323; brtos/semaphore.c  RemoveFromDelayList();
+04C4 5000      01024         MOVF    r0x05, W
+04C6 0000      01025         BANKSEL _Head
+04C8 1900      01026         XORWF   _Head, W, B
+gpasm-0.13.7 beta               build/default/production/brtos/semaphore.asm7-19-2011  15:07:13          PAGE 20
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+ 
+04CA E100      01027         BNZ     _00191_DS_
+04CC 5000      01028         MOVF    r0x06, W
+04CE 0000      01029         BANKSEL (_Head + 1)
+04D0 1900      01030         XORWF   (_Head + 1), W, B
+04D2 E100      01031         BNZ     _00191_DS_
+04D4 5000      01032         MOVF    r0x07, W
+04D6 0000      01033         BANKSEL (_Head + 2)
+04D8 1900      01034         XORWF   (_Head + 2), W, B
+04DA E000      01035         BZ      _00192_DS_
+04DC 01036 _00191_DS_:
+04DC D000      01037         BRA     _00166_DS_
+04DE 01038 _00192_DS_:
+04DE 5000      01039         MOVF    r0x05, W
+04E0 0000      01040         BANKSEL _Tail
+04E2 1900      01041         XORWF   _Tail, W, B
+04E4 E100      01042         BNZ     _00193_DS_
+04E6 5000      01043         MOVF    r0x06, W
+04E8 0000      01044         BANKSEL (_Tail + 1)
+04EA 1900      01045         XORWF   (_Tail + 1), W, B
+04EC E100      01046         BNZ     _00193_DS_
+04EE 5000      01047         MOVF    r0x07, W
+04F0 0000      01048         BANKSEL (_Tail + 2)
+04F2 1900      01049         XORWF   (_Tail + 2), W, B
+04F4 E000      01050         BZ      _00194_DS_
+04F6 01051 _00193_DS_:
+04F6 D000      01052         BRA     _00160_DS_
+04F8 01053 _00194_DS_:
+04F8 0000      01054         BANKSEL _Tail
+04FA 6B00      01055         CLRF    _Tail, B
+04FC 0000      01056         BANKSEL (_Tail + 1)
+04FE 6B00      01057         CLRF    (_Tail + 1), B
+0500 0000      01058         BANKSEL (_Tail + 2)
+0502 6B00      01059         CLRF    (_Tail + 2), B
+0504 0000      01060         BANKSEL _Head
+0506 6B00      01061         CLRF    _Head, B
+0508 0000      01062         BANKSEL (_Head + 1)
+050A 6B00      01063         CLRF    (_Head + 1), B
+050C 0000      01064         BANKSEL (_Head + 2)
+050E 6B00      01065         CLRF    (_Head + 2), B
+0510 D000      01066         BRA     _00172_DS_
+0512 01067 _00160_DS_:
+0512 5000      01068         MOVF    r0x05, W
+0514 0F0A      01069         ADDLW   0x0a
+0516 6E00      01070         MOVWF   r0x00
+0518 0E00      01071         MOVLW   0x00
+051A 2000      01072         ADDWFC  r0x06, W
+051C 6E00      01073         MOVWF   r0x01
+051E 0E00      01074         MOVLW   0x00
+0520 2000      01075         ADDWFC  r0x07, W
+0522 6E00      01076         MOVWF   r0x02
+0524 C000 FFE9 01077         MOVFF   r0x00, FSR0L
+0528 C000 FFF3 01078         MOVFF   r0x01, PRODL
+052C 5000      01079         MOVF    r0x02, W
+052E EC00 F000 01080         CALL    __gptrget3
+gpasm-0.13.7 beta               build/default/production/brtos/semaphore.asm7-19-2011  15:07:13          PAGE 21
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+ 
+0532 0000      01081         BANKSEL _Head
+0534 6F00      01082         MOVWF   _Head, B
+0536 CFF3 F000 01083         MOVFF   PRODL, (_Head + 1)
+053A CFF4 F000 01084         MOVFF   PRODH, (_Head + 2)
+053E C000 F000 01085         MOVFF   _Head, r0x00
+0542 C000 F000 01086         MOVFF   (_Head + 1), r0x01
+0546 C000 F000 01087         MOVFF   (_Head + 2), r0x02
+054A 0E0D      01088         MOVLW   0x0d
+054C 2600      01089         ADDWF   r0x00, F
+054E 0E00      01090         MOVLW   0x00
+0550 2200      01091         ADDWFC  r0x01, F
+0552 0E00      01092         MOVLW   0x00
+0554 2200      01093         ADDWFC  r0x02, F
+0556 0E00      01094         MOVLW   0x00
+0558 6EE5      01095         MOVWF   POSTDEC1
+055A 0E00      01096         MOVLW   0x00
+055C 6EF4      01097         MOVWF   PRODH
+055E 0E00      01098         MOVLW   0x00
+0560 6EF6      01099         MOVWF   TBLPTRL
+0562 C000 FFE9 01100         MOVFF   r0x00, FSR0L
+0566 C000 FFF3 01101         MOVFF   r0x01, PRODL
+056A 5000      01102         MOVF    r0x02, W
+056C EC00 F000 01103         CALL    __gptrput3
+0570 D000      01104         BRA     _00172_DS_
+0572 01105 _00166_DS_:
+0572 5000      01106         MOVF    r0x05, W
+0574 0000      01107         BANKSEL _Tail
+0576 1900      01108         XORWF   _Tail, W, B
+0578 E100      01109         BNZ     _00195_DS_
+057A 5000      01110         MOVF    r0x06, W
+057C 0000      01111         BANKSEL (_Tail + 1)
+057E 1900      01112         XORWF   (_Tail + 1), W, B
+0580 E100      01113         BNZ     _00195_DS_
+0582 5000      01114         MOVF    r0x07, W
+0584 0000      01115         BANKSEL (_Tail + 2)
+0586 1900      01116         XORWF   (_Tail + 2), W, B
+0588 E000      01117         BZ      _00196_DS_
+058A 01118 _00195_DS_:
+058A D000      01119         BRA     _00163_DS_
+058C 01120 _00196_DS_:
+058C 5000      01121         MOVF    r0x05, W
+058E 0F0D      01122         ADDLW   0x0d
+0590 6E00      01123         MOVWF   r0x00
+0592 0E00      01124         MOVLW   0x00
+0594 2000      01125         ADDWFC  r0x06, W
+0596 6E00      01126         MOVWF   r0x01
+0598 0E00      01127         MOVLW   0x00
+059A 2000      01128         ADDWFC  r0x07, W
+059C 6E00      01129         MOVWF   r0x02
+059E C000 FFE9 01130         MOVFF   r0x00, FSR0L
+05A2 C000 FFF3 01131         MOVFF   r0x01, PRODL
+05A6 5000      01132         MOVF    r0x02, W
+05A8 EC00 F000 01133         CALL    __gptrget3
+05AC 0000      01134         BANKSEL _Tail
+gpasm-0.13.7 beta               build/default/production/brtos/semaphore.asm7-19-2011  15:07:13          PAGE 22
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+ 
+05AE 6F00      01135         MOVWF   _Tail, B
+05B0 CFF3 F000 01136         MOVFF   PRODL, (_Tail + 1)
+05B4 CFF4 F000 01137         MOVFF   PRODH, (_Tail + 2)
+05B8 C000 F000 01138         MOVFF   _Tail, r0x00
+05BC C000 F000 01139         MOVFF   (_Tail + 1), r0x01
+05C0 C000 F000 01140         MOVFF   (_Tail + 2), r0x02
+05C4 0E0A      01141         MOVLW   0x0a
+05C6 2600      01142         ADDWF   r0x00, F
+05C8 0E00      01143         MOVLW   0x00
+05CA 2200      01144         ADDWFC  r0x01, F
+05CC 0E00      01145         MOVLW   0x00
+05CE 2200      01146         ADDWFC  r0x02, F
+05D0 0E00      01147         MOVLW   0x00
+05D2 6EE5      01148         MOVWF   POSTDEC1
+05D4 0E00      01149         MOVLW   0x00
+05D6 6EF4      01150         MOVWF   PRODH
+05D8 0E00      01151         MOVLW   0x00
+05DA 6EF6      01152         MOVWF   TBLPTRL
+05DC C000 FFE9 01153         MOVFF   r0x00, FSR0L
+05E0 C000 FFF3 01154         MOVFF   r0x01, PRODL
+05E4 5000      01155         MOVF    r0x02, W
+05E6 EC00 F000 01156         CALL    __gptrput3
+05EA D000      01157         BRA     _00172_DS_
+05EC 01158 _00163_DS_:
+05EC 5000      01159         MOVF    r0x05, W
+05EE 0F0A      01160         ADDLW   0x0a
+05F0 6E00      01161         MOVWF   r0x00
+05F2 0E00      01162         MOVLW   0x00
+05F4 2000      01163         ADDWFC  r0x06, W
+05F6 6E00      01164         MOVWF   r0x01
+05F8 0E00      01165         MOVLW   0x00
+05FA 2000      01166         ADDWFC  r0x07, W
+05FC 6E00      01167         MOVWF   r0x02
+05FE C000 FFE9 01168         MOVFF   r0x00, FSR0L
+0602 C000 FFF3 01169         MOVFF   r0x01, PRODL
+0606 5000      01170         MOVF    r0x02, W
+0608 EC00 F000 01171         CALL    __gptrget3
+060C 6E00      01172         MOVWF   r0x00
+060E CFF3 F000 01173         MOVFF   PRODL, r0x01
+0612 CFF4 F000 01174         MOVFF   PRODH, r0x02
+0616 5000      01175         MOVF    r0x00, W
+0618 0F0D      01176         ADDLW   0x0d
+061A 6E00      01177         MOVWF   r0x03
+061C 0E00      01178         MOVLW   0x00
+061E 2000      01179         ADDWFC  r0x01, W
+0620 6E00      01180         MOVWF   r0x04
+0622 0E00      01181         MOVLW   0x00
+0624 2000      01182         ADDWFC  r0x02, W
+0626 6E00      01183         MOVWF   r0x08
+0628 0E0D      01184         MOVLW   0x0d
+062A 2600      01185         ADDWF   r0x05, F
+062C 0E00      01186         MOVLW   0x00
+062E 2200      01187         ADDWFC  r0x06, F
+0630 0E00      01188         MOVLW   0x00
+gpasm-0.13.7 beta               build/default/production/brtos/semaphore.asm7-19-2011  15:07:13          PAGE 23
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+ 
+0632 2200      01189         ADDWFC  r0x07, F
+0634 C000 FFE9 01190         MOVFF   r0x05, FSR0L
+0638 C000 FFF3 01191         MOVFF   r0x06, PRODL
+063C 5000      01192         MOVF    r0x07, W
+063E EC00 F000 01193         CALL    __gptrget3
+0642 6E00      01194         MOVWF   r0x05
+0644 CFF3 F000 01195         MOVFF   PRODL, r0x06
+0648 CFF4 F000 01196         MOVFF   PRODH, r0x07
+064C C000 FFE5 01197         MOVFF   r0x05, POSTDEC1
+0650 C000 FFF4 01198         MOVFF   r0x06, PRODH
+0654 C000 FFF6 01199         MOVFF   r0x07, TBLPTRL
+0658 C000 FFE9 01200         MOVFF   r0x03, FSR0L
+065C C000 FFF3 01201         MOVFF   r0x04, PRODL
+0660 5000      01202         MOVF    r0x08, W
+0662 EC00 F000 01203         CALL    __gptrput3
+0666 0E0A      01204         MOVLW   0x0a
+0668 2600      01205         ADDWF   r0x05, F
+066A 0E00      01206         MOVLW   0x00
+066C 2200      01207         ADDWFC  r0x06, F
+066E 0E00      01208         MOVLW   0x00
+0670 2200      01209         ADDWFC  r0x07, F
+0672 C000 FFE5 01210         MOVFF   r0x00, POSTDEC1
+0676 C000 FFF4 01211         MOVFF   r0x01, PRODH
+067A C000 FFF6 01212         MOVFF   r0x02, TBLPTRL
+067E C000 FFE9 01213         MOVFF   r0x05, FSR0L
+0682 C000 FFF3 01214         MOVFF   r0x06, PRODL
+0686 5000      01215         MOVF    r0x07, W
+0688 EC00 F000 01216         CALL    __gptrput3
+068C 01217 _00172_DS_:
+               01218 ;       .line   328; brtos/semaphore.c  OSExitCritical();
+068C 8E00      01219         BSF     _INTCONbits, 7
+               01220 ;       .line   330; brtos/semaphore.c  return OK;
+068E 6AE8      01221         CLRF    WREG
+0690 01222 _00173_DS_:
+0690 CFE4 F000 01223         MOVFF   PREINC1, r0x16
+0694 CFE4 F000 01224         MOVFF   PREINC1, r0x15
+0698 CFE4 F000 01225         MOVFF   PREINC1, r0x14
+069C CFE4 F000 01226         MOVFF   PREINC1, r0x13
+06A0 CFE4 F000 01227         MOVFF   PREINC1, r0x12
+06A4 CFE4 F000 01228         MOVFF   PREINC1, r0x11
+06A8 CFE4 F000 01229         MOVFF   PREINC1, r0x10
+06AC CFE4 F000 01230         MOVFF   PREINC1, r0x0f
+06B0 CFE4 F000 01231         MOVFF   PREINC1, r0x0e
+06B4 CFE4 F000 01232         MOVFF   PREINC1, r0x0d
+06B8 CFE4 F000 01233         MOVFF   PREINC1, r0x0c
+06BC CFE4 F000 01234         MOVFF   PREINC1, r0x0b
+06C0 CFE4 F000 01235         MOVFF   PREINC1, r0x0a
+06C4 CFE4 F000 01236         MOVFF   PREINC1, r0x09
+06C8 CFE4 F000 01237         MOVFF   PREINC1, r0x08
+06CC CFE4 F000 01238         MOVFF   PREINC1, r0x07
+06D0 CFE4 F000 01239         MOVFF   PREINC1, r0x06
+06D4 CFE4 F000 01240         MOVFF   PREINC1, r0x05
+06D8 CFE4 F000 01241         MOVFF   PREINC1, r0x04
+06DC CFE4 F000 01242         MOVFF   PREINC1, r0x03
+gpasm-0.13.7 beta               build/default/production/brtos/semaphore.asm7-19-2011  15:07:13          PAGE 24
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+ 
+06E0 CFE4 F000 01243         MOVFF   PREINC1, r0x02
+06E4 CFE4 F000 01244         MOVFF   PREINC1, r0x01
+06E8 CFE4 F000 01245         MOVFF   PREINC1, r0x00
+06EC CFE4 FFD9 01246         MOVFF   PREINC1, FSR2L
+06F0 CFE4 FFDA 01247         MOVFF   PREINC1, FSR2H
+06F4 0012      01248         RETURN  
+               01249 
+               01250 ; ; Starting pCode block
+               01251 S_semaphore__OSSemDelete        code
+0000 01252 _OSSemDelete:
+               01253 ;       .line   146; brtos/semaphore.c  INT8U OSSemDelete (BRTOS_Sem **event)
+0000 CFDA FFE5 01254         MOVFF   FSR2H, POSTDEC1
+0004 CFD9 FFE5 01255         MOVFF   FSR2L, POSTDEC1
+0008 CFE2 FFDA 01256         MOVFF   FSR1H, FSR2H
+000C CFE1 FFD9 01257         MOVFF   FSR1L, FSR2L
+0010 C000 FFE5 01258         MOVFF   r0x00, POSTDEC1
+0014 C000 FFE5 01259         MOVFF   r0x01, POSTDEC1
+0018 C000 FFE5 01260         MOVFF   r0x02, POSTDEC1
+001C C000 FFE5 01261         MOVFF   r0x03, POSTDEC1
+0020 C000 FFE5 01262         MOVFF   r0x04, POSTDEC1
+0024 C000 FFE5 01263         MOVFF   r0x05, POSTDEC1
+0028 C000 FFE5 01264         MOVFF   r0x06, POSTDEC1
+002C C000 FFE5 01265         MOVFF   r0x07, POSTDEC1
+0030 C000 FFE5 01266         MOVFF   r0x08, POSTDEC1
+0034 0E03      01267         MOVLW   0x03
+0036 CFDB F000 01268         MOVFF   PLUSW2, r0x00
+003A 0E04      01269         MOVLW   0x04
+003C CFDB F000 01270         MOVFF   PLUSW2, r0x01
+0040 0E05      01271         MOVLW   0x05
+0042 CFDB F000 01272         MOVFF   PLUSW2, r0x02
+0046 0000      01273         BANKSEL _iNesting
+               01274 ;       .line   151; brtos/semaphore.c  if (iNesting > 0) {                                // See if caller is an interrupt
+0048 5100      01275         MOVF    _iNesting, W, B
+004A E000      01276         BZ      _00140_DS_
+               01277 ;       .line   152; brtos/semaphore.c  return(IRQ_PEND_ERR);                          // Can't be delete by interrupt
+004C 0E02      01278         MOVLW   0x02
+004E D000      01279         BRA     _00141_DS_
+0050 01280 _00140_DS_:
+               01281 ;       .line   156; brtos/semaphore.c  OSEnterCritical();
+0050 9E00      01282         BCF     _INTCONbits, 7
+               01283 ;       .line   158; brtos/semaphore.c  pont_event = *event;  
+0052 C000 FFE9 01284         MOVFF   r0x00, FSR0L
+0056 C000 FFF3 01285         MOVFF   r0x01, PRODL
+005A 5000      01286         MOVF    r0x02, W
+005C EC00 F000 01287         CALL    __gptrget3
+0060 6E00      01288         MOVWF   r0x03
+0062 CFF3 F000 01289         MOVFF   PRODL, r0x04
+0066 CFF4 F000 01290         MOVFF   PRODH, r0x05
+               01291 ;       .line   159; brtos/semaphore.c  pont_event->OSEventAllocated = 0;
+006A 0E00      01292         MOVLW   0x00
+006C 6EE5      01293         MOVWF   POSTDEC1
+006E C000 FFE9 01294         MOVFF   r0x03, FSR0L
+0072 C000 FFF3 01295         MOVFF   r0x04, PRODL
+0076 5000      01296         MOVF    r0x05, W
+gpasm-0.13.7 beta               build/default/production/brtos/semaphore.asm7-19-2011  15:07:13          PAGE 25
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+ 
+0078 EC00 F000 01297         CALL    __gptrput1
+               01298 ;       .line   160; brtos/semaphore.c  pont_event->OSEventCount     = 0;                      
+007C 5000      01299         MOVF    r0x03, W
+007E 0F01      01300         ADDLW   0x01
+0080 6E00      01301         MOVWF   r0x06
+0082 0E00      01302         MOVLW   0x00
+0084 2000      01303         ADDWFC  r0x04, W
+0086 6E00      01304         MOVWF   r0x07
+0088 0E00      01305         MOVLW   0x00
+008A 2000      01306         ADDWFC  r0x05, W
+008C 6E00      01307         MOVWF   r0x08
+008E 0E00      01308         MOVLW   0x00
+0090 6EE5      01309         MOVWF   POSTDEC1
+0092 C000 FFE9 01310         MOVFF   r0x06, FSR0L
+0096 C000 FFF3 01311         MOVFF   r0x07, PRODL
+009A 5000      01312         MOVF    r0x08, W
+009C EC00 F000 01313         CALL    __gptrput1
+               01314 ;       .line   161; brtos/semaphore.c  pont_event->OSEventWait      = 0;
+00A0 5000      01315         MOVF    r0x03, W
+00A2 0F02      01316         ADDLW   0x02
+00A4 6E00      01317         MOVWF   r0x06
+00A6 0E00      01318         MOVLW   0x00
+00A8 2000      01319         ADDWFC  r0x04, W
+00AA 6E00      01320         MOVWF   r0x07
+00AC 0E00      01321         MOVLW   0x00
+00AE 2000      01322         ADDWFC  r0x05, W
+00B0 6E00      01323         MOVWF   r0x08
+00B2 0E00      01324         MOVLW   0x00
+00B4 6EE5      01325         MOVWF   POSTDEC1
+00B6 C000 FFE9 01326         MOVFF   r0x06, FSR0L
+00BA C000 FFF3 01327         MOVFF   r0x07, PRODL
+00BE 5000      01328         MOVF    r0x08, W
+00C0 EC00 F000 01329         CALL    __gptrput1
+               01330 ;       .line   163; brtos/semaphore.c  pont_event->OSEventWaitList=0;
+00C4 0E03      01331         MOVLW   0x03
+00C6 2600      01332         ADDWF   r0x03, F
+00C8 0E00      01333         MOVLW   0x00
+00CA 2200      01334         ADDWFC  r0x04, F
+00CC 0E00      01335         MOVLW   0x00
+00CE 2200      01336         ADDWFC  r0x05, F
+00D0 0E00      01337         MOVLW   0x00
+00D2 6EE5      01338         MOVWF   POSTDEC1
+00D4 0E00      01339         MOVLW   0x00
+00D6 6EF4      01340         MOVWF   PRODH
+00D8 C000 FFE9 01341         MOVFF   r0x03, FSR0L
+00DC C000 FFF3 01342         MOVFF   r0x04, PRODL
+00E0 5000      01343         MOVF    r0x05, W
+00E2 EC00 F000 01344         CALL    __gptrput2
+               01345 ;       .line   165; brtos/semaphore.c  *event = NULL;
+00E6 0E00      01346         MOVLW   0x00
+00E8 6EE5      01347         MOVWF   POSTDEC1
+00EA 0E00      01348         MOVLW   0x00
+00EC 6EF4      01349         MOVWF   PRODH
+00EE 0E00      01350         MOVLW   0x00
+gpasm-0.13.7 beta               build/default/production/brtos/semaphore.asm7-19-2011  15:07:13          PAGE 26
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+ 
+00F0 6EF6      01351         MOVWF   TBLPTRL
+00F2 C000 FFE9 01352         MOVFF   r0x00, FSR0L
+00F6 C000 FFF3 01353         MOVFF   r0x01, PRODL
+00FA 5000      01354         MOVF    r0x02, W
+00FC EC00 F000 01355         CALL    __gptrput3
+               01356 ;       .line   168; brtos/semaphore.c  OSExitCritical();
+0100 8E00      01357         BSF     _INTCONbits, 7
+               01358 ;       .line   170; brtos/semaphore.c  return(DELETE_EVENT_OK);
+0102 0E08      01359         MOVLW   0x08
+0104 01360 _00141_DS_:
+0104 CFE4 F000 01361         MOVFF   PREINC1, r0x08
+0108 CFE4 F000 01362         MOVFF   PREINC1, r0x07
+010C CFE4 F000 01363         MOVFF   PREINC1, r0x06
+0110 CFE4 F000 01364         MOVFF   PREINC1, r0x05
+0114 CFE4 F000 01365         MOVFF   PREINC1, r0x04
+0118 CFE4 F000 01366         MOVFF   PREINC1, r0x03
+011C CFE4 F000 01367         MOVFF   PREINC1, r0x02
+0120 CFE4 F000 01368         MOVFF   PREINC1, r0x01
+0124 CFE4 F000 01369         MOVFF   PREINC1, r0x00
+0128 CFE4 FFD9 01370         MOVFF   PREINC1, FSR2L
+012C CFE4 FFDA 01371         MOVFF   PREINC1, FSR2H
+0130 0012      01372         RETURN  
+               01373 
+               01374 ; ; Starting pCode block
+               01375 S_semaphore__OSSemCreate        code
+0000 01376 _OSSemCreate:
+               01377 ;       .line   77; brtos/semaphore.c   INT8U OSSemCreate (INT8U cnt, BRTOS_Sem **event)
+0000 CFDA FFE5 01378         MOVFF   FSR2H, POSTDEC1
+0004 CFD9 FFE5 01379         MOVFF   FSR2L, POSTDEC1
+0008 CFE2 FFDA 01380         MOVFF   FSR1H, FSR2H
+000C CFE1 FFD9 01381         MOVFF   FSR1L, FSR2L
+0010 C000 FFE5 01382         MOVFF   r0x00, POSTDEC1
+0014 C000 FFE5 01383         MOVFF   r0x01, POSTDEC1
+0018 C000 FFE5 01384         MOVFF   r0x02, POSTDEC1
+001C C000 FFE5 01385         MOVFF   r0x03, POSTDEC1
+0020 C000 FFE5 01386         MOVFF   r0x04, POSTDEC1
+0024 C000 FFE5 01387         MOVFF   r0x05, POSTDEC1
+0028 C000 FFE5 01388         MOVFF   r0x06, POSTDEC1
+002C C000 FFE5 01389         MOVFF   r0x07, POSTDEC1
+0030 C000 FFE5 01390         MOVFF   r0x08, POSTDEC1
+0034 C000 FFE5 01391         MOVFF   r0x09, POSTDEC1
+0038 C000 FFE5 01392         MOVFF   r0x0a, POSTDEC1
+003C 0E03      01393         MOVLW   0x03
+003E CFDB F000 01394         MOVFF   PLUSW2, r0x00
+0042 0E04      01395         MOVLW   0x04
+0044 CFDB F000 01396         MOVFF   PLUSW2, r0x01
+0048 0E05      01397         MOVLW   0x05
+004A CFDB F000 01398         MOVFF   PLUSW2, r0x02
+004E 0E06      01399         MOVLW   0x06
+0050 CFDB F000 01400         MOVFF   PLUSW2, r0x03
+0054 0000      01401         BANKSEL _iNesting
+               01402 ;       .line   84; brtos/semaphore.c   if (iNesting > 0) {                                // See if caller is an interrupt
+0056 5100      01403         MOVF    _iNesting, W, B
+0058 E000      01404         BZ      _00106_DS_
+gpasm-0.13.7 beta               build/default/production/brtos/semaphore.asm7-19-2011  15:07:13          PAGE 27
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+ 
+               01405 ;       .line   85; brtos/semaphore.c   return(IRQ_PEND_ERR);                           // Can't be create by interrupt
+005A 0E02      01406         MOVLW   0x02
+005C D000      01407         BRA     _00121_DS_
+005E 01408 _00106_DS_:
+005E 0000      01409         BANKSEL _currentTask
+               01410 ;       .line   89; brtos/semaphore.c   if (currentTask)
+0060 5100      01411         MOVF    _currentTask, W, B
+0062 E000      01412         BZ      _00129_DS_
+               01413 ;       .line   90; brtos/semaphore.c   OSEnterCritical();
+0064 9E00      01414         BCF     _INTCONbits, 7
+0066 01415 _00129_DS_:
+               01416 ;       .line   93; brtos/semaphore.c   for(i=0;i<=BRTOS_MAX_SEM;i++)
+0066 6A00      01417         CLRF    r0x04
+0068 6A00      01418         CLRF    r0x05
+006A 6A00      01419         CLRF    r0x06
+006C 6A00      01420         CLRF    r0x07
+006E 01421 _00115_DS_:
+006E 5000      01422         MOVF    r0x05, W
+0070 0F80      01423         ADDLW   0x80
+0072 0F80      01424         ADDLW   0x80
+0074 E100      01425         BNZ     _00131_DS_
+0076 0E03      01426         MOVLW   0x03
+0078 5C00      01427         SUBWF   r0x04, W
+007A 01428 _00131_DS_:
+007A E200      01429         BC      _00118_DS_
+               01430 ;       .line   96; brtos/semaphore.c   if(i >= BRTOS_MAX_SEM)
+007C 5000      01431         MOVF    r0x05, W
+007E 0F80      01432         ADDLW   0x80
+0080 0F80      01433         ADDLW   0x80
+0082 E100      01434         BNZ     _00132_DS_
+0084 0E02      01435         MOVLW   0x02
+0086 5C00      01436         SUBWF   r0x04, W
+0088 01437 _00132_DS_:
+0088 E300      01438         BNC     _00112_DS_
+008A 0000      01439         BANKSEL _currentTask
+               01440 ;       .line   101; brtos/semaphore.c  if (currentTask)
+008C 5100      01441         MOVF    _currentTask, W, B
+008E E000      01442         BZ      _00110_DS_
+               01443 ;       .line   102; brtos/semaphore.c  OSExitCritical();
+0090 8E00      01444         BSF     _INTCONbits, 7
+0092 01445 _00110_DS_:
+               01446 ;       .line   104; brtos/semaphore.c  return(NO_AVAILABLE_EVENT);
+0092 0E01      01447         MOVLW   0x01
+0094 D000      01448         BRA     _00121_DS_
+0096 01449 _00112_DS_:
+               01450 ;       .line   108; brtos/semaphore.c  if(BRTOS_Sem_Table[i].OSEventAllocated != TRUE)
+0096 0E00      01451         MOVLW   LOW(_BRTOS_Sem_Table)
+0098 2400      01452         ADDWF   r0x06, W
+009A 6E00      01453         MOVWF   r0x08
+009C 0E00      01454         MOVLW   HIGH(_BRTOS_Sem_Table)
+009E 2000      01455         ADDWFC  r0x07, W
+00A0 6E00      01456         MOVWF   r0x09
+00A2 C000 FFE9 01457         MOVFF   r0x08, FSR0L
+00A6 C000 FFEA 01458         MOVFF   r0x09, FSR0H
+gpasm-0.13.7 beta               build/default/production/brtos/semaphore.asm7-19-2011  15:07:13          PAGE 28
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+ 
+00AA CFEF F000 01459         MOVFF   INDF0, r0x0a
+00AE 5000      01460         MOVF    r0x0a, W
+00B0 0A01      01461         XORLW   0x01
+00B2 E000      01462         BZ      _00117_DS_
+               01463 ;       .line   110; brtos/semaphore.c  BRTOS_Sem_Table[i].OSEventAllocated = TRUE;
+00B4 C000 FFE9 01464         MOVFF   r0x08, FSR0L
+00B8 C000 FFEA 01465         MOVFF   r0x09, FSR0H
+00BC 0E01      01466         MOVLW   0x01
+00BE 6EEF      01467         MOVWF   INDF0
+               01468 ;       .line   111; brtos/semaphore.c  pont_event = &BRTOS_Sem_Table[i];
+00C0 0E00      01469         MOVLW   LOW(_BRTOS_Sem_Table)
+00C2 2400      01470         ADDWF   r0x06, W
+00C4 6E00      01471         MOVWF   r0x08
+00C6 0E00      01472         MOVLW   HIGH(_BRTOS_Sem_Table)
+00C8 2000      01473         ADDWFC  r0x07, W
+00CA 6E00      01474         MOVWF   r0x09
+00CC 5000      01475         MOVF    r0x09, W
+00CE 6E00      01476         MOVWF   r0x09
+00D0 5000      01477         MOVF    r0x08, W
+00D2 6E00      01478         MOVWF   r0x08
+00D4 0E80      01479         MOVLW   0x80
+00D6 6E00      01480         MOVWF   r0x0a
+               01481 ;       .line   112; brtos/semaphore.c  break;      
+00D8 D000      01482         BRA     _00118_DS_
+00DA 01483 _00117_DS_:
+               01484 ;       .line   93; brtos/semaphore.c   for(i=0;i<=BRTOS_MAX_SEM;i++)
+00DA 0E05      01485         MOVLW   0x05
+00DC 2600      01486         ADDWF   r0x06, F
+00DE B0D8      01487         BTFSC   STATUS, 0
+00E0 2A00      01488         INCF    r0x07, F
+00E2 2A00      01489         INCF    r0x04, F
+00E4 B0D8      01490         BTFSC   STATUS, 0
+00E6 2A00      01491         INCF    r0x05, F
+00E8 D000      01492         BRA     _00115_DS_
+00EA 01493 _00118_DS_:
+               01494 ;       .line   117; brtos/semaphore.c  pont_event->OSEventCount = cnt;                      // Set semaphore count value
+00EA 5000      01495         MOVF    r0x08, W
+00EC 0F01      01496         ADDLW   0x01
+00EE 6E00      01497         MOVWF   r0x04
+00F0 0E00      01498         MOVLW   0x00
+00F2 2000      01499         ADDWFC  r0x09, W
+00F4 6E00      01500         MOVWF   r0x05
+00F6 0E00      01501         MOVLW   0x00
+00F8 2000      01502         ADDWFC  r0x0a, W
+00FA 6E00      01503         MOVWF   r0x06
+00FC C000 FFE5 01504         MOVFF   r0x00, POSTDEC1
+0100 C000 FFE9 01505         MOVFF   r0x04, FSR0L
+0104 C000 FFF3 01506         MOVFF   r0x05, PRODL
+0108 5000      01507         MOVF    r0x06, W
+010A EC00 F000 01508         CALL    __gptrput1
+               01509 ;       .line   118; brtos/semaphore.c  pont_event->OSEventWait  = 0;
+010E 5000      01510         MOVF    r0x08, W
+0110 0F02      01511         ADDLW   0x02
+0112 6E00      01512         MOVWF   r0x00
+gpasm-0.13.7 beta               build/default/production/brtos/semaphore.asm7-19-2011  15:07:13          PAGE 29
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+ 
+0114 0E00      01513         MOVLW   0x00
+0116 2000      01514         ADDWFC  r0x09, W
+0118 6E00      01515         MOVWF   r0x04
+011A 0E00      01516         MOVLW   0x00
+011C 2000      01517         ADDWFC  r0x0a, W
+011E 6E00      01518         MOVWF   r0x05
+0120 0E00      01519         MOVLW   0x00
+0122 6EE5      01520         MOVWF   POSTDEC1
+0124 C000 FFE9 01521         MOVFF   r0x00, FSR0L
+0128 C000 FFF3 01522         MOVFF   r0x04, PRODL
+012C 5000      01523         MOVF    r0x05, W
+012E EC00 F000 01524         CALL    __gptrput1
+               01525 ;       .line   120; brtos/semaphore.c  pont_event->OSEventWaitList=0;
+0132 5000      01526         MOVF    r0x08, W
+0134 0F03      01527         ADDLW   0x03
+0136 6E00      01528         MOVWF   r0x00
+0138 0E00      01529         MOVLW   0x00
+013A 2000      01530         ADDWFC  r0x09, W
+013C 6E00      01531         MOVWF   r0x04
+013E 0E00      01532         MOVLW   0x00
+0140 2000      01533         ADDWFC  r0x0a, W
+0142 6E00      01534         MOVWF   r0x05
+0144 0E00      01535         MOVLW   0x00
+0146 6EE5      01536         MOVWF   POSTDEC1
+0148 0E00      01537         MOVLW   0x00
+014A 6EF4      01538         MOVWF   PRODH
+014C C000 FFE9 01539         MOVFF   r0x00, FSR0L
+0150 C000 FFF3 01540         MOVFF   r0x04, PRODL
+0154 5000      01541         MOVF    r0x05, W
+0156 EC00 F000 01542         CALL    __gptrput2
+               01543 ;       .line   122; brtos/semaphore.c  *event = pont_event;
+015A C000 FFE5 01544         MOVFF   r0x08, POSTDEC1
+015E C000 FFF4 01545         MOVFF   r0x09, PRODH
+0162 C000 FFF6 01546         MOVFF   r0x0a, TBLPTRL
+0166 C000 FFE9 01547         MOVFF   r0x01, FSR0L
+016A C000 FFF3 01548         MOVFF   r0x02, PRODL
+016E 5000      01549         MOVF    r0x03, W
+0170 EC00 F000 01550         CALL    __gptrput3
+0174 0000      01551         BANKSEL _currentTask
+               01552 ;       .line   125; brtos/semaphore.c  if (currentTask)
+0176 5100      01553         MOVF    _currentTask, W, B
+0178 E000      01554         BZ      _00120_DS_
+               01555 ;       .line   126; brtos/semaphore.c  OSExitCritical();
+017A 8E00      01556         BSF     _INTCONbits, 7
+017C 01557 _00120_DS_:
+               01558 ;       .line   128; brtos/semaphore.c  return(ALLOC_EVENT_OK);
+017C 6AE8      01559         CLRF    WREG
+017E 01560 _00121_DS_:
+017E CFE4 F000 01561         MOVFF   PREINC1, r0x0a
+0182 CFE4 F000 01562         MOVFF   PREINC1, r0x09
+0186 CFE4 F000 01563         MOVFF   PREINC1, r0x08
+018A CFE4 F000 01564         MOVFF   PREINC1, r0x07
+018E CFE4 F000 01565         MOVFF   PREINC1, r0x06
+0192 CFE4 F000 01566         MOVFF   PREINC1, r0x05
+gpasm-0.13.7 beta               build/default/production/brtos/semaphore.asm7-19-2011  15:07:13          PAGE 30
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+ 
+0196 CFE4 F000 01567         MOVFF   PREINC1, r0x04
+019A CFE4 F000 01568         MOVFF   PREINC1, r0x03
+019E CFE4 F000 01569         MOVFF   PREINC1, r0x02
+01A2 CFE4 F000 01570         MOVFF   PREINC1, r0x01
+01A6 CFE4 F000 01571         MOVFF   PREINC1, r0x00
+01AA CFE4 FFD9 01572         MOVFF   PREINC1, FSR2L
+01AE CFE4 FFDA 01573         MOVFF   PREINC1, FSR2H
+01B2 0012      01574         RETURN  
+               01575 
+               01576 
+               01577 
+               01578 ; Statistics:
+               01579 ; code size:     3042 (0x0be2) bytes ( 2.32%)
+               01580 ;                1521 (0x05f1) words
+               01581 ; udata size:       0 (0x0000) bytes ( 0.00%)
+               01582 ; access size:     23 (0x0017) bytes
+               01583 
+               01584 
+gpasm-0.13.7 beta               build/default/production/brtos/semaphore.asm7-19-2011  15:07:13          PAGE 31
+
+
+SYMBOL TABLE
+  LABEL                             VALUE 
+
+FSR0H                             00000FEA
+FSR0L                             00000FE9
+FSR1H                             00000FE2
+FSR1L                             00000FE1
+FSR2H                             00000FDA
+FSR2L                             00000FD9
+INDF0                             00000FEF
+PLUSW2                            00000FDB
+POSTDEC1                          00000FE5
+PREINC1                           00000FE4
+PRODH                             00000FF4
+PRODL                             00000FF3
+STATUS                            00000FD8
+TABLAT                            00000FF5
+TBLPTRH                           00000FF7
+TBLPTRL                           00000FF6
+TBLPTRU                           00000FF8
+WREG                              00000FE8
+_00106_DS_                        0000005E
+_00110_DS_                        00000092
+_00112_DS_                        00000096
+_00115_DS_                        0000006E
+_00117_DS_                        000000DA
+_00118_DS_                        000000EA
+_00120_DS_                        0000017C
+_00121_DS_                        0000017E
+_00129_DS_                        00000066
+_00131_DS_                        0000007A
+_00132_DS_                        00000088
+_00140_DS_                        00000050
+_00141_DS_                        00000104
+_00147_DS_                        000000CE
+_00149_DS_                        0000024A
+_00150_DS_                        00000272
+_00152_DS_                        00000320
+_00155_DS_                        00000392
+_00156_DS_                        000003BA
+_00160_DS_                        00000512
+_00163_DS_                        000005EC
+_00166_DS_                        00000572
+_00169_DS_                        000004AE
+_00172_DS_                        0000068C
+_00173_DS_                        00000690
+_00187_DS_                        00000208
+_00188_DS_                        000003FC
+_00189_DS_                        000003FE
+_00191_DS_                        000004DC
+_00192_DS_                        000004DE
+_00193_DS_                        000004F6
+_00194_DS_                        000004F8
+_00195_DS_                        0000058A
+_00196_DS_                        0000058C
+_00202_DS_                        00000066
+gpasm-0.13.7 beta               build/default/production/brtos/semaphore.asm7-19-2011  15:07:13          PAGE 32
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+ 
+_00204_DS_                        0000016A
+_00206_DS_                        00000172
+_00208_DS_                        00000176
+_00210_DS_                        000001B2
+_00212_DS_                        000001BE
+_00214_DS_                        000001B6
+_00216_DS_                        000001C0
+_ADCON0                           00000000
+_ADCON0bits                       00000000
+_ADCON1                           00000000
+_ADCON1bits                       00000000
+_ADCON2                           00000000
+_ADCON2bits                       00000000
+_ADRES                            00000000
+_ADRESH                           00000000
+_ADRESL                           00000000
+_BAUDCON                          00000000
+_BAUDCONbits                      00000000
+_BAUDCTL                          00000000
+_BAUDCTLbits                      00000000
+_BRTOS_Mutex_Table                00000000
+_BRTOS_Queue_Table                00000000
+_BRTOS_Sem_Table                  00000000
+_BSR                              00000000
+_BufferText                       00000000
+_CCP1CON                          00000000
+_CCP1CONbits                      00000000
+_CCP2CON                          00000000
+_CCP2CONbits                      00000000
+_CCPR1                            00000000
+_CCPR1H                           00000000
+_CCPR1L                           00000000
+_CCPR2                            00000000
+_CCPR2H                           00000000
+_CCPR2L                           00000000
+_CMCON                            00000000
+_CMCONbits                        00000000
+_CVRCON                           00000000
+_CVRCONbits                       00000000
+_ContextTask                      00000000
+_DDRA                             00000000
+_DDRAbits                         00000000
+_DDRB                             00000000
+_DDRBbits                         00000000
+_DDRC                             00000000
+_DDRCbits                         00000000
+_DDRD                             00000000
+_DDRDbits                         00000000
+_DDRE                             00000000
+_DDREbits                         00000000
+_Data                             00000000
+_ECCP1AS                          00000000
+_ECCP1ASbits                      00000000
+_EEADR                            00000000
+gpasm-0.13.7 beta               build/default/production/brtos/semaphore.asm7-19-2011  15:07:13          PAGE 33
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+ 
+_EECON1                           00000000
+_EECON1bits                       00000000
+_EECON2                           00000000
+_EEDATA                           00000000
+_FSR0H                            00000000
+_FSR0L                            00000000
+_FSR1H                            00000000
+_FSR1L                            00000000
+_FSR2H                            00000000
+_FSR2L                            00000000
+_HLVDCON                          00000000
+_HLVDCONbits                      00000000
+_Head                             00000000
+_Hora                             00000000
+_INDF0                            00000000
+_INDF1                            00000000
+_INDF2                            00000000
+_INTCON                           00000000
+_INTCON2                          00000000
+_INTCON2bits                      00000000
+_INTCON3                          00000000
+_INTCON3bits                      00000000
+_INTCONbits                       00000000
+_IPR1                             00000000
+_IPR1bits                         00000000
+_IPR2                             00000000
+_IPR2bits                         00000000
+_LATA                             00000000
+_LATAbits                         00000000
+_LATB                             00000000
+_LATBbits                         00000000
+_LATC                             00000000
+_LATCbits                         00000000
+_LATD                             00000000
+_LATDbits                         00000000
+_LATE                             00000000
+_LATEbits                         00000000
+_LVDCON                           00000000
+_LVDCONbits                       00000000
+_LastOSDuty                       00000000
+_NumberOfInstalledTasks           00000000
+_OSBlockedList                    00000000
+_OSCCON                           00000000
+_OSCCONbits                       00000000
+_OSCTUNE                          00000000
+_OSCTUNEbits                      00000000
+_OSDuty                           00000000
+_OSDutyTmp                        00000000
+_OSReadyList                      00000000
+_OSSemCreate                      00000000
+_OSSemDelete                      00000000
+_OSSemPend                        00000000
+_OSSemPost                        00000000
+_PC                               00000000
+gpasm-0.13.7 beta               build/default/production/brtos/semaphore.asm7-19-2011  15:07:13          PAGE 34
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+ 
+_PCL                              00000000
+_PCLATH                           00000000
+_PCLATU                           00000000
+_PIE1                             00000000
+_PIE1bits                         00000000
+_PIE2                             00000000
+_PIE2bits                         00000000
+_PIR1                             00000000
+_PIR1bits                         00000000
+_PIR2                             00000000
+_PIR2bits                         00000000
+_PLUSW0                           00000000
+_PLUSW1                           00000000
+_PLUSW2                           00000000
+_PORTA                            00000000
+_PORTAbits                        00000000
+_PORTB                            00000000
+_PORTBbits                        00000000
+_PORTC                            00000000
+_PORTCbits                        00000000
+_PORTD                            00000000
+_PORTDbits                        00000000
+_PORTE                            00000000
+_PORTEbits                        00000000
+_POSTDEC0                         00000000
+_POSTDEC1                         00000000
+_POSTDEC2                         00000000
+_POSTINC0                         00000000
+_POSTINC1                         00000000
+_POSTINC2                         00000000
+_PR2                              00000000
+_PREINC0                          00000000
+_PREINC1                          00000000
+_PREINC2                          00000000
+_PROD                             00000000
+_PRODH                            00000000
+_PRODL                            00000000
+_PWM1CON                          00000000
+_PWM1CONbits                      00000000
+_PriorityMask                     00000000
+_PriorityVector                   00000000
+_QUEUE_STACK                      00000000
+_RCON                             00000000
+_RCONbits                         00000000
+_RCREG                            00000000
+_RCSTA                            00000000
+_RCSTAbits                        00000000
+_SAScheduler                      00000000
+_SPBRG                            00000000
+_SPBRGH                           00000000
+_SPvalue                          00000000
+_SSPADD                           00000000
+_SSPBUF                           00000000
+_SSPCON1                          00000000
+gpasm-0.13.7 beta               build/default/production/brtos/semaphore.asm7-19-2011  15:07:13          PAGE 35
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+ 
+_SSPCON1bits                      00000000
+_SSPCON2                          00000000
+_SSPCON2bits                      00000000
+_SSPSTAT                          00000000
+_SSPSTATbits                      00000000
+_STACK                            00000000
+_STATUS                           00000000
+_STATUSbits                       00000000
+_STKPTR                           00000000
+_STKPTRbits                       00000000
+_SelectedTask                     00000000
+_StackAddress                     00000000
+_SwitchContext                    00000000
+_T0CON                            00000000
+_T0CONbits                        00000000
+_T1CON                            00000000
+_T1CONbits                        00000000
+_T2CON                            00000000
+_T2CONbits                        00000000
+_T3CON                            00000000
+_T3CONbits                        00000000
+_TABLAT                           00000000
+_TBLPTR                           00000000
+_TBLPTRH                          00000000
+_TBLPTRL                          00000000
+_TBLPTRU                          00000000
+_TMR0H                            00000000
+_TMR0L                            00000000
+_TMR1H                            00000000
+_TMR1L                            00000000
+_TMR2                             00000000
+_TMR3H                            00000000
+_TMR3L                            00000000
+_TOS                              00000000
+_TOSH                             00000000
+_TOSL                             00000000
+_TOSU                             00000000
+_TRISA                            00000000
+_TRISAbits                        00000000
+_TRISB                            00000000
+_TRISBbits                        00000000
+_TRISC                            00000000
+_TRISCbits                        00000000
+_TRISD                            00000000
+_TRISDbits                        00000000
+_TRISE                            00000000
+_TRISEbits                        00000000
+_TXREG                            00000000
+_TXSTA                            00000000
+_TXSTAbits                        00000000
+_Tail                             00000000
+_TaskAlloc                        00000000
+_WDTCON                           00000000
+_WDTCONbits                       00000000
+gpasm-0.13.7 beta               build/default/production/brtos/semaphore.asm7-19-2011  15:07:13          PAGE 36
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+ 
+_WREG                             00000000
+__18F4520                         00000001
+__gptrget1                        00000000
+__gptrget2                        00000000
+__gptrget3                        00000000
+__gptrput1                        00000000
+__gptrput2                        00000000
+__gptrput3                        00000000
+_counter                          00000000
+_currentTask                      00000000
+_iNesting                         00000000
+_iQueueAddress                    00000000
+_iStackAddress                    00000000
+_version                          00000000
+r0x00                             00000000
+r0x01                             00000001
+r0x02                             00000002
+r0x03                             00000003
+r0x04                             00000004
+r0x05                             00000005
+r0x06                             00000006
+r0x07                             00000007
+r0x08                             00000008
+r0x09                             00000009
+r0x0a                             0000000A
+r0x0b                             0000000B
+r0x0c                             0000000C
+r0x0d                             0000000D
+r0x0e                             0000000E
+r0x0f                             0000000F
+r0x10                             00000010
+r0x11                             00000011
+r0x12                             00000012
+r0x13                             00000013
+r0x14                             00000014
+r0x15                             00000015
+r0x16                             00000016
+
+
+Errors   :       0
+Warnings :       0 reported,       0 suppressed
+Messages :       0 reported,       0 suppressed
+

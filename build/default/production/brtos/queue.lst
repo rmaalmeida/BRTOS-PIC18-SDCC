@@ -1,0 +1,3320 @@
+gpasm-0.13.7 beta               build/default/production/brtos/queue.asm7-19-2011  15:07:14          PAGE  1
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+ 
+               00001 ;--------------------------------------------------------
+               00002 ; File Created by SDCC : free open source ANSI-C Compiler
+               00003 ; Version 2.9.0 #5416 (Apr 29 2011) (UNIX)
+               00004 ; This file was generated Tue Jul 19 15:07:14 2011
+               00005 ;--------------------------------------------------------
+               00006 ; PIC16 port for the Microchip 16-bit core micros
+               00007 ;--------------------------------------------------------
+               00008         list    p=18f4520
+               00009 
+               00010         radix dec
+               00011 
+               00012 ;--------------------------------------------------------
+               00013 ; public variables in this module
+               00014 ;--------------------------------------------------------
+               00015         global _OSQueueCreate
+               00016         global _OSWQueue
+               00017         global _OSRQueue
+               00018         global _OSCleanQueue
+               00019         global _OSQueuePend
+               00020         global _OSQueuePost
+               00021 
+               00022 ;--------------------------------------------------------
+               00023 ; extern variables in this module
+               00024 ;--------------------------------------------------------
+               00025         extern __gptrput3
+               00026         extern __gptrput2
+               00027         extern __gptrput1
+               00028         extern __gptrget2
+               00029         extern __gptrget3
+               00030         extern __gptrget1
+               00031         extern _PORTAbits
+               00032         extern _PORTBbits
+               00033         extern _PORTCbits
+               00034         extern _PORTDbits
+               00035         extern _PORTEbits
+               00036         extern _LATAbits
+               00037         extern _LATBbits
+               00038         extern _LATCbits
+               00039         extern _LATDbits
+               00040         extern _LATEbits
+               00041         extern _DDRAbits
+               00042         extern _TRISAbits
+               00043         extern _DDRBbits
+               00044         extern _TRISBbits
+               00045         extern _DDRCbits
+               00046         extern _TRISCbits
+               00047         extern _DDRDbits
+               00048         extern _TRISDbits
+               00049         extern _DDREbits
+               00050         extern _TRISEbits
+               00051         extern _OSCTUNEbits
+               00052         extern _PIE1bits
+               00053         extern _PIR1bits
+               00054         extern _IPR1bits
+gpasm-0.13.7 beta               build/default/production/brtos/queue.asm7-19-2011  15:07:14          PAGE  2
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+ 
+               00055         extern _PIE2bits
+               00056         extern _PIR2bits
+               00057         extern _IPR2bits
+               00058         extern _EECON1bits
+               00059         extern _RCSTAbits
+               00060         extern _TXSTAbits
+               00061         extern _T3CONbits
+               00062         extern _CMCONbits
+               00063         extern _CVRCONbits
+               00064         extern _ECCP1ASbits
+               00065         extern _PWM1CONbits
+               00066         extern _BAUDCONbits
+               00067         extern _BAUDCTLbits
+               00068         extern _CCP2CONbits
+               00069         extern _CCP1CONbits
+               00070         extern _ADCON2bits
+               00071         extern _ADCON1bits
+               00072         extern _ADCON0bits
+               00073         extern _SSPCON2bits
+               00074         extern _SSPCON1bits
+               00075         extern _SSPSTATbits
+               00076         extern _T2CONbits
+               00077         extern _T1CONbits
+               00078         extern _RCONbits
+               00079         extern _WDTCONbits
+               00080         extern _HLVDCONbits
+               00081         extern _LVDCONbits
+               00082         extern _OSCCONbits
+               00083         extern _T0CONbits
+               00084         extern _STATUSbits
+               00085         extern _INTCON3bits
+               00086         extern _INTCON2bits
+               00087         extern _INTCONbits
+               00088         extern _STKPTRbits
+               00089         extern _SPvalue
+               00090         extern _Hora
+               00091         extern _Data
+               00092         extern _BRTOS_Sem_Table
+               00093         extern _BRTOS_Mutex_Table
+               00094         extern _BRTOS_Queue_Table
+               00095         extern _OSReadyList
+               00096         extern _OSBlockedList
+               00097         extern _Tail
+               00098         extern _Head
+               00099         extern _iNesting
+               00100         extern _currentTask
+               00101         extern _SelectedTask
+               00102         extern _ContextTask
+               00103         extern _iStackAddress
+               00104         extern _NumberOfInstalledTasks
+               00105         extern _counter
+               00106         extern _OSDuty
+               00107         extern _PriorityVector
+               00108         extern _OSDutyTmp
+gpasm-0.13.7 beta               build/default/production/brtos/queue.asm7-19-2011  15:07:14          PAGE  3
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+ 
+               00109         extern _LastOSDuty
+               00110         extern _STACK
+               00111         extern _TaskAlloc
+               00112         extern _QUEUE_STACK
+               00113         extern _iQueueAddress
+               00114         extern _version
+               00115         extern _BufferText
+               00116         extern _StackAddress
+               00117         extern _PORTA
+               00118         extern _PORTB
+               00119         extern _PORTC
+               00120         extern _PORTD
+               00121         extern _PORTE
+               00122         extern _LATA
+               00123         extern _LATB
+               00124         extern _LATC
+               00125         extern _LATD
+               00126         extern _LATE
+               00127         extern _DDRA
+               00128         extern _TRISA
+               00129         extern _DDRB
+               00130         extern _TRISB
+               00131         extern _DDRC
+               00132         extern _TRISC
+               00133         extern _DDRD
+               00134         extern _TRISD
+               00135         extern _DDRE
+               00136         extern _TRISE
+               00137         extern _OSCTUNE
+               00138         extern _PIE1
+               00139         extern _PIR1
+               00140         extern _IPR1
+               00141         extern _PIE2
+               00142         extern _PIR2
+               00143         extern _IPR2
+               00144         extern _EECON1
+               00145         extern _EECON2
+               00146         extern _EEDATA
+               00147         extern _EEADR
+               00148         extern _RCSTA
+               00149         extern _TXSTA
+               00150         extern _TXREG
+               00151         extern _RCREG
+               00152         extern _SPBRG
+               00153         extern _SPBRGH
+               00154         extern _T3CON
+               00155         extern _TMR3L
+               00156         extern _TMR3H
+               00157         extern _CMCON
+               00158         extern _CVRCON
+               00159         extern _ECCP1AS
+               00160         extern _PWM1CON
+               00161         extern _BAUDCON
+               00162         extern _BAUDCTL
+gpasm-0.13.7 beta               build/default/production/brtos/queue.asm7-19-2011  15:07:14          PAGE  4
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+ 
+               00163         extern _CCP2CON
+               00164         extern _CCPR2
+               00165         extern _CCPR2L
+               00166         extern _CCPR2H
+               00167         extern _CCP1CON
+               00168         extern _CCPR1
+               00169         extern _CCPR1L
+               00170         extern _CCPR1H
+               00171         extern _ADCON2
+               00172         extern _ADCON1
+               00173         extern _ADCON0
+               00174         extern _ADRES
+               00175         extern _ADRESL
+               00176         extern _ADRESH
+               00177         extern _SSPCON2
+               00178         extern _SSPCON1
+               00179         extern _SSPSTAT
+               00180         extern _SSPADD
+               00181         extern _SSPBUF
+               00182         extern _T2CON
+               00183         extern _PR2
+               00184         extern _TMR2
+               00185         extern _T1CON
+               00186         extern _TMR1L
+               00187         extern _TMR1H
+               00188         extern _RCON
+               00189         extern _WDTCON
+               00190         extern _HLVDCON
+               00191         extern _LVDCON
+               00192         extern _OSCCON
+               00193         extern _T0CON
+               00194         extern _TMR0L
+               00195         extern _TMR0H
+               00196         extern _STATUS
+               00197         extern _FSR2L
+               00198         extern _FSR2H
+               00199         extern _PLUSW2
+               00200         extern _PREINC2
+               00201         extern _POSTDEC2
+               00202         extern _POSTINC2
+               00203         extern _INDF2
+               00204         extern _BSR
+               00205         extern _FSR1L
+               00206         extern _FSR1H
+               00207         extern _PLUSW1
+               00208         extern _PREINC1
+               00209         extern _POSTDEC1
+               00210         extern _POSTINC1
+               00211         extern _INDF1
+               00212         extern _WREG
+               00213         extern _FSR0L
+               00214         extern _FSR0H
+               00215         extern _PLUSW0
+               00216         extern _PREINC0
+gpasm-0.13.7 beta               build/default/production/brtos/queue.asm7-19-2011  15:07:14          PAGE  5
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+ 
+               00217         extern _POSTDEC0
+               00218         extern _POSTINC0
+               00219         extern _INDF0
+               00220         extern _INTCON3
+               00221         extern _INTCON2
+               00222         extern _INTCON
+               00223         extern _PROD
+               00224         extern _PRODL
+               00225         extern _PRODH
+               00226         extern _TABLAT
+               00227         extern _TBLPTR
+               00228         extern _TBLPTRL
+               00229         extern _TBLPTRH
+               00230         extern _TBLPTRU
+               00231         extern _PC
+               00232         extern _PCL
+               00233         extern _PCLATH
+               00234         extern _PCLATU
+               00235         extern _STKPTR
+               00236         extern _TOS
+               00237         extern _TOSL
+               00238         extern _TOSH
+               00239         extern _TOSU
+               00240         extern _SwitchContext
+               00241         extern _SAScheduler
+               00242         extern _PriorityMask
+               00243 ;--------------------------------------------------------
+               00244 ;       Equates to used internal registers
+               00245 ;--------------------------------------------------------
+  00000FD8     00246 STATUS  equ     0xfd8
+  00000FE8     00247 WREG    equ     0xfe8
+  00000FF6     00248 TBLPTRL equ     0xff6
+  00000FF7     00249 TBLPTRH equ     0xff7
+  00000FF8     00250 TBLPTRU equ     0xff8
+  00000FF5     00251 TABLAT  equ     0xff5
+  00000FE9     00252 FSR0L   equ     0xfe9
+  00000FEA     00253 FSR0H   equ     0xfea
+  00000FE1     00254 FSR1L   equ     0xfe1
+  00000FE2     00255 FSR1H   equ     0xfe2
+  00000FD9     00256 FSR2L   equ     0xfd9
+  00000FDA     00257 FSR2H   equ     0xfda
+  00000FEF     00258 INDF0   equ     0xfef
+  00000FE5     00259 POSTDEC1        equ     0xfe5
+  00000FE4     00260 PREINC1 equ     0xfe4
+  00000FDB     00261 PLUSW2  equ     0xfdb
+  00000FF3     00262 PRODL   equ     0xff3
+  00000FF4     00263 PRODH   equ     0xff4
+               00264 
+               00265 
+               00266 ; Internal registers
+               00267 .registers      udata_ovr       0x0000
+               00268 r0x00   res     1
+               00269 r0x01   res     1
+               00270 r0x02   res     1
+gpasm-0.13.7 beta               build/default/production/brtos/queue.asm7-19-2011  15:07:14          PAGE  6
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+ 
+               00271 r0x03   res     1
+               00272 r0x04   res     1
+               00273 r0x05   res     1
+               00274 r0x06   res     1
+               00275 r0x07   res     1
+               00276 r0x08   res     1
+               00277 r0x09   res     1
+               00278 r0x0a   res     1
+               00279 r0x0b   res     1
+               00280 r0x0c   res     1
+               00281 r0x0d   res     1
+               00282 r0x0e   res     1
+               00283 r0x0f   res     1
+               00284 r0x10   res     1
+               00285 r0x11   res     1
+               00286 r0x12   res     1
+               00287 r0x13   res     1
+               00288 r0x14   res     1
+               00289 r0x15   res     1
+               00290 r0x16   res     1
+               00291 r0x17   res     1
+               00292 r0x18   res     1
+               00293 r0x19   res     1
+               00294 r0x1a   res     1
+               00295 r0x1b   res     1
+               00296 r0x1c   res     1
+               00297 r0x1d   res     1
+               00298 r0x1e   res     1
+               00299 r0x1f   res     1
+               00300 
+               00301 ;--------------------------------------------------------
+               00302 ; global & static initialisations
+               00303 ;--------------------------------------------------------
+               00304 ; I code from now on!
+               00305 ; ; Starting pCode block
+               00306 S_queue__OSQueuePost    code
+0000 00307 _OSQueuePost:
+               00308 ;       .line   499; brtos/queue.c      INT8U OSQueuePost(BRTOS_Queue *pont_event, INT8U newdata)
+0000 CFDA FFE5 00309         MOVFF   FSR2H, POSTDEC1
+0004 CFD9 FFE5 00310         MOVFF   FSR2L, POSTDEC1
+0008 CFE2 FFDA 00311         MOVFF   FSR1H, FSR2H
+000C CFE1 FFD9 00312         MOVFF   FSR1L, FSR2L
+0010 C000 FFE5 00313         MOVFF   r0x00, POSTDEC1
+0014 C000 FFE5 00314         MOVFF   r0x01, POSTDEC1
+0018 C000 FFE5 00315         MOVFF   r0x02, POSTDEC1
+001C C000 FFE5 00316         MOVFF   r0x03, POSTDEC1
+0020 C000 FFE5 00317         MOVFF   r0x04, POSTDEC1
+0024 C000 FFE5 00318         MOVFF   r0x05, POSTDEC1
+0028 C000 FFE5 00319         MOVFF   r0x06, POSTDEC1
+002C C000 FFE5 00320         MOVFF   r0x07, POSTDEC1
+0030 C000 FFE5 00321         MOVFF   r0x08, POSTDEC1
+0034 C000 FFE5 00322         MOVFF   r0x09, POSTDEC1
+0038 C000 FFE5 00323         MOVFF   r0x0a, POSTDEC1
+003C C000 FFE5 00324         MOVFF   r0x0b, POSTDEC1
+gpasm-0.13.7 beta               build/default/production/brtos/queue.asm7-19-2011  15:07:14          PAGE  7
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+ 
+0040 C000 FFE5 00325         MOVFF   r0x0c, POSTDEC1
+0044 C000 FFE5 00326         MOVFF   r0x0d, POSTDEC1
+0048 C000 FFE5 00327         MOVFF   r0x0e, POSTDEC1
+004C C000 FFE5 00328         MOVFF   r0x0f, POSTDEC1
+0050 0E03      00329         MOVLW   0x03
+0052 CFDB F000 00330         MOVFF   PLUSW2, r0x00
+0056 0E04      00331         MOVLW   0x04
+0058 CFDB F000 00332         MOVFF   PLUSW2, r0x01
+005C 0E05      00333         MOVLW   0x05
+005E CFDB F000 00334         MOVFF   PLUSW2, r0x02
+0062 0E06      00335         MOVLW   0x06
+0064 CFDB F000 00336         MOVFF   PLUSW2, r0x03
+               00337 ;       .line   506; brtos/queue.c      OS_QUEUE *cqueue = pont_event->OSEventPointer;
+0068 5000      00338         MOVF    r0x00, W
+006A 0F03      00339         ADDLW   0x03
+006C 6E00      00340         MOVWF   r0x04
+006E 0E00      00341         MOVLW   0x00
+0070 2000      00342         ADDWFC  r0x01, W
+0072 6E00      00343         MOVWF   r0x05
+0074 0E00      00344         MOVLW   0x00
+0076 2000      00345         ADDWFC  r0x02, W
+0078 6E00      00346         MOVWF   r0x06
+007A C000 FFE9 00347         MOVFF   r0x04, FSR0L
+007E C000 FFF3 00348         MOVFF   r0x05, PRODL
+0082 5000      00349         MOVF    r0x06, W
+0084 EC00 F000 00350         CALL    __gptrget3
+0088 6E00      00351         MOVWF   r0x04
+008A CFF3 F000 00352         MOVFF   PRODL, r0x05
+008E CFF4 F000 00353         MOVFF   PRODH, r0x06
+0092 0000      00354         BANKSEL _iNesting
+               00355 ;       .line   518; brtos/queue.c      if (!iNesting)
+0094 5100      00356         MOVF    _iNesting, W, B
+0096 E100      00357         BNZ     _00271_DS_
+               00358 ;       .line   520; brtos/queue.c      OSEnterCritical();
+0098 9E00      00359         BCF     _INTCONbits, 7
+009A 00360 _00271_DS_:
+               00361 ;       .line   549; brtos/queue.c      if (cqueue->OSQEntries < cqueue->OSQSize)
+009A 5000      00362         MOVF    r0x04, W
+009C 0F11      00363         ADDLW   0x11
+009E 6E00      00364         MOVWF   r0x07
+00A0 0E00      00365         MOVLW   0x00
+00A2 2000      00366         ADDWFC  r0x05, W
+00A4 6E00      00367         MOVWF   r0x08
+00A6 0E00      00368         MOVLW   0x00
+00A8 2000      00369         ADDWFC  r0x06, W
+00AA 6E00      00370         MOVWF   r0x09
+00AC C000 FFE9 00371         MOVFF   r0x07, FSR0L
+00B0 C000 FFF3 00372         MOVFF   r0x08, PRODL
+00B4 5000      00373         MOVF    r0x09, W
+00B6 EC00 F000 00374         CALL    __gptrget2
+00BA 6E00      00375         MOVWF   r0x0a
+00BC CFF3 F000 00376         MOVFF   PRODL, r0x0b
+00C0 5000      00377         MOVF    r0x04, W
+00C2 0F0F      00378         ADDLW   0x0f
+gpasm-0.13.7 beta               build/default/production/brtos/queue.asm7-19-2011  15:07:14          PAGE  8
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+ 
+00C4 6E00      00379         MOVWF   r0x0c
+00C6 0E00      00380         MOVLW   0x00
+00C8 2000      00381         ADDWFC  r0x05, W
+00CA 6E00      00382         MOVWF   r0x0d
+00CC 0E00      00383         MOVLW   0x00
+00CE 2000      00384         ADDWFC  r0x06, W
+00D0 6E00      00385         MOVWF   r0x0e
+00D2 C000 FFE9 00386         MOVFF   r0x0c, FSR0L
+00D6 C000 FFF3 00387         MOVFF   r0x0d, PRODL
+00DA 5000      00388         MOVF    r0x0e, W
+00DC EC00 F000 00389         CALL    __gptrget2
+00E0 6E00      00390         MOVWF   r0x0c
+00E2 CFF3 F000 00391         MOVFF   PRODL, r0x0d
+00E6 5000      00392         MOVF    r0x0d, W
+00E8 5C00      00393         SUBWF   r0x0b, W
+00EA E100      00394         BNZ     _00298_DS_
+00EC 5000      00395         MOVF    r0x0c, W
+00EE 5C00      00396         SUBWF   r0x0a, W
+00F0 00397 _00298_DS_:
+00F0 E200      00398         BC      _00275_DS_
+               00399 ;       .line   552; brtos/queue.c      cqueue->OSQEntries++;
+00F2 2A00      00400         INCF    r0x0a, F
+00F4 B0D8      00401         BTFSC   STATUS, 0
+00F6 2A00      00402         INCF    r0x0b, F
+00F8 C000 FFE5 00403         MOVFF   r0x0a, POSTDEC1
+00FC C000 FFF4 00404         MOVFF   r0x0b, PRODH
+0100 C000 FFE9 00405         MOVFF   r0x07, FSR0L
+0104 C000 FFF3 00406         MOVFF   r0x08, PRODL
+0108 5000      00407         MOVF    r0x09, W
+010A EC00 F000 00408         CALL    __gptrput2
+010E D000      00409         BRA     _00276_DS_
+0110 00410 _00275_DS_:
+0110 0000      00411         BANKSEL _iNesting
+               00412 ;       .line   558; brtos/queue.c      if (!iNesting)
+0112 5100      00413         MOVF    _iNesting, W, B
+0114 E100      00414         BNZ     _00273_DS_
+               00415 ;       .line   560; brtos/queue.c      OSExitCritical();
+0116 8E00      00416         BSF     _INTCONbits, 7
+0118 00417 _00273_DS_:
+               00418 ;       .line   563; brtos/queue.c      return BUFFER_UNDERRUN;
+0118 0E01      00419         MOVLW   0x01
+011A D000      00420         BRA     _00288_DS_
+011C 00421 _00276_DS_:
+               00422 ;       .line   567; brtos/queue.c      if (cqueue->OSQIn == cqueue->OSQEnd)
+011C 5000      00423         MOVF    r0x04, W
+011E 0F09      00424         ADDLW   0x09
+0120 6E00      00425         MOVWF   r0x07
+0122 0E00      00426         MOVLW   0x00
+0124 2000      00427         ADDWFC  r0x05, W
+0126 6E00      00428         MOVWF   r0x08
+0128 0E00      00429         MOVLW   0x00
+012A 2000      00430         ADDWFC  r0x06, W
+012C 6E00      00431         MOVWF   r0x09
+012E C000 FFE9 00432         MOVFF   r0x07, FSR0L
+gpasm-0.13.7 beta               build/default/production/brtos/queue.asm7-19-2011  15:07:14          PAGE  9
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+ 
+0132 C000 FFF3 00433         MOVFF   r0x08, PRODL
+0136 5000      00434         MOVF    r0x09, W
+0138 EC00 F000 00435         CALL    __gptrget3
+013C 6E00      00436         MOVWF   r0x0a
+013E CFF3 F000 00437         MOVFF   PRODL, r0x0b
+0142 CFF4 F000 00438         MOVFF   PRODH, r0x0c
+0146 5000      00439         MOVF    r0x04, W
+0148 0F06      00440         ADDLW   0x06
+014A 6E00      00441         MOVWF   r0x0d
+014C 0E00      00442         MOVLW   0x00
+014E 2000      00443         ADDWFC  r0x05, W
+0150 6E00      00444         MOVWF   r0x0e
+0152 0E00      00445         MOVLW   0x00
+0154 2000      00446         ADDWFC  r0x06, W
+0156 6E00      00447         MOVWF   r0x0f
+0158 C000 FFE9 00448         MOVFF   r0x0d, FSR0L
+015C C000 FFF3 00449         MOVFF   r0x0e, PRODL
+0160 5000      00450         MOVF    r0x0f, W
+0162 EC00 F000 00451         CALL    __gptrget3
+0166 6E00      00452         MOVWF   r0x0d
+0168 CFF3 F000 00453         MOVFF   PRODL, r0x0e
+016C CFF4 F000 00454         MOVFF   PRODH, r0x0f
+0170 5000      00455         MOVF    r0x0a, W
+0172 1800      00456         XORWF   r0x0d, W
+0174 E100      00457         BNZ     _00299_DS_
+0176 5000      00458         MOVF    r0x0b, W
+0178 1800      00459         XORWF   r0x0e, W
+017A E100      00460         BNZ     _00299_DS_
+017C 5000      00461         MOVF    r0x0c, W
+017E 1800      00462         XORWF   r0x0f, W
+0180 E000      00463         BZ      _00300_DS_
+0182 00464 _00299_DS_:
+0182 D000      00465         BRA     _00278_DS_
+0184 00466 _00300_DS_:
+               00467 ;       .line   568; brtos/queue.c      cqueue->OSQIn = cqueue->OSQStart;
+0184 0E03      00468         MOVLW   0x03
+0186 2600      00469         ADDWF   r0x04, F
+0188 0E00      00470         MOVLW   0x00
+018A 2200      00471         ADDWFC  r0x05, F
+018C 0E00      00472         MOVLW   0x00
+018E 2200      00473         ADDWFC  r0x06, F
+0190 C000 FFE9 00474         MOVFF   r0x04, FSR0L
+0194 C000 FFF3 00475         MOVFF   r0x05, PRODL
+0198 5000      00476         MOVF    r0x06, W
+019A EC00 F000 00477         CALL    __gptrget3
+019E 6E00      00478         MOVWF   r0x04
+01A0 CFF3 F000 00479         MOVFF   PRODL, r0x05
+01A4 CFF4 F000 00480         MOVFF   PRODH, r0x06
+01A8 C000 FFE5 00481         MOVFF   r0x04, POSTDEC1
+01AC C000 FFF4 00482         MOVFF   r0x05, PRODH
+01B0 C000 FFF6 00483         MOVFF   r0x06, TBLPTRL
+01B4 C000 FFE9 00484         MOVFF   r0x07, FSR0L
+01B8 C000 FFF3 00485         MOVFF   r0x08, PRODL
+01BC 5000      00486         MOVF    r0x09, W
+gpasm-0.13.7 beta               build/default/production/brtos/queue.asm7-19-2011  15:07:14          PAGE 10
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+ 
+01BE EC00 F000 00487         CALL    __gptrput3
+01C2 00488 _00278_DS_:
+               00489 ;       .line   571; brtos/queue.c      *(cqueue->OSQIn) = newdata;
+01C2 C000 FFE9 00490         MOVFF   r0x07, FSR0L
+01C6 C000 FFF3 00491         MOVFF   r0x08, PRODL
+01CA 5000      00492         MOVF    r0x09, W
+01CC EC00 F000 00493         CALL    __gptrget3
+01D0 6E00      00494         MOVWF   r0x04
+01D2 CFF3 F000 00495         MOVFF   PRODL, r0x05
+01D6 CFF4 F000 00496         MOVFF   PRODH, r0x06
+01DA C000 FFE5 00497         MOVFF   r0x03, POSTDEC1
+01DE C000 FFE9 00498         MOVFF   r0x04, FSR0L
+01E2 C000 FFF3 00499         MOVFF   r0x05, PRODL
+01E6 5000      00500         MOVF    r0x06, W
+01E8 EC00 F000 00501         CALL    __gptrput1
+               00502 ;       .line   574; brtos/queue.c      cqueue->OSQIn++;
+01EC 2A00      00503         INCF    r0x04, F
+01EE B0D8      00504         BTFSC   STATUS, 0
+01F0 2A00      00505         INCF    r0x05, F
+01F2 B0D8      00506         BTFSC   STATUS, 0
+01F4 2A00      00507         INCF    r0x06, F
+01F6 C000 FFE5 00508         MOVFF   r0x04, POSTDEC1
+01FA C000 FFF4 00509         MOVFF   r0x05, PRODH
+01FE C000 FFF6 00510         MOVFF   r0x06, TBLPTRL
+0202 C000 FFE9 00511         MOVFF   r0x07, FSR0L
+0206 C000 FFF3 00512         MOVFF   r0x08, PRODL
+020A 5000      00513         MOVF    r0x09, W
+020C EC00 F000 00514         CALL    __gptrput3
+               00515 ;       .line   577; brtos/queue.c      if (pont_event->OSEventWait != 0)
+0210 5000      00516         MOVF    r0x00, W
+0212 0F02      00517         ADDLW   0x02
+0214 6E00      00518         MOVWF   r0x03
+0216 0E00      00519         MOVLW   0x00
+0218 2000      00520         ADDWFC  r0x01, W
+021A 6E00      00521         MOVWF   r0x04
+021C 0E00      00522         MOVLW   0x00
+021E 2000      00523         ADDWFC  r0x02, W
+0220 6E00      00524         MOVWF   r0x05
+0222 C000 FFE9 00525         MOVFF   r0x03, FSR0L
+0226 C000 FFF3 00526         MOVFF   r0x04, PRODL
+022A 5000      00527         MOVF    r0x05, W
+022C EC00 F000 00528         CALL    __gptrget1
+0230 6E00      00529         MOVWF   r0x06
+0232 5000      00530         MOVF    r0x06, W
+0234 B4D8      00531         BTFSC   STATUS, 2
+0236 D000      00532         BRA     _00286_DS_
+               00533 ;       .line   580; brtos/queue.c      iPriority = SAScheduler(pont_event->OSEventWaitList);    
+0238 0E06      00534         MOVLW   0x06
+023A 2600      00535         ADDWF   r0x00, F
+023C 0E00      00536         MOVLW   0x00
+023E 2200      00537         ADDWFC  r0x01, F
+0240 0E00      00538         MOVLW   0x00
+0242 2200      00539         ADDWFC  r0x02, F
+0244 C000 FFE9 00540         MOVFF   r0x00, FSR0L
+gpasm-0.13.7 beta               build/default/production/brtos/queue.asm7-19-2011  15:07:14          PAGE 11
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+ 
+0248 C000 FFF3 00541         MOVFF   r0x01, PRODL
+024C 5000      00542         MOVF    r0x02, W
+024E EC00 F000 00543         CALL    __gptrget2
+0252 6E00      00544         MOVWF   r0x06
+0254 CFF3 F000 00545         MOVFF   PRODL, r0x07
+0258 5000      00546         MOVF    r0x07, W
+025A 6EE5      00547         MOVWF   POSTDEC1
+025C 5000      00548         MOVF    r0x06, W
+025E 6EE5      00549         MOVWF   POSTDEC1
+0260 EC00 F000 00550         CALL    _SAScheduler
+0264 6E00      00551         MOVWF   r0x06
+0266 0E02      00552         MOVLW   0x02
+0268 26E1      00553         ADDWF   FSR1L, F
+026A B0D8      00554         BTFSC   STATUS, 0
+026C 2AE2      00555         INCF    FSR1H, F
+               00556 ;       .line   583; brtos/queue.c      pont_event->OSEventWaitList = pont_event->OSEventWaitList & ~(PriorityMask[iPriority]);
+026E C000 FFE9 00557         MOVFF   r0x00, FSR0L
+0272 C000 FFF3 00558         MOVFF   r0x01, PRODL
+0276 5000      00559         MOVF    r0x02, W
+0278 EC00 F000 00560         CALL    __gptrget2
+027C 6E00      00561         MOVWF   r0x07
+027E CFF3 F000 00562         MOVFF   PRODL, r0x08
+               00563 ; ;multiply lit val:0x02 by variable r0x06 and store in r0x06
+               00564 ; ;Unrolled 8 X 8 multiplication
+               00565 ; ;FIXME: the function does not support result==WREG
+0282 90D8      00566         BCF     STATUS, 0
+0284 3600      00567         RLCF    r0x06, F
+0286 6A00      00568         CLRF    r0x09
+0288 6A00      00569         CLRF    r0x0a
+028A 0E00      00570         MOVLW   LOW(_PriorityMask)
+028C 2600      00571         ADDWF   r0x06, F
+028E 0E00      00572         MOVLW   HIGH(_PriorityMask)
+0290 2200      00573         ADDWFC  r0x09, F
+0292 0E00      00574         MOVLW   UPPER(_PriorityMask)
+0294 2200      00575         ADDWFC  r0x0a, F
+0296 C000 FFF6 00576         MOVFF   r0x06, TBLPTRL
+029A C000 FFF7 00577         MOVFF   r0x09, TBLPTRH
+029E C000 FFF8 00578         MOVFF   r0x0a, TBLPTRU
+02A2 0009      00579         TBLRD*+ 
+02A4 CFF5 F000 00580         MOVFF   TABLAT, r0x06
+02A8 0009      00581         TBLRD*+ 
+02AA CFF5 F000 00582         MOVFF   TABLAT, r0x09
+02AE 1C00      00583         COMF    r0x06, W
+02B0 6E00      00584         MOVWF   r0x0a
+02B2 1C00      00585         COMF    r0x09, W
+02B4 6E00      00586         MOVWF   r0x0b
+02B6 5000      00587         MOVF    r0x0a, W
+02B8 1600      00588         ANDWF   r0x07, F
+02BA 5000      00589         MOVF    r0x0b, W
+02BC 1600      00590         ANDWF   r0x08, F
+02BE C000 FFE5 00591         MOVFF   r0x07, POSTDEC1
+02C2 C000 FFF4 00592         MOVFF   r0x08, PRODH
+02C6 C000 FFE9 00593         MOVFF   r0x00, FSR0L
+02CA C000 FFF3 00594         MOVFF   r0x01, PRODL
+gpasm-0.13.7 beta               build/default/production/brtos/queue.asm7-19-2011  15:07:14          PAGE 12
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+ 
+02CE 5000      00595         MOVF    r0x02, W
+02D0 EC00 F000 00596         CALL    __gptrput2
+               00597 ;       .line   586; brtos/queue.c      pont_event->OSEventWait--;
+02D4 C000 FFE9 00598         MOVFF   r0x03, FSR0L
+02D8 C000 FFF3 00599         MOVFF   r0x04, PRODL
+02DC 5000      00600         MOVF    r0x05, W
+02DE EC00 F000 00601         CALL    __gptrget1
+02E2 6E00      00602         MOVWF   r0x00
+02E4 0600      00603         DECF    r0x00, F
+02E6 C000 FFE5 00604         MOVFF   r0x00, POSTDEC1
+02EA C000 FFE9 00605         MOVFF   r0x03, FSR0L
+02EE C000 FFF3 00606         MOVFF   r0x04, PRODL
+02F2 5000      00607         MOVF    r0x05, W
+02F4 EC00 F000 00608         CALL    __gptrput1
+               00609 ;       .line   594; brtos/queue.c      OSReadyList = OSReadyList | (PriorityMask[iPriority]);
+02F8 5000      00610         MOVF    r0x06, W
+02FA 0000      00611         BANKSEL _OSReadyList
+02FC 1300      00612         IORWF   _OSReadyList, F, B
+02FE 5000      00613         MOVF    r0x09, W
+0300 0000      00614         BANKSEL (_OSReadyList + 1)
+0302 1300      00615         IORWF   (_OSReadyList + 1), F, B
+0304 0000      00616         BANKSEL _iNesting
+               00617 ;       .line   598; brtos/queue.c      if (!iNesting)
+0306 5100      00618         MOVF    _iNesting, W, B
+0308 E100      00619         BNZ     _00280_DS_
+               00620 ;       .line   601; brtos/queue.c      ChangeContext();      
+030A EC00 F000 00621         CALL    _SwitchContext
+030E 00622 _00280_DS_:
+030E 0000      00623         BANKSEL _iNesting
+               00624 ;       .line   606; brtos/queue.c      if (!iNesting)
+0310 5100      00625         MOVF    _iNesting, W, B
+0312 E100      00626         BNZ     _00282_DS_
+               00627 ;       .line   608; brtos/queue.c      OSExitCritical();
+0314 8E00      00628         BSF     _INTCONbits, 7
+0316 00629 _00282_DS_:
+               00630 ;       .line   610; brtos/queue.c      return WRITE_BUFFER_OK;
+0316 6AE8      00631         CLRF    WREG
+0318 D000      00632         BRA     _00288_DS_
+031A 00633 _00286_DS_:
+031A 0000      00634         BANKSEL _iNesting
+               00635 ;       .line   616; brtos/queue.c      if (!iNesting)
+031C 5100      00636         MOVF    _iNesting, W, B
+031E E100      00637         BNZ     _00284_DS_
+               00638 ;       .line   618; brtos/queue.c      OSExitCritical();
+0320 8E00      00639         BSF     _INTCONbits, 7
+0322 00640 _00284_DS_:
+               00641 ;       .line   620; brtos/queue.c      return WRITE_BUFFER_OK;
+0322 6AE8      00642         CLRF    WREG
+0324 00643 _00288_DS_:
+0324 CFE4 F000 00644         MOVFF   PREINC1, r0x0f
+0328 CFE4 F000 00645         MOVFF   PREINC1, r0x0e
+032C CFE4 F000 00646         MOVFF   PREINC1, r0x0d
+0330 CFE4 F000 00647         MOVFF   PREINC1, r0x0c
+0334 CFE4 F000 00648         MOVFF   PREINC1, r0x0b
+gpasm-0.13.7 beta               build/default/production/brtos/queue.asm7-19-2011  15:07:14          PAGE 13
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+ 
+0338 CFE4 F000 00649         MOVFF   PREINC1, r0x0a
+033C CFE4 F000 00650         MOVFF   PREINC1, r0x09
+0340 CFE4 F000 00651         MOVFF   PREINC1, r0x08
+0344 CFE4 F000 00652         MOVFF   PREINC1, r0x07
+0348 CFE4 F000 00653         MOVFF   PREINC1, r0x06
+034C CFE4 F000 00654         MOVFF   PREINC1, r0x05
+0350 CFE4 F000 00655         MOVFF   PREINC1, r0x04
+0354 CFE4 F000 00656         MOVFF   PREINC1, r0x03
+0358 CFE4 F000 00657         MOVFF   PREINC1, r0x02
+035C CFE4 F000 00658         MOVFF   PREINC1, r0x01
+0360 CFE4 F000 00659         MOVFF   PREINC1, r0x00
+0364 CFE4 FFD9 00660         MOVFF   PREINC1, FSR2L
+0368 CFE4 FFDA 00661         MOVFF   PREINC1, FSR2H
+036C 0012      00662         RETURN  
+               00663 
+               00664 ; ; Starting pCode block
+               00665 S_queue__OSQueuePend    code
+0000 00666 _OSQueuePend:
+               00667 ;       .line   318; brtos/queue.c      INT8U OSQueuePend (BRTOS_Queue *pont_event, INT8U* pdata, INT16U time_wait)
+0000 CFDA FFE5 00668         MOVFF   FSR2H, POSTDEC1
+0004 CFD9 FFE5 00669         MOVFF   FSR2L, POSTDEC1
+0008 CFE2 FFDA 00670         MOVFF   FSR1H, FSR2H
+000C CFE1 FFD9 00671         MOVFF   FSR1L, FSR2L
+0010 C000 FFE5 00672         MOVFF   r0x00, POSTDEC1
+0014 C000 FFE5 00673         MOVFF   r0x01, POSTDEC1
+0018 C000 FFE5 00674         MOVFF   r0x02, POSTDEC1
+001C C000 FFE5 00675         MOVFF   r0x03, POSTDEC1
+0020 C000 FFE5 00676         MOVFF   r0x04, POSTDEC1
+0024 C000 FFE5 00677         MOVFF   r0x05, POSTDEC1
+0028 C000 FFE5 00678         MOVFF   r0x06, POSTDEC1
+002C C000 FFE5 00679         MOVFF   r0x07, POSTDEC1
+0030 C000 FFE5 00680         MOVFF   r0x08, POSTDEC1
+0034 C000 FFE5 00681         MOVFF   r0x09, POSTDEC1
+0038 C000 FFE5 00682         MOVFF   r0x0a, POSTDEC1
+003C C000 FFE5 00683         MOVFF   r0x0b, POSTDEC1
+0040 C000 FFE5 00684         MOVFF   r0x0c, POSTDEC1
+0044 C000 FFE5 00685         MOVFF   r0x0d, POSTDEC1
+0048 C000 FFE5 00686         MOVFF   r0x0e, POSTDEC1
+004C C000 FFE5 00687         MOVFF   r0x0f, POSTDEC1
+0050 C000 FFE5 00688         MOVFF   r0x10, POSTDEC1
+0054 C000 FFE5 00689         MOVFF   r0x11, POSTDEC1
+0058 C000 FFE5 00690         MOVFF   r0x12, POSTDEC1
+005C C000 FFE5 00691         MOVFF   r0x13, POSTDEC1
+0060 C000 FFE5 00692         MOVFF   r0x14, POSTDEC1
+0064 C000 FFE5 00693         MOVFF   r0x15, POSTDEC1
+0068 C000 FFE5 00694         MOVFF   r0x16, POSTDEC1
+006C C000 FFE5 00695         MOVFF   r0x17, POSTDEC1
+0070 C000 FFE5 00696         MOVFF   r0x18, POSTDEC1
+0074 C000 FFE5 00697         MOVFF   r0x19, POSTDEC1
+0078 C000 FFE5 00698         MOVFF   r0x1a, POSTDEC1
+007C C000 FFE5 00699         MOVFF   r0x1b, POSTDEC1
+0080 C000 FFE5 00700         MOVFF   r0x1c, POSTDEC1
+0084 C000 FFE5 00701         MOVFF   r0x1d, POSTDEC1
+0088 C000 FFE5 00702         MOVFF   r0x1e, POSTDEC1
+gpasm-0.13.7 beta               build/default/production/brtos/queue.asm7-19-2011  15:07:14          PAGE 14
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+ 
+008C C000 FFE5 00703         MOVFF   r0x1f, POSTDEC1
+0090 0E03      00704         MOVLW   0x03
+0092 CFDB F000 00705         MOVFF   PLUSW2, r0x00
+0096 0E04      00706         MOVLW   0x04
+0098 CFDB F000 00707         MOVFF   PLUSW2, r0x01
+009C 0E05      00708         MOVLW   0x05
+009E CFDB F000 00709         MOVFF   PLUSW2, r0x02
+00A2 0E06      00710         MOVLW   0x06
+00A4 CFDB F000 00711         MOVFF   PLUSW2, r0x03
+00A8 0E07      00712         MOVLW   0x07
+00AA CFDB F000 00713         MOVFF   PLUSW2, r0x04
+00AE 0E08      00714         MOVLW   0x08
+00B0 CFDB F000 00715         MOVFF   PLUSW2, r0x05
+00B4 0E09      00716         MOVLW   0x09
+00B6 CFDB F000 00717         MOVFF   PLUSW2, r0x06
+00BA 0E0A      00718         MOVLW   0x0a
+00BC CFDB F000 00719         MOVFF   PLUSW2, r0x07
+               00720 ;       .line   324; brtos/queue.c      OS_QUEUE *cqueue = pont_event->OSEventPointer;
+00C0 5000      00721         MOVF    r0x00, W
+00C2 0F03      00722         ADDLW   0x03
+00C4 6E00      00723         MOVWF   r0x08
+00C6 0E00      00724         MOVLW   0x00
+00C8 2000      00725         ADDWFC  r0x01, W
+00CA 6E00      00726         MOVWF   r0x09
+00CC 0E00      00727         MOVLW   0x00
+00CE 2000      00728         ADDWFC  r0x02, W
+00D0 6E00      00729         MOVWF   r0x0a
+00D2 C000 FFE9 00730         MOVFF   r0x08, FSR0L
+00D6 C000 FFF3 00731         MOVFF   r0x09, PRODL
+00DA 5000      00732         MOVF    r0x0a, W
+00DC EC00 F000 00733         CALL    __gptrget3
+00E0 6E00      00734         MOVWF   r0x08
+00E2 CFF3 F000 00735         MOVFF   PRODL, r0x09
+00E6 CFF4 F000 00736         MOVFF   PRODH, r0x0a
+               00737 ;       .line   341; brtos/queue.c      OSEnterCritical();
+00EA 9E00      00738         BCF     _INTCONbits, 7
+               00739 ;       .line   363; brtos/queue.c      if(cqueue->OSQEntries > 0)
+00EC 5000      00740         MOVF    r0x08, W
+00EE 0F11      00741         ADDLW   0x11
+00F0 6E00      00742         MOVWF   r0x0b
+00F2 0E00      00743         MOVLW   0x00
+00F4 2000      00744         ADDWFC  r0x09, W
+00F6 6E00      00745         MOVWF   r0x0c
+00F8 0E00      00746         MOVLW   0x00
+00FA 2000      00747         ADDWFC  r0x0a, W
+00FC 6E00      00748         MOVWF   r0x0d
+00FE C000 FFE9 00749         MOVFF   r0x0b, FSR0L
+0102 C000 FFF3 00750         MOVFF   r0x0c, PRODL
+0106 5000      00751         MOVF    r0x0d, W
+0108 EC00 F000 00752         CALL    __gptrget2
+010C 6E00      00753         MOVWF   r0x0e
+010E CFF3 F000 00754         MOVFF   PRODL, r0x0f
+0112 5000      00755         MOVF    r0x0e, W
+0114 1000      00756         IORWF   r0x0f, W
+gpasm-0.13.7 beta               build/default/production/brtos/queue.asm7-19-2011  15:07:14          PAGE 15
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+ 
+0116 B4D8      00757         BTFSC   STATUS, 2
+0118 D000      00758         BRA     _00234_DS_
+               00759 ;       .line   366; brtos/queue.c      if (cqueue->OSQOut == cqueue->OSQEnd)
+011A 5000      00760         MOVF    r0x08, W
+011C 0F0C      00761         ADDLW   0x0c
+011E 6E00      00762         MOVWF   r0x10
+0120 0E00      00763         MOVLW   0x00
+0122 2000      00764         ADDWFC  r0x09, W
+0124 6E00      00765         MOVWF   r0x11
+0126 0E00      00766         MOVLW   0x00
+0128 2000      00767         ADDWFC  r0x0a, W
+012A 6E00      00768         MOVWF   r0x12
+012C C000 FFE9 00769         MOVFF   r0x10, FSR0L
+0130 C000 FFF3 00770         MOVFF   r0x11, PRODL
+0134 5000      00771         MOVF    r0x12, W
+0136 EC00 F000 00772         CALL    __gptrget3
+013A 6E00      00773         MOVWF   r0x13
+013C CFF3 F000 00774         MOVFF   PRODL, r0x14
+0140 CFF4 F000 00775         MOVFF   PRODH, r0x15
+0144 5000      00776         MOVF    r0x08, W
+0146 0F06      00777         ADDLW   0x06
+0148 6E00      00778         MOVWF   r0x16
+014A 0E00      00779         MOVLW   0x00
+014C 2000      00780         ADDWFC  r0x09, W
+014E 6E00      00781         MOVWF   r0x17
+0150 0E00      00782         MOVLW   0x00
+0152 2000      00783         ADDWFC  r0x0a, W
+0154 6E00      00784         MOVWF   r0x18
+0156 C000 FFE9 00785         MOVFF   r0x16, FSR0L
+015A C000 FFF3 00786         MOVFF   r0x17, PRODL
+015E 5000      00787         MOVF    r0x18, W
+0160 EC00 F000 00788         CALL    __gptrget3
+0164 6E00      00789         MOVWF   r0x16
+0166 CFF3 F000 00790         MOVFF   PRODL, r0x17
+016A CFF4 F000 00791         MOVFF   PRODH, r0x18
+016E 5000      00792         MOVF    r0x13, W
+0170 1800      00793         XORWF   r0x16, W
+0172 E100      00794         BNZ     _00250_DS_
+0174 5000      00795         MOVF    r0x14, W
+0176 1800      00796         XORWF   r0x17, W
+0178 E100      00797         BNZ     _00250_DS_
+017A 5000      00798         MOVF    r0x15, W
+017C 1800      00799         XORWF   r0x18, W
+017E E000      00800         BZ      _00251_DS_
+0180 00801 _00250_DS_:
+0180 D000      00802         BRA     _00205_DS_
+0182 00803 _00251_DS_:
+               00804 ;       .line   367; brtos/queue.c      cqueue->OSQOut = cqueue->OSQStart;
+0182 5000      00805         MOVF    r0x08, W
+0184 0F03      00806         ADDLW   0x03
+0186 6E00      00807         MOVWF   r0x13
+0188 0E00      00808         MOVLW   0x00
+018A 2000      00809         ADDWFC  r0x09, W
+018C 6E00      00810         MOVWF   r0x14
+gpasm-0.13.7 beta               build/default/production/brtos/queue.asm7-19-2011  15:07:14          PAGE 16
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+ 
+018E 0E00      00811         MOVLW   0x00
+0190 2000      00812         ADDWFC  r0x0a, W
+0192 6E00      00813         MOVWF   r0x15
+0194 C000 FFE9 00814         MOVFF   r0x13, FSR0L
+0198 C000 FFF3 00815         MOVFF   r0x14, PRODL
+019C 5000      00816         MOVF    r0x15, W
+019E EC00 F000 00817         CALL    __gptrget3
+01A2 6E00      00818         MOVWF   r0x13
+01A4 CFF3 F000 00819         MOVFF   PRODL, r0x14
+01A8 CFF4 F000 00820         MOVFF   PRODH, r0x15
+01AC C000 FFE5 00821         MOVFF   r0x13, POSTDEC1
+01B0 C000 FFF4 00822         MOVFF   r0x14, PRODH
+01B4 C000 FFF6 00823         MOVFF   r0x15, TBLPTRL
+01B8 C000 FFE9 00824         MOVFF   r0x10, FSR0L
+01BC C000 FFF3 00825         MOVFF   r0x11, PRODL
+01C0 5000      00826         MOVF    r0x12, W
+01C2 EC00 F000 00827         CALL    __gptrput3
+01C6 00828 _00205_DS_:
+               00829 ;       .line   370; brtos/queue.c      *pdata = *cqueue->OSQOut;
+01C6 C000 FFE9 00830         MOVFF   r0x10, FSR0L
+01CA C000 FFF3 00831         MOVFF   r0x11, PRODL
+01CE 5000      00832         MOVF    r0x12, W
+01D0 EC00 F000 00833         CALL    __gptrget3
+01D4 6E00      00834         MOVWF   r0x13
+01D6 CFF3 F000 00835         MOVFF   PRODL, r0x14
+01DA CFF4 F000 00836         MOVFF   PRODH, r0x15
+01DE C000 FFE9 00837         MOVFF   r0x13, FSR0L
+01E2 C000 FFF3 00838         MOVFF   r0x14, PRODL
+01E6 5000      00839         MOVF    r0x15, W
+01E8 EC00 F000 00840         CALL    __gptrget1
+01EC 6E00      00841         MOVWF   r0x16
+01EE C000 FFE5 00842         MOVFF   r0x16, POSTDEC1
+01F2 C000 FFE9 00843         MOVFF   r0x03, FSR0L
+01F6 C000 FFF3 00844         MOVFF   r0x04, PRODL
+01FA 5000      00845         MOVF    r0x05, W
+01FC EC00 F000 00846         CALL    __gptrput1
+               00847 ;       .line   373; brtos/queue.c      cqueue->OSQOut++;
+0200 2A00      00848         INCF    r0x13, F
+0202 B0D8      00849         BTFSC   STATUS, 0
+0204 2A00      00850         INCF    r0x14, F
+0206 B0D8      00851         BTFSC   STATUS, 0
+0208 2A00      00852         INCF    r0x15, F
+020A C000 FFE5 00853         MOVFF   r0x13, POSTDEC1
+020E C000 FFF4 00854         MOVFF   r0x14, PRODH
+0212 C000 FFF6 00855         MOVFF   r0x15, TBLPTRL
+0216 C000 FFE9 00856         MOVFF   r0x10, FSR0L
+021A C000 FFF3 00857         MOVFF   r0x11, PRODL
+021E 5000      00858         MOVF    r0x12, W
+0220 EC00 F000 00859         CALL    __gptrput3
+               00860 ;       .line   376; brtos/queue.c      cqueue->OSQEntries--;
+0224 0EFF      00861         MOVLW   0xff
+0226 2600      00862         ADDWF   r0x0e, F
+0228 A0D8      00863         BTFSS   STATUS, 0
+022A 0600      00864         DECF    r0x0f, F
+gpasm-0.13.7 beta               build/default/production/brtos/queue.asm7-19-2011  15:07:14          PAGE 17
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+ 
+022C C000 FFE5 00865         MOVFF   r0x0e, POSTDEC1
+0230 C000 FFF4 00866         MOVFF   r0x0f, PRODH
+0234 C000 FFE9 00867         MOVFF   r0x0b, FSR0L
+0238 C000 FFF3 00868         MOVFF   r0x0c, PRODL
+023C 5000      00869         MOVF    r0x0d, W
+023E EC00 F000 00870         CALL    __gptrput2
+               00871 ;       .line   379; brtos/queue.c      OSExitCritical();
+0242 8E00      00872         BSF     _INTCONbits, 7
+               00873 ;       .line   380; brtos/queue.c      return READ_BUFFER_OK;
+0244 6AE8      00874         CLRF    WREG
+0246 EF00 F000 00875         GOTO    _00236_DS_
+               00876 ; ;multiply lit val:0x10 by variable _currentTask and store in r0x0e
+               00877 ; ;Unrolled 8 X 8 multiplication
+               00878 ; ;FIXME: the function does not support result==WREG
+024A 00879 _00234_DS_:
+024A 0000      00880         BANKSEL _currentTask
+               00881 ;       .line   384; brtos/queue.c      Task = &ContextTask[currentTask];
+024C 5100      00882         MOVF    _currentTask, W, B
+024E 0D10      00883         MULLW   0x10
+0250 CFF3 F000 00884         MOVFF   PRODL, r0x0e
+0254 6A00      00885         CLRF    r0x0f
+0256 0E00      00886         MOVLW   LOW(_ContextTask)
+0258 2600      00887         ADDWF   r0x0e, F
+025A 0E00      00888         MOVLW   HIGH(_ContextTask)
+025C 2200      00889         ADDWFC  r0x0f, F
+025E 5000      00890         MOVF    r0x0f, W
+0260 6E00      00891         MOVWF   r0x0f
+0262 5000      00892         MOVF    r0x0e, W
+0264 6E00      00893         MOVWF   r0x0e
+0266 0E80      00894         MOVLW   0x80
+0268 6E00      00895         MOVWF   r0x10
+               00896 ;       .line   387; brtos/queue.c      iPriority = Task->Priority;
+026A 5000      00897         MOVF    r0x0e, W
+026C 0F09      00898         ADDLW   0x09
+026E 6E00      00899         MOVWF   r0x11
+0270 0E00      00900         MOVLW   0x00
+0272 2000      00901         ADDWFC  r0x0f, W
+0274 6E00      00902         MOVWF   r0x12
+0276 0E00      00903         MOVLW   0x00
+0278 2000      00904         ADDWFC  r0x10, W
+027A 6E00      00905         MOVWF   r0x13
+027C C000 FFE9 00906         MOVFF   r0x11, FSR0L
+0280 C000 FFF3 00907         MOVFF   r0x12, PRODL
+0284 5000      00908         MOVF    r0x13, W
+0286 EC00 F000 00909         CALL    __gptrget1
+028A 6E00      00910         MOVWF   r0x11
+               00911 ;       .line   390; brtos/queue.c      pont_event->OSEventWait++;
+028C 5000      00912         MOVF    r0x00, W
+028E 0F02      00913         ADDLW   0x02
+0290 6E00      00914         MOVWF   r0x12
+0292 0E00      00915         MOVLW   0x00
+0294 2000      00916         ADDWFC  r0x01, W
+0296 6E00      00917         MOVWF   r0x13
+0298 0E00      00918         MOVLW   0x00
+gpasm-0.13.7 beta               build/default/production/brtos/queue.asm7-19-2011  15:07:14          PAGE 18
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+ 
+029A 2000      00919         ADDWFC  r0x02, W
+029C 6E00      00920         MOVWF   r0x14
+029E C000 FFE9 00921         MOVFF   r0x12, FSR0L
+02A2 C000 FFF3 00922         MOVFF   r0x13, PRODL
+02A6 5000      00923         MOVF    r0x14, W
+02A8 EC00 F000 00924         CALL    __gptrget1
+02AC 6E00      00925         MOVWF   r0x15
+02AE 2A00      00926         INCF    r0x15, F
+02B0 C000 FFE5 00927         MOVFF   r0x15, POSTDEC1
+02B4 C000 FFE9 00928         MOVFF   r0x12, FSR0L
+02B8 C000 FFF3 00929         MOVFF   r0x13, PRODL
+02BC 5000      00930         MOVF    r0x14, W
+02BE EC00 F000 00931         CALL    __gptrput1
+               00932 ;       .line   393; brtos/queue.c      pont_event->OSEventWaitList = pont_event->OSEventWaitList | (PriorityMask[iPriority]);
+02C2 0E06      00933         MOVLW   0x06
+02C4 2600      00934         ADDWF   r0x00, F
+02C6 0E00      00935         MOVLW   0x00
+02C8 2200      00936         ADDWFC  r0x01, F
+02CA 0E00      00937         MOVLW   0x00
+02CC 2200      00938         ADDWFC  r0x02, F
+02CE C000 FFE9 00939         MOVFF   r0x00, FSR0L
+02D2 C000 FFF3 00940         MOVFF   r0x01, PRODL
+02D6 5000      00941         MOVF    r0x02, W
+02D8 EC00 F000 00942         CALL    __gptrget2
+02DC 6E00      00943         MOVWF   r0x15
+02DE CFF3 F000 00944         MOVFF   PRODL, r0x16
+               00945 ; ;multiply lit val:0x02 by variable r0x11 and store in r0x17
+               00946 ; ;Unrolled 8 X 8 multiplication
+               00947 ; ;FIXME: the function does not support result==WREG
+02E2 90D8      00948         BCF     STATUS, 0
+02E4 3400      00949         RLCF    r0x11, W
+02E6 6E00      00950         MOVWF   r0x17
+02E8 6A00      00951         CLRF    r0x18
+02EA 6A00      00952         CLRF    r0x19
+02EC 0E00      00953         MOVLW   LOW(_PriorityMask)
+02EE 2600      00954         ADDWF   r0x17, F
+02F0 0E00      00955         MOVLW   HIGH(_PriorityMask)
+02F2 2200      00956         ADDWFC  r0x18, F
+02F4 0E00      00957         MOVLW   UPPER(_PriorityMask)
+02F6 2200      00958         ADDWFC  r0x19, F
+02F8 C000 FFF6 00959         MOVFF   r0x17, TBLPTRL
+02FC C000 FFF7 00960         MOVFF   r0x18, TBLPTRH
+0300 C000 FFF8 00961         MOVFF   r0x19, TBLPTRU
+0304 0009      00962         TBLRD*+ 
+0306 CFF5 F000 00963         MOVFF   TABLAT, r0x17
+030A 0009      00964         TBLRD*+ 
+030C CFF5 F000 00965         MOVFF   TABLAT, r0x18
+0310 5000      00966         MOVF    r0x17, W
+0312 1200      00967         IORWF   r0x15, F
+0314 5000      00968         MOVF    r0x18, W
+0316 1200      00969         IORWF   r0x16, F
+0318 C000 FFE5 00970         MOVFF   r0x15, POSTDEC1
+031C C000 FFF4 00971         MOVFF   r0x16, PRODH
+0320 C000 FFE9 00972         MOVFF   r0x00, FSR0L
+gpasm-0.13.7 beta               build/default/production/brtos/queue.asm7-19-2011  15:07:14          PAGE 19
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+ 
+0324 C000 FFF3 00973         MOVFF   r0x01, PRODL
+0328 5000      00974         MOVF    r0x02, W
+032A EC00 F000 00975         CALL    __gptrput2
+               00976 ;       .line   402; brtos/queue.c      OSReadyList = OSReadyList & ~(PriorityMask[iPriority]);
+032E 1E00      00977         COMF    r0x17, F
+0330 1E00      00978         COMF    r0x18, F
+0332 5000      00979         MOVF    r0x17, W
+0334 0000      00980         BANKSEL _OSReadyList
+0336 1700      00981         ANDWF   _OSReadyList, F, B
+0338 5000      00982         MOVF    r0x18, W
+033A 0000      00983         BANKSEL (_OSReadyList + 1)
+033C 1700      00984         ANDWF   (_OSReadyList + 1), F, B
+               00985 ;       .line   405; brtos/queue.c      if (time_wait)
+033E 5000      00986         MOVF    r0x06, W
+0340 1000      00987         IORWF   r0x07, W
+0342 B4D8      00988         BTFSC   STATUS, 2
+0344 D000      00989         BRA     _00213_DS_
+               00990 ;       .line   407; brtos/queue.c      timeout = (INT32U)((INT32U)counter + (INT32U)time_wait);
+0346 C000 F000 00991         MOVFF   _counter, r0x15
+034A C000 F000 00992         MOVFF   (_counter + 1), r0x16
+034E 6A00      00993         CLRF    r0x17
+0350 6A00      00994         CLRF    r0x18
+0352 C000 F000 00995         MOVFF   r0x06, r0x19
+0356 C000 F000 00996         MOVFF   r0x07, r0x1a
+035A 6A00      00997         CLRF    r0x1b
+035C 6A00      00998         CLRF    r0x1c
+035E 5000      00999         MOVF    r0x19, W
+0360 2600      01000         ADDWF   r0x15, F
+0362 5000      01001         MOVF    r0x1a, W
+0364 2200      01002         ADDWFC  r0x16, F
+0366 5000      01003         MOVF    r0x1b, W
+0368 2200      01004         ADDWFC  r0x17, F
+036A 5000      01005         MOVF    r0x1c, W
+036C 2200      01006         ADDWFC  r0x18, F
+               01007 ;       .line   409; brtos/queue.c      if (timeout >= TickCountOverFlow)
+036E 0E00      01008         MOVLW   0x00
+0370 5C00      01009         SUBWF   r0x18, W
+0372 E100      01010         BNZ     _00254_DS_
+0374 0E00      01011         MOVLW   0x00
+0376 5C00      01012         SUBWF   r0x17, W
+0378 E100      01013         BNZ     _00254_DS_
+037A 0EFA      01014         MOVLW   0xfa
+037C 5C00      01015         SUBWF   r0x16, W
+037E E100      01016         BNZ     _00254_DS_
+0380 0E00      01017         MOVLW   0x00
+0382 5C00      01018         SUBWF   r0x15, W
+0384 01019 _00254_DS_:
+0384 E300      01020         BNC     _00207_DS_
+               01021 ;       .line   411; brtos/queue.c      Task->TimeToWait = (INT16U)(timeout - TickCountOverFlow);
+0386 5000      01022         MOVF    r0x0e, W
+0388 0F07      01023         ADDLW   0x07
+038A 6E00      01024         MOVWF   r0x19
+038C 0E00      01025         MOVLW   0x00
+038E 2000      01026         ADDWFC  r0x0f, W
+gpasm-0.13.7 beta               build/default/production/brtos/queue.asm7-19-2011  15:07:14          PAGE 20
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+ 
+0390 6E00      01027         MOVWF   r0x1a
+0392 0E00      01028         MOVLW   0x00
+0394 2000      01029         ADDWFC  r0x10, W
+0396 6E00      01030         MOVWF   r0x1b
+0398 5000      01031         MOVF    r0x15, W
+039A 6E00      01032         MOVWF   r0x1c
+039C 0E06      01033         MOVLW   0x06
+039E 2400      01034         ADDWF   r0x16, W
+03A0 6E00      01035         MOVWF   r0x1d
+03A2 0EFF      01036         MOVLW   0xff
+03A4 2000      01037         ADDWFC  r0x17, W
+03A6 6E00      01038         MOVWF   r0x1e
+03A8 0EFF      01039         MOVLW   0xff
+03AA 2000      01040         ADDWFC  r0x18, W
+03AC 6E00      01041         MOVWF   r0x1f
+03AE C000 FFE5 01042         MOVFF   r0x1c, POSTDEC1
+03B2 C000 FFF4 01043         MOVFF   r0x1d, PRODH
+03B6 C000 FFE9 01044         MOVFF   r0x19, FSR0L
+03BA C000 FFF3 01045         MOVFF   r0x1a, PRODL
+03BE 5000      01046         MOVF    r0x1b, W
+03C0 EC00 F000 01047         CALL    __gptrput2
+03C4 D000      01048         BRA     _00208_DS_
+03C6 01049 _00207_DS_:
+               01050 ;       .line   415; brtos/queue.c      Task->TimeToWait = (INT16U)timeout;
+03C6 5000      01051         MOVF    r0x0e, W
+03C8 0F07      01052         ADDLW   0x07
+03CA 6E00      01053         MOVWF   r0x19
+03CC 0E00      01054         MOVLW   0x00
+03CE 2000      01055         ADDWFC  r0x0f, W
+03D0 6E00      01056         MOVWF   r0x1a
+03D2 0E00      01057         MOVLW   0x00
+03D4 2000      01058         ADDWFC  r0x10, W
+03D6 6E00      01059         MOVWF   r0x1b
+03D8 C000 FFE5 01060         MOVFF   r0x15, POSTDEC1
+03DC C000 FFF4 01061         MOVFF   r0x16, PRODH
+03E0 C000 FFE9 01062         MOVFF   r0x19, FSR0L
+03E4 C000 FFF3 01063         MOVFF   r0x1a, PRODL
+03E8 5000      01064         MOVF    r0x1b, W
+03EA EC00 F000 01065         CALL    __gptrput2
+03EE 01066 _00208_DS_:
+03EE 0000      01067         BANKSEL _Tail
+               01068 ;       .line   419; brtos/queue.c      IncludeTaskIntoDelayList();
+03F0 5100      01069         MOVF    _Tail, W, B
+03F2 0000      01070         BANKSEL (_Tail + 1)
+03F4 1100      01071         IORWF   (_Tail + 1), W, B
+03F6 0000      01072         BANKSEL (_Tail + 2)
+03F8 1100      01073         IORWF   (_Tail + 2), W, B
+03FA B4D8      01074         BTFSC   STATUS, 2
+03FC D000      01075         BRA     _00210_DS_
+03FE C000 F000 01076         MOVFF   _Tail, r0x15
+0402 C000 F000 01077         MOVFF   (_Tail + 1), r0x16
+0406 C000 F000 01078         MOVFF   (_Tail + 2), r0x17
+040A 0E0A      01079         MOVLW   0x0a
+040C 2600      01080         ADDWF   r0x15, F
+gpasm-0.13.7 beta               build/default/production/brtos/queue.asm7-19-2011  15:07:14          PAGE 21
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+ 
+040E 0E00      01081         MOVLW   0x00
+0410 2200      01082         ADDWFC  r0x16, F
+0412 0E00      01083         MOVLW   0x00
+0414 2200      01084         ADDWFC  r0x17, F
+0416 C000 FFE5 01085         MOVFF   r0x0e, POSTDEC1
+041A C000 FFF4 01086         MOVFF   r0x0f, PRODH
+041E C000 FFF6 01087         MOVFF   r0x10, TBLPTRL
+0422 C000 FFE9 01088         MOVFF   r0x15, FSR0L
+0426 C000 FFF3 01089         MOVFF   r0x16, PRODL
+042A 5000      01090         MOVF    r0x17, W
+042C EC00 F000 01091         CALL    __gptrput3
+0430 5000      01092         MOVF    r0x0e, W
+0432 0F0D      01093         ADDLW   0x0d
+0434 6E00      01094         MOVWF   r0x15
+0436 0E00      01095         MOVLW   0x00
+0438 2000      01096         ADDWFC  r0x0f, W
+043A 6E00      01097         MOVWF   r0x16
+043C 0E00      01098         MOVLW   0x00
+043E 2000      01099         ADDWFC  r0x10, W
+0440 6E00      01100         MOVWF   r0x17
+0442 C000 FFE5 01101         MOVFF   _Tail, POSTDEC1
+0446 C000 FFF4 01102         MOVFF   (_Tail + 1), PRODH
+044A C000 FFF6 01103         MOVFF   (_Tail + 2), TBLPTRL
+044E C000 FFE9 01104         MOVFF   r0x15, FSR0L
+0452 C000 FFF3 01105         MOVFF   r0x16, PRODL
+0456 5000      01106         MOVF    r0x17, W
+0458 EC00 F000 01107         CALL    __gptrput3
+045C C000 F000 01108         MOVFF   r0x0e, _Tail
+0460 C000 F000 01109         MOVFF   r0x0f, (_Tail + 1)
+0464 C000 F000 01110         MOVFF   r0x10, (_Tail + 2)
+0468 C000 F000 01111         MOVFF   _Tail, r0x15
+046C C000 F000 01112         MOVFF   (_Tail + 1), r0x16
+0470 C000 F000 01113         MOVFF   (_Tail + 2), r0x17
+0474 0E0A      01114         MOVLW   0x0a
+0476 2600      01115         ADDWF   r0x15, F
+0478 0E00      01116         MOVLW   0x00
+047A 2200      01117         ADDWFC  r0x16, F
+047C 0E00      01118         MOVLW   0x00
+047E 2200      01119         ADDWFC  r0x17, F
+0480 0E00      01120         MOVLW   0x00
+0482 6EE5      01121         MOVWF   POSTDEC1
+0484 0E00      01122         MOVLW   0x00
+0486 6EF4      01123         MOVWF   PRODH
+0488 0E00      01124         MOVLW   0x00
+048A 6EF6      01125         MOVWF   TBLPTRL
+048C C000 FFE9 01126         MOVFF   r0x15, FSR0L
+0490 C000 FFF3 01127         MOVFF   r0x16, PRODL
+0494 5000      01128         MOVF    r0x17, W
+0496 EC00 F000 01129         CALL    __gptrput3
+049A D000      01130         BRA     _00214_DS_
+049C 01131 _00210_DS_:
+049C C000 F000 01132         MOVFF   r0x0e, _Tail
+04A0 C000 F000 01133         MOVFF   r0x0f, (_Tail + 1)
+04A4 C000 F000 01134         MOVFF   r0x10, (_Tail + 2)
+gpasm-0.13.7 beta               build/default/production/brtos/queue.asm7-19-2011  15:07:14          PAGE 22
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+ 
+04A8 C000 F000 01135         MOVFF   r0x0e, _Head
+04AC C000 F000 01136         MOVFF   r0x0f, (_Head + 1)
+04B0 C000 F000 01137         MOVFF   r0x10, (_Head + 2)
+04B4 5000      01138         MOVF    r0x0e, W
+04B6 0F0A      01139         ADDLW   0x0a
+04B8 6E00      01140         MOVWF   r0x15
+04BA 0E00      01141         MOVLW   0x00
+04BC 2000      01142         ADDWFC  r0x0f, W
+04BE 6E00      01143         MOVWF   r0x16
+04C0 0E00      01144         MOVLW   0x00
+04C2 2000      01145         ADDWFC  r0x10, W
+04C4 6E00      01146         MOVWF   r0x17
+04C6 0E00      01147         MOVLW   0x00
+04C8 6EE5      01148         MOVWF   POSTDEC1
+04CA 0E00      01149         MOVLW   0x00
+04CC 6EF4      01150         MOVWF   PRODH
+04CE 0E00      01151         MOVLW   0x00
+04D0 6EF6      01152         MOVWF   TBLPTRL
+04D2 C000 FFE9 01153         MOVFF   r0x15, FSR0L
+04D6 C000 FFF3 01154         MOVFF   r0x16, PRODL
+04DA 5000      01155         MOVF    r0x17, W
+04DC EC00 F000 01156         CALL    __gptrput3
+04E0 5000      01157         MOVF    r0x0e, W
+04E2 0F0D      01158         ADDLW   0x0d
+04E4 6E00      01159         MOVWF   r0x15
+04E6 0E00      01160         MOVLW   0x00
+04E8 2000      01161         ADDWFC  r0x0f, W
+04EA 6E00      01162         MOVWF   r0x16
+04EC 0E00      01163         MOVLW   0x00
+04EE 2000      01164         ADDWFC  r0x10, W
+04F0 6E00      01165         MOVWF   r0x17
+04F2 0E00      01166         MOVLW   0x00
+04F4 6EE5      01167         MOVWF   POSTDEC1
+04F6 0E00      01168         MOVLW   0x00
+04F8 6EF4      01169         MOVWF   PRODH
+04FA 0E00      01170         MOVLW   0x00
+04FC 6EF6      01171         MOVWF   TBLPTRL
+04FE C000 FFE9 01172         MOVFF   r0x15, FSR0L
+0502 C000 FFF3 01173         MOVFF   r0x16, PRODL
+0506 5000      01174         MOVF    r0x17, W
+0508 EC00 F000 01175         CALL    __gptrput3
+050C D000      01176         BRA     _00214_DS_
+050E 01177 _00213_DS_:
+               01178 ;       .line   422; brtos/queue.c      Task->TimeToWait = NO_TIMEOUT;
+050E 5000      01179         MOVF    r0x0e, W
+0510 0F07      01180         ADDLW   0x07
+0512 6E00      01181         MOVWF   r0x15
+0514 0E00      01182         MOVLW   0x00
+0516 2000      01183         ADDWFC  r0x0f, W
+0518 6E00      01184         MOVWF   r0x16
+051A 0E00      01185         MOVLW   0x00
+051C 2000      01186         ADDWFC  r0x10, W
+051E 6E00      01187         MOVWF   r0x17
+0520 0EE8      01188         MOVLW   0xe8
+gpasm-0.13.7 beta               build/default/production/brtos/queue.asm7-19-2011  15:07:14          PAGE 23
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+ 
+0522 6EE5      01189         MOVWF   POSTDEC1
+0524 0EFD      01190         MOVLW   0xfd
+0526 6EF4      01191         MOVWF   PRODH
+0528 C000 FFE9 01192         MOVFF   r0x15, FSR0L
+052C C000 FFF3 01193         MOVFF   r0x16, PRODL
+0530 5000      01194         MOVF    r0x17, W
+0532 EC00 F000 01195         CALL    __gptrput2
+0536 01196 _00214_DS_:
+               01197 ;       .line   426; brtos/queue.c      ChangeContext();
+0536 EC00 F000 01198         CALL    _SwitchContext
+               01199 ;       .line   429; brtos/queue.c      OSExitCritical();
+053A 8E00      01200         BSF     _INTCONbits, 7
+               01201 ;       .line   431; brtos/queue.c      OSEnterCritical();  
+053C 9E00      01202         BCF     _INTCONbits, 7
+               01203 ;       .line   433; brtos/queue.c      if (time_wait)
+053E 5000      01204         MOVF    r0x06, W
+0540 1000      01205         IORWF   r0x07, W
+0542 B4D8      01206         BTFSC   STATUS, 2
+0544 D000      01207         BRA     _00230_DS_
+               01208 ;       .line   436; brtos/queue.c      if(Task->TimeToWait == EXIT_BY_TIMEOUT)
+0546 5000      01209         MOVF    r0x0e, W
+0548 0F07      01210         ADDLW   0x07
+054A 6E00      01211         MOVWF   r0x06
+054C 0E00      01212         MOVLW   0x00
+054E 2000      01213         ADDWFC  r0x0f, W
+0550 6E00      01214         MOVWF   r0x07
+0552 0E00      01215         MOVLW   0x00
+0554 2000      01216         ADDWFC  r0x10, W
+0556 6E00      01217         MOVWF   r0x15
+0558 C000 FFE9 01218         MOVFF   r0x06, FSR0L
+055C C000 FFF3 01219         MOVFF   r0x07, PRODL
+0560 5000      01220         MOVF    r0x15, W
+0562 EC00 F000 01221         CALL    __gptrget2
+0566 6E00      01222         MOVWF   r0x16
+0568 CFF3 F000 01223         MOVFF   PRODL, r0x17
+056C 5000      01224         MOVF    r0x16, W
+056E 0AE9      01225         XORLW   0xe9
+0570 E100      01226         BNZ     _00255_DS_
+0572 5000      01227         MOVF    r0x17, W
+0574 0AFD      01228         XORLW   0xfd
+0576 E000      01229         BZ      _00256_DS_
+0578 01230 _00255_DS_:
+0578 D000      01231         BRA     _00227_DS_
+057A 01232 _00256_DS_:
+               01233 ;       .line   439; brtos/queue.c      if ((pont_event->OSEventWaitList & PriorityMask[iPriority]))
+057A C000 FFE9 01234         MOVFF   r0x00, FSR0L
+057E C000 FFF3 01235         MOVFF   r0x01, PRODL
+0582 5000      01236         MOVF    r0x02, W
+0584 EC00 F000 01237         CALL    __gptrget2
+0588 6E00      01238         MOVWF   r0x16
+058A CFF3 F000 01239         MOVFF   PRODL, r0x17
+               01240 ; ;multiply lit val:0x02 by variable r0x11 and store in r0x11
+               01241 ; ;Unrolled 8 X 8 multiplication
+               01242 ; ;FIXME: the function does not support result==WREG
+gpasm-0.13.7 beta               build/default/production/brtos/queue.asm7-19-2011  15:07:14          PAGE 24
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+ 
+058E 90D8      01243         BCF     STATUS, 0
+0590 3600      01244         RLCF    r0x11, F
+0592 6A00      01245         CLRF    r0x18
+0594 6A00      01246         CLRF    r0x19
+0596 0E00      01247         MOVLW   LOW(_PriorityMask)
+0598 2600      01248         ADDWF   r0x11, F
+059A 0E00      01249         MOVLW   HIGH(_PriorityMask)
+059C 2200      01250         ADDWFC  r0x18, F
+059E 0E00      01251         MOVLW   UPPER(_PriorityMask)
+05A0 2200      01252         ADDWFC  r0x19, F
+05A2 C000 FFF6 01253         MOVFF   r0x11, TBLPTRL
+05A6 C000 FFF7 01254         MOVFF   r0x18, TBLPTRH
+05AA C000 FFF8 01255         MOVFF   r0x19, TBLPTRU
+05AE 0009      01256         TBLRD*+ 
+05B0 CFF5 F000 01257         MOVFF   TABLAT, r0x11
+05B4 0009      01258         TBLRD*+ 
+05B6 CFF5 F000 01259         MOVFF   TABLAT, r0x18
+05BA 5000      01260         MOVF    r0x11, W
+05BC 1600      01261         ANDWF   r0x16, F
+05BE 5000      01262         MOVF    r0x18, W
+05C0 1600      01263         ANDWF   r0x17, F
+05C2 5000      01264         MOVF    r0x16, W
+05C4 1000      01265         IORWF   r0x17, W
+05C6 B4D8      01266         BTFSC   STATUS, 2
+05C8 D000      01267         BRA     _00230_DS_
+               01268 ;       .line   442; brtos/queue.c      pont_event->OSEventWaitList = pont_event->OSEventWaitList & ~(PriorityMask[iPriority]);
+05CA C000 FFE9 01269         MOVFF   r0x00, FSR0L
+05CE C000 FFF3 01270         MOVFF   r0x01, PRODL
+05D2 5000      01271         MOVF    r0x02, W
+05D4 EC00 F000 01272         CALL    __gptrget2
+05D8 6E00      01273         MOVWF   r0x16
+05DA CFF3 F000 01274         MOVFF   PRODL, r0x17
+05DE 1E00      01275         COMF    r0x11, F
+05E0 1E00      01276         COMF    r0x18, F
+05E2 5000      01277         MOVF    r0x11, W
+05E4 1600      01278         ANDWF   r0x16, F
+05E6 5000      01279         MOVF    r0x18, W
+05E8 1600      01280         ANDWF   r0x17, F
+05EA C000 FFE5 01281         MOVFF   r0x16, POSTDEC1
+05EE C000 FFF4 01282         MOVFF   r0x17, PRODH
+05F2 C000 FFE9 01283         MOVFF   r0x00, FSR0L
+05F6 C000 FFF3 01284         MOVFF   r0x01, PRODL
+05FA 5000      01285         MOVF    r0x02, W
+05FC EC00 F000 01286         CALL    __gptrput2
+               01287 ;       .line   445; brtos/queue.c      pont_event->OSEventWait--;
+0600 C000 FFE9 01288         MOVFF   r0x12, FSR0L
+0604 C000 FFF3 01289         MOVFF   r0x13, PRODL
+0608 5000      01290         MOVF    r0x14, W
+060A EC00 F000 01291         CALL    __gptrget1
+060E 6E00      01292         MOVWF   r0x00
+0610 0600      01293         DECF    r0x00, F
+0612 C000 FFE5 01294         MOVFF   r0x00, POSTDEC1
+0616 C000 FFE9 01295         MOVFF   r0x12, FSR0L
+061A C000 FFF3 01296         MOVFF   r0x13, PRODL
+gpasm-0.13.7 beta               build/default/production/brtos/queue.asm7-19-2011  15:07:14          PAGE 25
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+ 
+061E 5000      01297         MOVF    r0x14, W
+0620 EC00 F000 01298         CALL    __gptrput1
+               01299 ;       .line   448; brtos/queue.c      OSExitCritical();
+0624 8E00      01300         BSF     _INTCONbits, 7
+               01301 ;       .line   451; brtos/queue.c      return TIMEOUT;
+0626 0E06      01302         MOVLW   0x06
+0628 D000      01303         BRA     _00236_DS_
+062A 01304 _00227_DS_:
+               01305 ;       .line   457; brtos/queue.c      Task->TimeToWait = NO_TIMEOUT;
+062A 0EE8      01306         MOVLW   0xe8
+062C 6EE5      01307         MOVWF   POSTDEC1
+062E 0EFD      01308         MOVLW   0xfd
+0630 6EF4      01309         MOVWF   PRODH
+0632 C000 FFE9 01310         MOVFF   r0x06, FSR0L
+0636 C000 FFF3 01311         MOVFF   r0x07, PRODL
+063A 5000      01312         MOVF    r0x15, W
+063C EC00 F000 01313         CALL    __gptrput2
+               01314 ;       .line   460; brtos/queue.c      RemoveFromDelayList();
+0640 5000      01315         MOVF    r0x0e, W
+0642 0000      01316         BANKSEL _Head
+0644 1900      01317         XORWF   _Head, W, B
+0646 E100      01318         BNZ     _00258_DS_
+0648 5000      01319         MOVF    r0x0f, W
+064A 0000      01320         BANKSEL (_Head + 1)
+064C 1900      01321         XORWF   (_Head + 1), W, B
+064E E100      01322         BNZ     _00258_DS_
+0650 5000      01323         MOVF    r0x10, W
+0652 0000      01324         BANKSEL (_Head + 2)
+0654 1900      01325         XORWF   (_Head + 2), W, B
+0656 E000      01326         BZ      _00259_DS_
+0658 01327 _00258_DS_:
+0658 D000      01328         BRA     _00224_DS_
+065A 01329 _00259_DS_:
+065A 5000      01330         MOVF    r0x0e, W
+065C 0000      01331         BANKSEL _Tail
+065E 1900      01332         XORWF   _Tail, W, B
+0660 E100      01333         BNZ     _00260_DS_
+0662 5000      01334         MOVF    r0x0f, W
+0664 0000      01335         BANKSEL (_Tail + 1)
+0666 1900      01336         XORWF   (_Tail + 1), W, B
+0668 E100      01337         BNZ     _00260_DS_
+066A 5000      01338         MOVF    r0x10, W
+066C 0000      01339         BANKSEL (_Tail + 2)
+066E 1900      01340         XORWF   (_Tail + 2), W, B
+0670 E000      01341         BZ      _00261_DS_
+0672 01342 _00260_DS_:
+0672 D000      01343         BRA     _00218_DS_
+0674 01344 _00261_DS_:
+0674 0000      01345         BANKSEL _Tail
+0676 6B00      01346         CLRF    _Tail, B
+0678 0000      01347         BANKSEL (_Tail + 1)
+067A 6B00      01348         CLRF    (_Tail + 1), B
+067C 0000      01349         BANKSEL (_Tail + 2)
+067E 6B00      01350         CLRF    (_Tail + 2), B
+gpasm-0.13.7 beta               build/default/production/brtos/queue.asm7-19-2011  15:07:14          PAGE 26
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+ 
+0680 0000      01351         BANKSEL _Head
+0682 6B00      01352         CLRF    _Head, B
+0684 0000      01353         BANKSEL (_Head + 1)
+0686 6B00      01354         CLRF    (_Head + 1), B
+0688 0000      01355         BANKSEL (_Head + 2)
+068A 6B00      01356         CLRF    (_Head + 2), B
+068C D000      01357         BRA     _00230_DS_
+068E 01358 _00218_DS_:
+068E 5000      01359         MOVF    r0x0e, W
+0690 0F0A      01360         ADDLW   0x0a
+0692 6E00      01361         MOVWF   r0x00
+0694 0E00      01362         MOVLW   0x00
+0696 2000      01363         ADDWFC  r0x0f, W
+0698 6E00      01364         MOVWF   r0x01
+069A 0E00      01365         MOVLW   0x00
+069C 2000      01366         ADDWFC  r0x10, W
+069E 6E00      01367         MOVWF   r0x02
+06A0 C000 FFE9 01368         MOVFF   r0x00, FSR0L
+06A4 C000 FFF3 01369         MOVFF   r0x01, PRODL
+06A8 5000      01370         MOVF    r0x02, W
+06AA EC00 F000 01371         CALL    __gptrget3
+06AE 0000      01372         BANKSEL _Head
+06B0 6F00      01373         MOVWF   _Head, B
+06B2 CFF3 F000 01374         MOVFF   PRODL, (_Head + 1)
+06B6 CFF4 F000 01375         MOVFF   PRODH, (_Head + 2)
+06BA C000 F000 01376         MOVFF   _Head, r0x00
+06BE C000 F000 01377         MOVFF   (_Head + 1), r0x01
+06C2 C000 F000 01378         MOVFF   (_Head + 2), r0x02
+06C6 0E0D      01379         MOVLW   0x0d
+06C8 2600      01380         ADDWF   r0x00, F
+06CA 0E00      01381         MOVLW   0x00
+06CC 2200      01382         ADDWFC  r0x01, F
+06CE 0E00      01383         MOVLW   0x00
+06D0 2200      01384         ADDWFC  r0x02, F
+06D2 0E00      01385         MOVLW   0x00
+06D4 6EE5      01386         MOVWF   POSTDEC1
+06D6 0E00      01387         MOVLW   0x00
+06D8 6EF4      01388         MOVWF   PRODH
+06DA 0E00      01389         MOVLW   0x00
+06DC 6EF6      01390         MOVWF   TBLPTRL
+06DE C000 FFE9 01391         MOVFF   r0x00, FSR0L
+06E2 C000 FFF3 01392         MOVFF   r0x01, PRODL
+06E6 5000      01393         MOVF    r0x02, W
+06E8 EC00 F000 01394         CALL    __gptrput3
+06EC D000      01395         BRA     _00230_DS_
+06EE 01396 _00224_DS_:
+06EE 5000      01397         MOVF    r0x0e, W
+06F0 0000      01398         BANKSEL _Tail
+06F2 1900      01399         XORWF   _Tail, W, B
+06F4 E100      01400         BNZ     _00262_DS_
+06F6 5000      01401         MOVF    r0x0f, W
+06F8 0000      01402         BANKSEL (_Tail + 1)
+06FA 1900      01403         XORWF   (_Tail + 1), W, B
+06FC E100      01404         BNZ     _00262_DS_
+gpasm-0.13.7 beta               build/default/production/brtos/queue.asm7-19-2011  15:07:14          PAGE 27
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+ 
+06FE 5000      01405         MOVF    r0x10, W
+0700 0000      01406         BANKSEL (_Tail + 2)
+0702 1900      01407         XORWF   (_Tail + 2), W, B
+0704 E000      01408         BZ      _00263_DS_
+0706 01409 _00262_DS_:
+0706 D000      01410         BRA     _00221_DS_
+0708 01411 _00263_DS_:
+0708 5000      01412         MOVF    r0x0e, W
+070A 0F0D      01413         ADDLW   0x0d
+070C 6E00      01414         MOVWF   r0x00
+070E 0E00      01415         MOVLW   0x00
+0710 2000      01416         ADDWFC  r0x0f, W
+0712 6E00      01417         MOVWF   r0x01
+0714 0E00      01418         MOVLW   0x00
+0716 2000      01419         ADDWFC  r0x10, W
+0718 6E00      01420         MOVWF   r0x02
+071A C000 FFE9 01421         MOVFF   r0x00, FSR0L
+071E C000 FFF3 01422         MOVFF   r0x01, PRODL
+0722 5000      01423         MOVF    r0x02, W
+0724 EC00 F000 01424         CALL    __gptrget3
+0728 0000      01425         BANKSEL _Tail
+072A 6F00      01426         MOVWF   _Tail, B
+072C CFF3 F000 01427         MOVFF   PRODL, (_Tail + 1)
+0730 CFF4 F000 01428         MOVFF   PRODH, (_Tail + 2)
+0734 C000 F000 01429         MOVFF   _Tail, r0x00
+0738 C000 F000 01430         MOVFF   (_Tail + 1), r0x01
+073C C000 F000 01431         MOVFF   (_Tail + 2), r0x02
+0740 0E0A      01432         MOVLW   0x0a
+0742 2600      01433         ADDWF   r0x00, F
+0744 0E00      01434         MOVLW   0x00
+0746 2200      01435         ADDWFC  r0x01, F
+0748 0E00      01436         MOVLW   0x00
+074A 2200      01437         ADDWFC  r0x02, F
+074C 0E00      01438         MOVLW   0x00
+074E 6EE5      01439         MOVWF   POSTDEC1
+0750 0E00      01440         MOVLW   0x00
+0752 6EF4      01441         MOVWF   PRODH
+0754 0E00      01442         MOVLW   0x00
+0756 6EF6      01443         MOVWF   TBLPTRL
+0758 C000 FFE9 01444         MOVFF   r0x00, FSR0L
+075C C000 FFF3 01445         MOVFF   r0x01, PRODL
+0760 5000      01446         MOVF    r0x02, W
+0762 EC00 F000 01447         CALL    __gptrput3
+0766 D000      01448         BRA     _00230_DS_
+0768 01449 _00221_DS_:
+0768 5000      01450         MOVF    r0x0e, W
+076A 0F0A      01451         ADDLW   0x0a
+076C 6E00      01452         MOVWF   r0x00
+076E 0E00      01453         MOVLW   0x00
+0770 2000      01454         ADDWFC  r0x0f, W
+0772 6E00      01455         MOVWF   r0x01
+0774 0E00      01456         MOVLW   0x00
+0776 2000      01457         ADDWFC  r0x10, W
+0778 6E00      01458         MOVWF   r0x02
+gpasm-0.13.7 beta               build/default/production/brtos/queue.asm7-19-2011  15:07:14          PAGE 28
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+ 
+077A C000 FFE9 01459         MOVFF   r0x00, FSR0L
+077E C000 FFF3 01460         MOVFF   r0x01, PRODL
+0782 5000      01461         MOVF    r0x02, W
+0784 EC00 F000 01462         CALL    __gptrget3
+0788 6E00      01463         MOVWF   r0x00
+078A CFF3 F000 01464         MOVFF   PRODL, r0x01
+078E CFF4 F000 01465         MOVFF   PRODH, r0x02
+0792 5000      01466         MOVF    r0x00, W
+0794 0F0D      01467         ADDLW   0x0d
+0796 6E00      01468         MOVWF   r0x06
+0798 0E00      01469         MOVLW   0x00
+079A 2000      01470         ADDWFC  r0x01, W
+079C 6E00      01471         MOVWF   r0x07
+079E 0E00      01472         MOVLW   0x00
+07A0 2000      01473         ADDWFC  r0x02, W
+07A2 6E00      01474         MOVWF   r0x11
+07A4 0E0D      01475         MOVLW   0x0d
+07A6 2600      01476         ADDWF   r0x0e, F
+07A8 0E00      01477         MOVLW   0x00
+07AA 2200      01478         ADDWFC  r0x0f, F
+07AC 0E00      01479         MOVLW   0x00
+07AE 2200      01480         ADDWFC  r0x10, F
+07B0 C000 FFE9 01481         MOVFF   r0x0e, FSR0L
+07B4 C000 FFF3 01482         MOVFF   r0x0f, PRODL
+07B8 5000      01483         MOVF    r0x10, W
+07BA EC00 F000 01484         CALL    __gptrget3
+07BE 6E00      01485         MOVWF   r0x0e
+07C0 CFF3 F000 01486         MOVFF   PRODL, r0x0f
+07C4 CFF4 F000 01487         MOVFF   PRODH, r0x10
+07C8 C000 FFE5 01488         MOVFF   r0x0e, POSTDEC1
+07CC C000 FFF4 01489         MOVFF   r0x0f, PRODH
+07D0 C000 FFF6 01490         MOVFF   r0x10, TBLPTRL
+07D4 C000 FFE9 01491         MOVFF   r0x06, FSR0L
+07D8 C000 FFF3 01492         MOVFF   r0x07, PRODL
+07DC 5000      01493         MOVF    r0x11, W
+07DE EC00 F000 01494         CALL    __gptrput3
+07E2 0E0A      01495         MOVLW   0x0a
+07E4 2600      01496         ADDWF   r0x0e, F
+07E6 0E00      01497         MOVLW   0x00
+07E8 2200      01498         ADDWFC  r0x0f, F
+07EA 0E00      01499         MOVLW   0x00
+07EC 2200      01500         ADDWFC  r0x10, F
+07EE C000 FFE5 01501         MOVFF   r0x00, POSTDEC1
+07F2 C000 FFF4 01502         MOVFF   r0x01, PRODH
+07F6 C000 FFF6 01503         MOVFF   r0x02, TBLPTRL
+07FA C000 FFE9 01504         MOVFF   r0x0e, FSR0L
+07FE C000 FFF3 01505         MOVFF   r0x0f, PRODL
+0802 5000      01506         MOVF    r0x10, W
+0804 EC00 F000 01507         CALL    __gptrput3
+0808 01508 _00230_DS_:
+               01509 ;       .line   466; brtos/queue.c      if (cqueue->OSQOut == cqueue->OSQEnd)
+0808 5000      01510         MOVF    r0x08, W
+080A 0F0C      01511         ADDLW   0x0c
+080C 6E00      01512         MOVWF   r0x00
+gpasm-0.13.7 beta               build/default/production/brtos/queue.asm7-19-2011  15:07:14          PAGE 29
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+ 
+080E 0E00      01513         MOVLW   0x00
+0810 2000      01514         ADDWFC  r0x09, W
+0812 6E00      01515         MOVWF   r0x01
+0814 0E00      01516         MOVLW   0x00
+0816 2000      01517         ADDWFC  r0x0a, W
+0818 6E00      01518         MOVWF   r0x02
+081A C000 FFE9 01519         MOVFF   r0x00, FSR0L
+081E C000 FFF3 01520         MOVFF   r0x01, PRODL
+0822 5000      01521         MOVF    r0x02, W
+0824 EC00 F000 01522         CALL    __gptrget3
+0828 6E00      01523         MOVWF   r0x06
+082A CFF3 F000 01524         MOVFF   PRODL, r0x07
+082E CFF4 F000 01525         MOVFF   PRODH, r0x0e
+0832 5000      01526         MOVF    r0x08, W
+0834 0F06      01527         ADDLW   0x06
+0836 6E00      01528         MOVWF   r0x0f
+0838 0E00      01529         MOVLW   0x00
+083A 2000      01530         ADDWFC  r0x09, W
+083C 6E00      01531         MOVWF   r0x10
+083E 0E00      01532         MOVLW   0x00
+0840 2000      01533         ADDWFC  r0x0a, W
+0842 6E00      01534         MOVWF   r0x11
+0844 C000 FFE9 01535         MOVFF   r0x0f, FSR0L
+0848 C000 FFF3 01536         MOVFF   r0x10, PRODL
+084C 5000      01537         MOVF    r0x11, W
+084E EC00 F000 01538         CALL    __gptrget3
+0852 6E00      01539         MOVWF   r0x0f
+0854 CFF3 F000 01540         MOVFF   PRODL, r0x10
+0858 CFF4 F000 01541         MOVFF   PRODH, r0x11
+085C 5000      01542         MOVF    r0x06, W
+085E 1800      01543         XORWF   r0x0f, W
+0860 E100      01544         BNZ     _00264_DS_
+0862 5000      01545         MOVF    r0x07, W
+0864 1800      01546         XORWF   r0x10, W
+0866 E100      01547         BNZ     _00264_DS_
+0868 5000      01548         MOVF    r0x0e, W
+086A 1800      01549         XORWF   r0x11, W
+086C E000      01550         BZ      _00265_DS_
+086E 01551 _00264_DS_:
+086E D000      01552         BRA     _00232_DS_
+0870 01553 _00265_DS_:
+               01554 ;       .line   467; brtos/queue.c      cqueue->OSQOut = cqueue->OSQStart;
+0870 0E03      01555         MOVLW   0x03
+0872 2600      01556         ADDWF   r0x08, F
+0874 0E00      01557         MOVLW   0x00
+0876 2200      01558         ADDWFC  r0x09, F
+0878 0E00      01559         MOVLW   0x00
+087A 2200      01560         ADDWFC  r0x0a, F
+087C C000 FFE9 01561         MOVFF   r0x08, FSR0L
+0880 C000 FFF3 01562         MOVFF   r0x09, PRODL
+0884 5000      01563         MOVF    r0x0a, W
+0886 EC00 F000 01564         CALL    __gptrget3
+088A 6E00      01565         MOVWF   r0x08
+088C CFF3 F000 01566         MOVFF   PRODL, r0x09
+gpasm-0.13.7 beta               build/default/production/brtos/queue.asm7-19-2011  15:07:14          PAGE 30
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+ 
+0890 CFF4 F000 01567         MOVFF   PRODH, r0x0a
+0894 C000 FFE5 01568         MOVFF   r0x08, POSTDEC1
+0898 C000 FFF4 01569         MOVFF   r0x09, PRODH
+089C C000 FFF6 01570         MOVFF   r0x0a, TBLPTRL
+08A0 C000 FFE9 01571         MOVFF   r0x00, FSR0L
+08A4 C000 FFF3 01572         MOVFF   r0x01, PRODL
+08A8 5000      01573         MOVF    r0x02, W
+08AA EC00 F000 01574         CALL    __gptrput3
+08AE 01575 _00232_DS_:
+               01576 ;       .line   470; brtos/queue.c      *pdata = *cqueue->OSQOut;
+08AE C000 FFE9 01577         MOVFF   r0x00, FSR0L
+08B2 C000 FFF3 01578         MOVFF   r0x01, PRODL
+08B6 5000      01579         MOVF    r0x02, W
+08B8 EC00 F000 01580         CALL    __gptrget3
+08BC 6E00      01581         MOVWF   r0x06
+08BE CFF3 F000 01582         MOVFF   PRODL, r0x07
+08C2 CFF4 F000 01583         MOVFF   PRODH, r0x08
+08C6 C000 FFE9 01584         MOVFF   r0x06, FSR0L
+08CA C000 FFF3 01585         MOVFF   r0x07, PRODL
+08CE 5000      01586         MOVF    r0x08, W
+08D0 EC00 F000 01587         CALL    __gptrget1
+08D4 6E00      01588         MOVWF   r0x09
+08D6 C000 FFE5 01589         MOVFF   r0x09, POSTDEC1
+08DA C000 FFE9 01590         MOVFF   r0x03, FSR0L
+08DE C000 FFF3 01591         MOVFF   r0x04, PRODL
+08E2 5000      01592         MOVF    r0x05, W
+08E4 EC00 F000 01593         CALL    __gptrput1
+               01594 ;       .line   473; brtos/queue.c      cqueue->OSQOut++;
+08E8 2A00      01595         INCF    r0x06, F
+08EA B0D8      01596         BTFSC   STATUS, 0
+08EC 2A00      01597         INCF    r0x07, F
+08EE B0D8      01598         BTFSC   STATUS, 0
+08F0 2A00      01599         INCF    r0x08, F
+08F2 C000 FFE5 01600         MOVFF   r0x06, POSTDEC1
+08F6 C000 FFF4 01601         MOVFF   r0x07, PRODH
+08FA C000 FFF6 01602         MOVFF   r0x08, TBLPTRL
+08FE C000 FFE9 01603         MOVFF   r0x00, FSR0L
+0902 C000 FFF3 01604         MOVFF   r0x01, PRODL
+0906 5000      01605         MOVF    r0x02, W
+0908 EC00 F000 01606         CALL    __gptrput3
+               01607 ;       .line   476; brtos/queue.c      cqueue->OSQEntries--;
+090C C000 FFE9 01608         MOVFF   r0x0b, FSR0L
+0910 C000 FFF3 01609         MOVFF   r0x0c, PRODL
+0914 5000      01610         MOVF    r0x0d, W
+0916 EC00 F000 01611         CALL    __gptrget2
+091A 6E00      01612         MOVWF   r0x00
+091C CFF3 F000 01613         MOVFF   PRODL, r0x01
+0920 0EFF      01614         MOVLW   0xff
+0922 2600      01615         ADDWF   r0x00, F
+0924 A0D8      01616         BTFSS   STATUS, 0
+0926 0600      01617         DECF    r0x01, F
+0928 C000 FFE5 01618         MOVFF   r0x00, POSTDEC1
+092C C000 FFF4 01619         MOVFF   r0x01, PRODH
+0930 C000 FFE9 01620         MOVFF   r0x0b, FSR0L
+gpasm-0.13.7 beta               build/default/production/brtos/queue.asm7-19-2011  15:07:14          PAGE 31
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+ 
+0934 C000 FFF3 01621         MOVFF   r0x0c, PRODL
+0938 5000      01622         MOVF    r0x0d, W
+093A EC00 F000 01623         CALL    __gptrput2
+               01624 ;       .line   479; brtos/queue.c      OSExitCritical();
+093E 8E00      01625         BSF     _INTCONbits, 7
+               01626 ;       .line   480; brtos/queue.c      return READ_BUFFER_OK;
+0940 6AE8      01627         CLRF    WREG
+0942 01628 _00236_DS_:
+0942 CFE4 F000 01629         MOVFF   PREINC1, r0x1f
+0946 CFE4 F000 01630         MOVFF   PREINC1, r0x1e
+094A CFE4 F000 01631         MOVFF   PREINC1, r0x1d
+094E CFE4 F000 01632         MOVFF   PREINC1, r0x1c
+0952 CFE4 F000 01633         MOVFF   PREINC1, r0x1b
+0956 CFE4 F000 01634         MOVFF   PREINC1, r0x1a
+095A CFE4 F000 01635         MOVFF   PREINC1, r0x19
+095E CFE4 F000 01636         MOVFF   PREINC1, r0x18
+0962 CFE4 F000 01637         MOVFF   PREINC1, r0x17
+0966 CFE4 F000 01638         MOVFF   PREINC1, r0x16
+096A CFE4 F000 01639         MOVFF   PREINC1, r0x15
+096E CFE4 F000 01640         MOVFF   PREINC1, r0x14
+0972 CFE4 F000 01641         MOVFF   PREINC1, r0x13
+0976 CFE4 F000 01642         MOVFF   PREINC1, r0x12
+097A CFE4 F000 01643         MOVFF   PREINC1, r0x11
+097E CFE4 F000 01644         MOVFF   PREINC1, r0x10
+0982 CFE4 F000 01645         MOVFF   PREINC1, r0x0f
+0986 CFE4 F000 01646         MOVFF   PREINC1, r0x0e
+098A CFE4 F000 01647         MOVFF   PREINC1, r0x0d
+098E CFE4 F000 01648         MOVFF   PREINC1, r0x0c
+0992 CFE4 F000 01649         MOVFF   PREINC1, r0x0b
+0996 CFE4 F000 01650         MOVFF   PREINC1, r0x0a
+099A CFE4 F000 01651         MOVFF   PREINC1, r0x09
+099E CFE4 F000 01652         MOVFF   PREINC1, r0x08
+09A2 CFE4 F000 01653         MOVFF   PREINC1, r0x07
+09A6 CFE4 F000 01654         MOVFF   PREINC1, r0x06
+09AA CFE4 F000 01655         MOVFF   PREINC1, r0x05
+09AE CFE4 F000 01656         MOVFF   PREINC1, r0x04
+09B2 CFE4 F000 01657         MOVFF   PREINC1, r0x03
+09B6 CFE4 F000 01658         MOVFF   PREINC1, r0x02
+09BA CFE4 F000 01659         MOVFF   PREINC1, r0x01
+09BE CFE4 F000 01660         MOVFF   PREINC1, r0x00
+09C2 CFE4 FFD9 01661         MOVFF   PREINC1, FSR2L
+09C6 CFE4 FFDA 01662         MOVFF   PREINC1, FSR2H
+09CA 0012      01663         RETURN  
+               01664 
+               01665 ; ; Starting pCode block
+               01666 S_queue__OSCleanQueue   code
+0000 01667 _OSCleanQueue:
+               01668 ;       .line   278; brtos/queue.c      INT8U OSCleanQueue(BRTOS_Queue *pont_event)
+0000 CFDA FFE5 01669         MOVFF   FSR2H, POSTDEC1
+0004 CFD9 FFE5 01670         MOVFF   FSR2L, POSTDEC1
+0008 CFE2 FFDA 01671         MOVFF   FSR1H, FSR2H
+000C CFE1 FFD9 01672         MOVFF   FSR1L, FSR2L
+0010 C000 FFE5 01673         MOVFF   r0x00, POSTDEC1
+0014 C000 FFE5 01674         MOVFF   r0x01, POSTDEC1
+gpasm-0.13.7 beta               build/default/production/brtos/queue.asm7-19-2011  15:07:14          PAGE 32
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+ 
+0018 C000 FFE5 01675         MOVFF   r0x02, POSTDEC1
+001C C000 FFE5 01676         MOVFF   r0x03, POSTDEC1
+0020 C000 FFE5 01677         MOVFF   r0x04, POSTDEC1
+0024 C000 FFE5 01678         MOVFF   r0x05, POSTDEC1
+0028 C000 FFE5 01679         MOVFF   r0x06, POSTDEC1
+002C C000 FFE5 01680         MOVFF   r0x07, POSTDEC1
+0030 C000 FFE5 01681         MOVFF   r0x08, POSTDEC1
+0034 0E03      01682         MOVLW   0x03
+0036 CFDB F000 01683         MOVFF   PLUSW2, r0x00
+003A 0E04      01684         MOVLW   0x04
+003C CFDB F000 01685         MOVFF   PLUSW2, r0x01
+0040 0E05      01686         MOVLW   0x05
+0042 CFDB F000 01687         MOVFF   PLUSW2, r0x02
+               01688 ;       .line   281; brtos/queue.c      OS_QUEUE *cqueue = pont_event->OSEventPointer;
+0046 0E03      01689         MOVLW   0x03
+0048 2600      01690         ADDWF   r0x00, F
+004A 0E00      01691         MOVLW   0x00
+004C 2200      01692         ADDWFC  r0x01, F
+004E 0E00      01693         MOVLW   0x00
+0050 2200      01694         ADDWFC  r0x02, F
+0052 C000 FFE9 01695         MOVFF   r0x00, FSR0L
+0056 C000 FFF3 01696         MOVFF   r0x01, PRODL
+005A 5000      01697         MOVF    r0x02, W
+005C EC00 F000 01698         CALL    __gptrget3
+0060 6E00      01699         MOVWF   r0x00
+0062 CFF3 F000 01700         MOVFF   PRODL, r0x01
+0066 CFF4 F000 01701         MOVFF   PRODH, r0x02
+006A 0000      01702         BANKSEL _iNesting
+               01703 ;       .line   285; brtos/queue.c      if (!iNesting)
+006C 5100      01704         MOVF    _iNesting, W, B
+006E E100      01705         BNZ     _00196_DS_
+               01706 ;       .line   287; brtos/queue.c      OSEnterCritical();
+0070 9E00      01707         BCF     _INTCONbits, 7
+0072 01708 _00196_DS_:
+               01709 ;       .line   289; brtos/queue.c      cqueue->OSQEntries = 0;
+0072 5000      01710         MOVF    r0x00, W
+0074 0F11      01711         ADDLW   0x11
+0076 6E00      01712         MOVWF   r0x03
+0078 0E00      01713         MOVLW   0x00
+007A 2000      01714         ADDWFC  r0x01, W
+007C 6E00      01715         MOVWF   r0x04
+007E 0E00      01716         MOVLW   0x00
+0080 2000      01717         ADDWFC  r0x02, W
+0082 6E00      01718         MOVWF   r0x05
+0084 0E00      01719         MOVLW   0x00
+0086 6EE5      01720         MOVWF   POSTDEC1
+0088 0E00      01721         MOVLW   0x00
+008A 6EF4      01722         MOVWF   PRODH
+008C C000 FFE9 01723         MOVFF   r0x03, FSR0L
+0090 C000 FFF3 01724         MOVFF   r0x04, PRODL
+0094 5000      01725         MOVF    r0x05, W
+0096 EC00 F000 01726         CALL    __gptrput2
+               01727 ;       .line   291; brtos/queue.c      cqueue->OSQIn = cqueue->OSQStart;
+009A 5000      01728         MOVF    r0x00, W
+gpasm-0.13.7 beta               build/default/production/brtos/queue.asm7-19-2011  15:07:14          PAGE 33
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+ 
+009C 0F09      01729         ADDLW   0x09
+009E 6E00      01730         MOVWF   r0x03
+00A0 0E00      01731         MOVLW   0x00
+00A2 2000      01732         ADDWFC  r0x01, W
+00A4 6E00      01733         MOVWF   r0x04
+00A6 0E00      01734         MOVLW   0x00
+00A8 2000      01735         ADDWFC  r0x02, W
+00AA 6E00      01736         MOVWF   r0x05
+00AC 5000      01737         MOVF    r0x00, W
+00AE 0F03      01738         ADDLW   0x03
+00B0 6E00      01739         MOVWF   r0x06
+00B2 0E00      01740         MOVLW   0x00
+00B4 2000      01741         ADDWFC  r0x01, W
+00B6 6E00      01742         MOVWF   r0x07
+00B8 0E00      01743         MOVLW   0x00
+00BA 2000      01744         ADDWFC  r0x02, W
+00BC 6E00      01745         MOVWF   r0x08
+00BE C000 FFE9 01746         MOVFF   r0x06, FSR0L
+00C2 C000 FFF3 01747         MOVFF   r0x07, PRODL
+00C6 5000      01748         MOVF    r0x08, W
+00C8 EC00 F000 01749         CALL    __gptrget3
+00CC 6E00      01750         MOVWF   r0x06
+00CE CFF3 F000 01751         MOVFF   PRODL, r0x07
+00D2 CFF4 F000 01752         MOVFF   PRODH, r0x08
+00D6 C000 FFE5 01753         MOVFF   r0x06, POSTDEC1
+00DA C000 FFF4 01754         MOVFF   r0x07, PRODH
+00DE C000 FFF6 01755         MOVFF   r0x08, TBLPTRL
+00E2 C000 FFE9 01756         MOVFF   r0x03, FSR0L
+00E6 C000 FFF3 01757         MOVFF   r0x04, PRODL
+00EA 5000      01758         MOVF    r0x05, W
+00EC EC00 F000 01759         CALL    __gptrput3
+               01760 ;       .line   292; brtos/queue.c      cqueue->OSQOut = cqueue->OSQStart;
+00F0 0E0C      01761         MOVLW   0x0c
+00F2 2600      01762         ADDWF   r0x00, F
+00F4 0E00      01763         MOVLW   0x00
+00F6 2200      01764         ADDWFC  r0x01, F
+00F8 0E00      01765         MOVLW   0x00
+00FA 2200      01766         ADDWFC  r0x02, F
+00FC C000 FFE5 01767         MOVFF   r0x06, POSTDEC1
+0100 C000 FFF4 01768         MOVFF   r0x07, PRODH
+0104 C000 FFF6 01769         MOVFF   r0x08, TBLPTRL
+0108 C000 FFE9 01770         MOVFF   r0x00, FSR0L
+010C C000 FFF3 01771         MOVFF   r0x01, PRODL
+0110 5000      01772         MOVF    r0x02, W
+0112 EC00 F000 01773         CALL    __gptrput3
+0116 0000      01774         BANKSEL _iNesting
+               01775 ;       .line   296; brtos/queue.c      if (!iNesting)
+0118 5100      01776         MOVF    _iNesting, W, B
+011A E100      01777         BNZ     _00198_DS_
+               01778 ;       .line   298; brtos/queue.c      OSExitCritical();  
+011C 8E00      01779         BSF     _INTCONbits, 7
+011E 01780 _00198_DS_:
+               01781 ;       .line   300; brtos/queue.c      return CLEAN_BUFFER_OK;
+011E 0E02      01782         MOVLW   0x02
+gpasm-0.13.7 beta               build/default/production/brtos/queue.asm7-19-2011  15:07:14          PAGE 34
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+ 
+0120 CFE4 F000 01783         MOVFF   PREINC1, r0x08
+0124 CFE4 F000 01784         MOVFF   PREINC1, r0x07
+0128 CFE4 F000 01785         MOVFF   PREINC1, r0x06
+012C CFE4 F000 01786         MOVFF   PREINC1, r0x05
+0130 CFE4 F000 01787         MOVFF   PREINC1, r0x04
+0134 CFE4 F000 01788         MOVFF   PREINC1, r0x03
+0138 CFE4 F000 01789         MOVFF   PREINC1, r0x02
+013C CFE4 F000 01790         MOVFF   PREINC1, r0x01
+0140 CFE4 F000 01791         MOVFF   PREINC1, r0x00
+0144 CFE4 FFD9 01792         MOVFF   PREINC1, FSR2L
+0148 CFE4 FFDA 01793         MOVFF   PREINC1, FSR2H
+014C 0012      01794         RETURN  
+               01795 
+               01796 ; ; Starting pCode block
+               01797 S_queue__OSRQueue       code
+0000 01798 _OSRQueue:
+               01799 ;       .line   222; brtos/queue.c      INT8U OSRQueue(OS_QUEUE *cqueue, INT8U* pdata)
+0000 CFDA FFE5 01800         MOVFF   FSR2H, POSTDEC1
+0004 CFD9 FFE5 01801         MOVFF   FSR2L, POSTDEC1
+0008 CFE2 FFDA 01802         MOVFF   FSR1H, FSR2H
+000C CFE1 FFD9 01803         MOVFF   FSR1L, FSR2L
+0010 C000 FFE5 01804         MOVFF   r0x00, POSTDEC1
+0014 C000 FFE5 01805         MOVFF   r0x01, POSTDEC1
+0018 C000 FFE5 01806         MOVFF   r0x02, POSTDEC1
+001C C000 FFE5 01807         MOVFF   r0x03, POSTDEC1
+0020 C000 FFE5 01808         MOVFF   r0x04, POSTDEC1
+0024 C000 FFE5 01809         MOVFF   r0x05, POSTDEC1
+0028 C000 FFE5 01810         MOVFF   r0x06, POSTDEC1
+002C C000 FFE5 01811         MOVFF   r0x07, POSTDEC1
+0030 C000 FFE5 01812         MOVFF   r0x08, POSTDEC1
+0034 C000 FFE5 01813         MOVFF   r0x09, POSTDEC1
+0038 C000 FFE5 01814         MOVFF   r0x0a, POSTDEC1
+003C C000 FFE5 01815         MOVFF   r0x0b, POSTDEC1
+0040 C000 FFE5 01816         MOVFF   r0x0c, POSTDEC1
+0044 C000 FFE5 01817         MOVFF   r0x0d, POSTDEC1
+0048 C000 FFE5 01818         MOVFF   r0x0e, POSTDEC1
+004C C000 FFE5 01819         MOVFF   r0x0f, POSTDEC1
+0050 C000 FFE5 01820         MOVFF   r0x10, POSTDEC1
+0054 C000 FFE5 01821         MOVFF   r0x11, POSTDEC1
+0058 C000 FFE5 01822         MOVFF   r0x12, POSTDEC1
+005C C000 FFE5 01823         MOVFF   r0x13, POSTDEC1
+0060 0E03      01824         MOVLW   0x03
+0062 CFDB F000 01825         MOVFF   PLUSW2, r0x00
+0066 0E04      01826         MOVLW   0x04
+0068 CFDB F000 01827         MOVFF   PLUSW2, r0x01
+006C 0E05      01828         MOVLW   0x05
+006E CFDB F000 01829         MOVFF   PLUSW2, r0x02
+0072 0E06      01830         MOVLW   0x06
+0074 CFDB F000 01831         MOVFF   PLUSW2, r0x03
+0078 0E07      01832         MOVLW   0x07
+007A CFDB F000 01833         MOVFF   PLUSW2, r0x04
+007E 0E08      01834         MOVLW   0x08
+0080 CFDB F000 01835         MOVFF   PLUSW2, r0x05
+0084 0000      01836         BANKSEL _iNesting
+gpasm-0.13.7 beta               build/default/production/brtos/queue.asm7-19-2011  15:07:14          PAGE 35
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+ 
+               01837 ;       .line   228; brtos/queue.c      if (!iNesting)
+0086 5100      01838         MOVF    _iNesting, W, B
+0088 E100      01839         BNZ     _00172_DS_
+               01840 ;       .line   230; brtos/queue.c      OSEnterCritical();
+008A 9E00      01841         BCF     _INTCONbits, 7
+008C 01842 _00172_DS_:
+               01843 ;       .line   232; brtos/queue.c      if(cqueue->OSQEntries > 0)
+008C 5000      01844         MOVF    r0x00, W
+008E 0F11      01845         ADDLW   0x11
+0090 6E00      01846         MOVWF   r0x06
+0092 0E00      01847         MOVLW   0x00
+0094 2000      01848         ADDWFC  r0x01, W
+0096 6E00      01849         MOVWF   r0x07
+0098 0E00      01850         MOVLW   0x00
+009A 2000      01851         ADDWFC  r0x02, W
+009C 6E00      01852         MOVWF   r0x08
+009E C000 FFE9 01853         MOVFF   r0x06, FSR0L
+00A2 C000 FFF3 01854         MOVFF   r0x07, PRODL
+00A6 5000      01855         MOVF    r0x08, W
+00A8 EC00 F000 01856         CALL    __gptrget2
+00AC 6E00      01857         MOVWF   r0x09
+00AE CFF3 F000 01858         MOVFF   PRODL, r0x0a
+00B2 5000      01859         MOVF    r0x09, W
+00B4 1000      01860         IORWF   r0x0a, W
+00B6 B4D8      01861         BTFSC   STATUS, 2
+00B8 D000      01862         BRA     _00180_DS_
+               01863 ;       .line   235; brtos/queue.c      if (cqueue->OSQOut == cqueue->OSQEnd)
+00BA 5000      01864         MOVF    r0x00, W
+00BC 0F0C      01865         ADDLW   0x0c
+00BE 6E00      01866         MOVWF   r0x0b
+00C0 0E00      01867         MOVLW   0x00
+00C2 2000      01868         ADDWFC  r0x01, W
+00C4 6E00      01869         MOVWF   r0x0c
+00C6 0E00      01870         MOVLW   0x00
+00C8 2000      01871         ADDWFC  r0x02, W
+00CA 6E00      01872         MOVWF   r0x0d
+00CC C000 FFE9 01873         MOVFF   r0x0b, FSR0L
+00D0 C000 FFF3 01874         MOVFF   r0x0c, PRODL
+00D4 5000      01875         MOVF    r0x0d, W
+00D6 EC00 F000 01876         CALL    __gptrget3
+00DA 6E00      01877         MOVWF   r0x0e
+00DC CFF3 F000 01878         MOVFF   PRODL, r0x0f
+00E0 CFF4 F000 01879         MOVFF   PRODH, r0x10
+00E4 5000      01880         MOVF    r0x00, W
+00E6 0F06      01881         ADDLW   0x06
+00E8 6E00      01882         MOVWF   r0x11
+00EA 0E00      01883         MOVLW   0x00
+00EC 2000      01884         ADDWFC  r0x01, W
+00EE 6E00      01885         MOVWF   r0x12
+00F0 0E00      01886         MOVLW   0x00
+00F2 2000      01887         ADDWFC  r0x02, W
+00F4 6E00      01888         MOVWF   r0x13
+00F6 C000 FFE9 01889         MOVFF   r0x11, FSR0L
+00FA C000 FFF3 01890         MOVFF   r0x12, PRODL
+gpasm-0.13.7 beta               build/default/production/brtos/queue.asm7-19-2011  15:07:14          PAGE 36
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+ 
+00FE 5000      01891         MOVF    r0x13, W
+0100 EC00 F000 01892         CALL    __gptrget3
+0104 6E00      01893         MOVWF   r0x11
+0106 CFF3 F000 01894         MOVFF   PRODL, r0x12
+010A CFF4 F000 01895         MOVFF   PRODH, r0x13
+010E 5000      01896         MOVF    r0x0e, W
+0110 1800      01897         XORWF   r0x11, W
+0112 E100      01898         BNZ     _00189_DS_
+0114 5000      01899         MOVF    r0x0f, W
+0116 1800      01900         XORWF   r0x12, W
+0118 E100      01901         BNZ     _00189_DS_
+011A 5000      01902         MOVF    r0x10, W
+011C 1800      01903         XORWF   r0x13, W
+011E E000      01904         BZ      _00190_DS_
+0120 01905 _00189_DS_:
+0120 D000      01906         BRA     _00174_DS_
+0122 01907 _00190_DS_:
+               01908 ;       .line   236; brtos/queue.c      cqueue->OSQOut = cqueue->OSQStart;
+0122 0E03      01909         MOVLW   0x03
+0124 2600      01910         ADDWF   r0x00, F
+0126 0E00      01911         MOVLW   0x00
+0128 2200      01912         ADDWFC  r0x01, F
+012A 0E00      01913         MOVLW   0x00
+012C 2200      01914         ADDWFC  r0x02, F
+012E C000 FFE9 01915         MOVFF   r0x00, FSR0L
+0132 C000 FFF3 01916         MOVFF   r0x01, PRODL
+0136 5000      01917         MOVF    r0x02, W
+0138 EC00 F000 01918         CALL    __gptrget3
+013C 6E00      01919         MOVWF   r0x00
+013E CFF3 F000 01920         MOVFF   PRODL, r0x01
+0142 CFF4 F000 01921         MOVFF   PRODH, r0x02
+0146 C000 FFE5 01922         MOVFF   r0x00, POSTDEC1
+014A C000 FFF4 01923         MOVFF   r0x01, PRODH
+014E C000 FFF6 01924         MOVFF   r0x02, TBLPTRL
+0152 C000 FFE9 01925         MOVFF   r0x0b, FSR0L
+0156 C000 FFF3 01926         MOVFF   r0x0c, PRODL
+015A 5000      01927         MOVF    r0x0d, W
+015C EC00 F000 01928         CALL    __gptrput3
+0160 01929 _00174_DS_:
+               01930 ;       .line   238; brtos/queue.c      *pdata = *(cqueue->OSQOut);
+0160 C000 FFE9 01931         MOVFF   r0x0b, FSR0L
+0164 C000 FFF3 01932         MOVFF   r0x0c, PRODL
+0168 5000      01933         MOVF    r0x0d, W
+016A EC00 F000 01934         CALL    __gptrget3
+016E 6E00      01935         MOVWF   r0x00
+0170 CFF3 F000 01936         MOVFF   PRODL, r0x01
+0174 CFF4 F000 01937         MOVFF   PRODH, r0x02
+0178 C000 FFE9 01938         MOVFF   r0x00, FSR0L
+017C C000 FFF3 01939         MOVFF   r0x01, PRODL
+0180 5000      01940         MOVF    r0x02, W
+0182 EC00 F000 01941         CALL    __gptrget1
+0186 6E00      01942         MOVWF   r0x0e
+0188 C000 FFE5 01943         MOVFF   r0x0e, POSTDEC1
+018C C000 FFE9 01944         MOVFF   r0x03, FSR0L
+gpasm-0.13.7 beta               build/default/production/brtos/queue.asm7-19-2011  15:07:14          PAGE 37
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+ 
+0190 C000 FFF3 01945         MOVFF   r0x04, PRODL
+0194 5000      01946         MOVF    r0x05, W
+0196 EC00 F000 01947         CALL    __gptrput1
+               01948 ;       .line   240; brtos/queue.c      cqueue->OSQOut++;
+019A 2A00      01949         INCF    r0x00, F
+019C B0D8      01950         BTFSC   STATUS, 0
+019E 2A00      01951         INCF    r0x01, F
+01A0 B0D8      01952         BTFSC   STATUS, 0
+01A2 2A00      01953         INCF    r0x02, F
+01A4 C000 FFE5 01954         MOVFF   r0x00, POSTDEC1
+01A8 C000 FFF4 01955         MOVFF   r0x01, PRODH
+01AC C000 FFF6 01956         MOVFF   r0x02, TBLPTRL
+01B0 C000 FFE9 01957         MOVFF   r0x0b, FSR0L
+01B4 C000 FFF3 01958         MOVFF   r0x0c, PRODL
+01B8 5000      01959         MOVF    r0x0d, W
+01BA EC00 F000 01960         CALL    __gptrput3
+               01961 ;       .line   241; brtos/queue.c      cqueue->OSQEntries--;
+01BE 0EFF      01962         MOVLW   0xff
+01C0 2600      01963         ADDWF   r0x09, F
+01C2 A0D8      01964         BTFSS   STATUS, 0
+01C4 0600      01965         DECF    r0x0a, F
+01C6 C000 FFE5 01966         MOVFF   r0x09, POSTDEC1
+01CA C000 FFF4 01967         MOVFF   r0x0a, PRODH
+01CE C000 FFE9 01968         MOVFF   r0x06, FSR0L
+01D2 C000 FFF3 01969         MOVFF   r0x07, PRODL
+01D6 5000      01970         MOVF    r0x08, W
+01D8 EC00 F000 01971         CALL    __gptrput2
+01DC 0000      01972         BANKSEL _iNesting
+               01973 ;       .line   245; brtos/queue.c      if (!iNesting)
+01DE 5100      01974         MOVF    _iNesting, W, B
+01E0 E100      01975         BNZ     _00176_DS_
+               01976 ;       .line   247; brtos/queue.c      OSExitCritical();
+01E2 8E00      01977         BSF     _INTCONbits, 7
+01E4 01978 _00176_DS_:
+               01979 ;       .line   249; brtos/queue.c      return READ_BUFFER_OK;
+01E4 6AE8      01980         CLRF    WREG
+01E6 D000      01981         BRA     _00182_DS_
+01E8 01982 _00180_DS_:
+01E8 0000      01983         BANKSEL _iNesting
+               01984 ;       .line   255; brtos/queue.c      if (!iNesting)
+01EA 5100      01985         MOVF    _iNesting, W, B
+01EC E100      01986         BNZ     _00178_DS_
+               01987 ;       .line   257; brtos/queue.c      OSExitCritical();
+01EE 8E00      01988         BSF     _INTCONbits, 7
+01F0 01989 _00178_DS_:
+               01990 ;       .line   259; brtos/queue.c      return NO_ENTRY_AVAILABLE;
+01F0 0E03      01991         MOVLW   0x03
+01F2 01992 _00182_DS_:
+01F2 CFE4 F000 01993         MOVFF   PREINC1, r0x13
+01F6 CFE4 F000 01994         MOVFF   PREINC1, r0x12
+01FA CFE4 F000 01995         MOVFF   PREINC1, r0x11
+01FE CFE4 F000 01996         MOVFF   PREINC1, r0x10
+0202 CFE4 F000 01997         MOVFF   PREINC1, r0x0f
+0206 CFE4 F000 01998         MOVFF   PREINC1, r0x0e
+gpasm-0.13.7 beta               build/default/production/brtos/queue.asm7-19-2011  15:07:14          PAGE 38
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+ 
+020A CFE4 F000 01999         MOVFF   PREINC1, r0x0d
+020E CFE4 F000 02000         MOVFF   PREINC1, r0x0c
+0212 CFE4 F000 02001         MOVFF   PREINC1, r0x0b
+0216 CFE4 F000 02002         MOVFF   PREINC1, r0x0a
+021A CFE4 F000 02003         MOVFF   PREINC1, r0x09
+021E CFE4 F000 02004         MOVFF   PREINC1, r0x08
+0222 CFE4 F000 02005         MOVFF   PREINC1, r0x07
+0226 CFE4 F000 02006         MOVFF   PREINC1, r0x06
+022A CFE4 F000 02007         MOVFF   PREINC1, r0x05
+022E CFE4 F000 02008         MOVFF   PREINC1, r0x04
+0232 CFE4 F000 02009         MOVFF   PREINC1, r0x03
+0236 CFE4 F000 02010         MOVFF   PREINC1, r0x02
+023A CFE4 F000 02011         MOVFF   PREINC1, r0x01
+023E CFE4 F000 02012         MOVFF   PREINC1, r0x00
+0242 CFE4 FFD9 02013         MOVFF   PREINC1, FSR2L
+0246 CFE4 FFDA 02014         MOVFF   PREINC1, FSR2H
+024A 0012      02015         RETURN  
+               02016 
+               02017 ; ; Starting pCode block
+               02018 S_queue__OSWQueue       code
+0000 02019 _OSWQueue:
+               02020 ;       .line   166; brtos/queue.c      INT8U OSWQueue(OS_QUEUE *cqueue, INT8U newdata)
+0000 CFDA FFE5 02021         MOVFF   FSR2H, POSTDEC1
+0004 CFD9 FFE5 02022         MOVFF   FSR2L, POSTDEC1
+0008 CFE2 FFDA 02023         MOVFF   FSR1H, FSR2H
+000C CFE1 FFD9 02024         MOVFF   FSR1L, FSR2L
+0010 C000 FFE5 02025         MOVFF   r0x00, POSTDEC1
+0014 C000 FFE5 02026         MOVFF   r0x01, POSTDEC1
+0018 C000 FFE5 02027         MOVFF   r0x02, POSTDEC1
+001C C000 FFE5 02028         MOVFF   r0x03, POSTDEC1
+0020 C000 FFE5 02029         MOVFF   r0x04, POSTDEC1
+0024 C000 FFE5 02030         MOVFF   r0x05, POSTDEC1
+0028 C000 FFE5 02031         MOVFF   r0x06, POSTDEC1
+002C C000 FFE5 02032         MOVFF   r0x07, POSTDEC1
+0030 C000 FFE5 02033         MOVFF   r0x08, POSTDEC1
+0034 C000 FFE5 02034         MOVFF   r0x09, POSTDEC1
+0038 C000 FFE5 02035         MOVFF   r0x0a, POSTDEC1
+003C C000 FFE5 02036         MOVFF   r0x0b, POSTDEC1
+0040 C000 FFE5 02037         MOVFF   r0x0c, POSTDEC1
+0044 0E03      02038         MOVLW   0x03
+0046 CFDB F000 02039         MOVFF   PLUSW2, r0x00
+004A 0E04      02040         MOVLW   0x04
+004C CFDB F000 02041         MOVFF   PLUSW2, r0x01
+0050 0E05      02042         MOVLW   0x05
+0052 CFDB F000 02043         MOVFF   PLUSW2, r0x02
+0056 0E06      02044         MOVLW   0x06
+0058 CFDB F000 02045         MOVFF   PLUSW2, r0x03
+005C 0000      02046         BANKSEL _iNesting
+               02047 ;       .line   172; brtos/queue.c      if (!iNesting)
+005E 5100      02048         MOVF    _iNesting, W, B
+0060 E100      02049         BNZ     _00147_DS_
+               02050 ;       .line   174; brtos/queue.c      OSEnterCritical();
+0062 9E00      02051         BCF     _INTCONbits, 7
+0064 02052 _00147_DS_:
+gpasm-0.13.7 beta               build/default/production/brtos/queue.asm7-19-2011  15:07:14          PAGE 39
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+ 
+               02053 ;       .line   176; brtos/queue.c      if (cqueue->OSQEntries < cqueue->OSQSize)
+0064 5000      02054         MOVF    r0x00, W
+0066 0F11      02055         ADDLW   0x11
+0068 6E00      02056         MOVWF   r0x04
+006A 0E00      02057         MOVLW   0x00
+006C 2000      02058         ADDWFC  r0x01, W
+006E 6E00      02059         MOVWF   r0x05
+0070 0E00      02060         MOVLW   0x00
+0072 2000      02061         ADDWFC  r0x02, W
+0074 6E00      02062         MOVWF   r0x06
+0076 C000 FFE9 02063         MOVFF   r0x04, FSR0L
+007A C000 FFF3 02064         MOVFF   r0x05, PRODL
+007E 5000      02065         MOVF    r0x06, W
+0080 EC00 F000 02066         CALL    __gptrget2
+0084 6E00      02067         MOVWF   r0x07
+0086 CFF3 F000 02068         MOVFF   PRODL, r0x08
+008A 5000      02069         MOVF    r0x00, W
+008C 0F0F      02070         ADDLW   0x0f
+008E 6E00      02071         MOVWF   r0x09
+0090 0E00      02072         MOVLW   0x00
+0092 2000      02073         ADDWFC  r0x01, W
+0094 6E00      02074         MOVWF   r0x0a
+0096 0E00      02075         MOVLW   0x00
+0098 2000      02076         ADDWFC  r0x02, W
+009A 6E00      02077         MOVWF   r0x0b
+009C C000 FFE9 02078         MOVFF   r0x09, FSR0L
+00A0 C000 FFF3 02079         MOVFF   r0x0a, PRODL
+00A4 5000      02080         MOVF    r0x0b, W
+00A6 EC00 F000 02081         CALL    __gptrget2
+00AA 6E00      02082         MOVWF   r0x09
+00AC CFF3 F000 02083         MOVFF   PRODL, r0x0a
+00B0 5000      02084         MOVF    r0x0a, W
+00B2 5C00      02085         SUBWF   r0x08, W
+00B4 E100      02086         BNZ     _00164_DS_
+00B6 5000      02087         MOVF    r0x09, W
+00B8 5C00      02088         SUBWF   r0x07, W
+00BA 02089 _00164_DS_:
+00BA E200      02090         BC      _00151_DS_
+               02091 ;       .line   178; brtos/queue.c      cqueue->OSQEntries++;
+00BC 2A00      02092         INCF    r0x07, F
+00BE B0D8      02093         BTFSC   STATUS, 0
+00C0 2A00      02094         INCF    r0x08, F
+00C2 C000 FFE5 02095         MOVFF   r0x07, POSTDEC1
+00C6 C000 FFF4 02096         MOVFF   r0x08, PRODH
+00CA C000 FFE9 02097         MOVFF   r0x04, FSR0L
+00CE C000 FFF3 02098         MOVFF   r0x05, PRODL
+00D2 5000      02099         MOVF    r0x06, W
+00D4 EC00 F000 02100         CALL    __gptrput2
+00D8 D000      02101         BRA     _00152_DS_
+00DA 02102 _00151_DS_:
+00DA 0000      02103         BANKSEL _iNesting
+               02104 ;       .line   184; brtos/queue.c      if (!iNesting)
+00DC 5100      02105         MOVF    _iNesting, W, B
+00DE E100      02106         BNZ     _00149_DS_
+gpasm-0.13.7 beta               build/default/production/brtos/queue.asm7-19-2011  15:07:14          PAGE 40
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+ 
+               02107 ;       .line   186; brtos/queue.c      OSExitCritical();
+00E0 8E00      02108         BSF     _INTCONbits, 7
+00E2 02109 _00149_DS_:
+               02110 ;       .line   188; brtos/queue.c      return BUFFER_UNDERRUN;
+00E2 0E01      02111         MOVLW   0x01
+00E4 D000      02112         BRA     _00157_DS_
+00E6 02113 _00152_DS_:
+               02114 ;       .line   191; brtos/queue.c      if (cqueue->OSQIn == cqueue->OSQEnd)
+00E6 5000      02115         MOVF    r0x00, W
+00E8 0F09      02116         ADDLW   0x09
+00EA 6E00      02117         MOVWF   r0x04
+00EC 0E00      02118         MOVLW   0x00
+00EE 2000      02119         ADDWFC  r0x01, W
+00F0 6E00      02120         MOVWF   r0x05
+00F2 0E00      02121         MOVLW   0x00
+00F4 2000      02122         ADDWFC  r0x02, W
+00F6 6E00      02123         MOVWF   r0x06
+00F8 C000 FFE9 02124         MOVFF   r0x04, FSR0L
+00FC C000 FFF3 02125         MOVFF   r0x05, PRODL
+0100 5000      02126         MOVF    r0x06, W
+0102 EC00 F000 02127         CALL    __gptrget3
+0106 6E00      02128         MOVWF   r0x07
+0108 CFF3 F000 02129         MOVFF   PRODL, r0x08
+010C CFF4 F000 02130         MOVFF   PRODH, r0x09
+0110 5000      02131         MOVF    r0x00, W
+0112 0F06      02132         ADDLW   0x06
+0114 6E00      02133         MOVWF   r0x0a
+0116 0E00      02134         MOVLW   0x00
+0118 2000      02135         ADDWFC  r0x01, W
+011A 6E00      02136         MOVWF   r0x0b
+011C 0E00      02137         MOVLW   0x00
+011E 2000      02138         ADDWFC  r0x02, W
+0120 6E00      02139         MOVWF   r0x0c
+0122 C000 FFE9 02140         MOVFF   r0x0a, FSR0L
+0126 C000 FFF3 02141         MOVFF   r0x0b, PRODL
+012A 5000      02142         MOVF    r0x0c, W
+012C EC00 F000 02143         CALL    __gptrget3
+0130 6E00      02144         MOVWF   r0x0a
+0132 CFF3 F000 02145         MOVFF   PRODL, r0x0b
+0136 CFF4 F000 02146         MOVFF   PRODH, r0x0c
+013A 5000      02147         MOVF    r0x07, W
+013C 1800      02148         XORWF   r0x0a, W
+013E E100      02149         BNZ     _00165_DS_
+0140 5000      02150         MOVF    r0x08, W
+0142 1800      02151         XORWF   r0x0b, W
+0144 E100      02152         BNZ     _00165_DS_
+0146 5000      02153         MOVF    r0x09, W
+0148 1800      02154         XORWF   r0x0c, W
+014A E000      02155         BZ      _00166_DS_
+014C 02156 _00165_DS_:
+014C D000      02157         BRA     _00154_DS_
+014E 02158 _00166_DS_:
+               02159 ;       .line   192; brtos/queue.c      cqueue->OSQIn = cqueue->OSQStart;
+014E 0E03      02160         MOVLW   0x03
+gpasm-0.13.7 beta               build/default/production/brtos/queue.asm7-19-2011  15:07:14          PAGE 41
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+ 
+0150 2600      02161         ADDWF   r0x00, F
+0152 0E00      02162         MOVLW   0x00
+0154 2200      02163         ADDWFC  r0x01, F
+0156 0E00      02164         MOVLW   0x00
+0158 2200      02165         ADDWFC  r0x02, F
+015A C000 FFE9 02166         MOVFF   r0x00, FSR0L
+015E C000 FFF3 02167         MOVFF   r0x01, PRODL
+0162 5000      02168         MOVF    r0x02, W
+0164 EC00 F000 02169         CALL    __gptrget3
+0168 6E00      02170         MOVWF   r0x00
+016A CFF3 F000 02171         MOVFF   PRODL, r0x01
+016E CFF4 F000 02172         MOVFF   PRODH, r0x02
+0172 C000 FFE5 02173         MOVFF   r0x00, POSTDEC1
+0176 C000 FFF4 02174         MOVFF   r0x01, PRODH
+017A C000 FFF6 02175         MOVFF   r0x02, TBLPTRL
+017E C000 FFE9 02176         MOVFF   r0x04, FSR0L
+0182 C000 FFF3 02177         MOVFF   r0x05, PRODL
+0186 5000      02178         MOVF    r0x06, W
+0188 EC00 F000 02179         CALL    __gptrput3
+018C 02180 _00154_DS_:
+               02181 ;       .line   194; brtos/queue.c      *(cqueue->OSQIn) = newdata;
+018C C000 FFE9 02182         MOVFF   r0x04, FSR0L
+0190 C000 FFF3 02183         MOVFF   r0x05, PRODL
+0194 5000      02184         MOVF    r0x06, W
+0196 EC00 F000 02185         CALL    __gptrget3
+019A 6E00      02186         MOVWF   r0x00
+019C CFF3 F000 02187         MOVFF   PRODL, r0x01
+01A0 CFF4 F000 02188         MOVFF   PRODH, r0x02
+01A4 C000 FFE5 02189         MOVFF   r0x03, POSTDEC1
+01A8 C000 FFE9 02190         MOVFF   r0x00, FSR0L
+01AC C000 FFF3 02191         MOVFF   r0x01, PRODL
+01B0 5000      02192         MOVF    r0x02, W
+01B2 EC00 F000 02193         CALL    __gptrput1
+               02194 ;       .line   195; brtos/queue.c      cqueue->OSQIn++; 
+01B6 2A00      02195         INCF    r0x00, F
+01B8 B0D8      02196         BTFSC   STATUS, 0
+01BA 2A00      02197         INCF    r0x01, F
+01BC B0D8      02198         BTFSC   STATUS, 0
+01BE 2A00      02199         INCF    r0x02, F
+01C0 C000 FFE5 02200         MOVFF   r0x00, POSTDEC1
+01C4 C000 FFF4 02201         MOVFF   r0x01, PRODH
+01C8 C000 FFF6 02202         MOVFF   r0x02, TBLPTRL
+01CC C000 FFE9 02203         MOVFF   r0x04, FSR0L
+01D0 C000 FFF3 02204         MOVFF   r0x05, PRODL
+01D4 5000      02205         MOVF    r0x06, W
+01D6 EC00 F000 02206         CALL    __gptrput3
+01DA 0000      02207         BANKSEL _iNesting
+               02208 ;       .line   199; brtos/queue.c      if (!iNesting)
+01DC 5100      02209         MOVF    _iNesting, W, B
+01DE E100      02210         BNZ     _00156_DS_
+               02211 ;       .line   201; brtos/queue.c      OSExitCritical();
+01E0 8E00      02212         BSF     _INTCONbits, 7
+01E2 02213 _00156_DS_:
+               02214 ;       .line   203; brtos/queue.c      return WRITE_BUFFER_OK;
+gpasm-0.13.7 beta               build/default/production/brtos/queue.asm7-19-2011  15:07:14          PAGE 42
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+ 
+01E2 6AE8      02215         CLRF    WREG
+01E4 02216 _00157_DS_:
+01E4 CFE4 F000 02217         MOVFF   PREINC1, r0x0c
+01E8 CFE4 F000 02218         MOVFF   PREINC1, r0x0b
+01EC CFE4 F000 02219         MOVFF   PREINC1, r0x0a
+01F0 CFE4 F000 02220         MOVFF   PREINC1, r0x09
+01F4 CFE4 F000 02221         MOVFF   PREINC1, r0x08
+01F8 CFE4 F000 02222         MOVFF   PREINC1, r0x07
+01FC CFE4 F000 02223         MOVFF   PREINC1, r0x06
+0200 CFE4 F000 02224         MOVFF   PREINC1, r0x05
+0204 CFE4 F000 02225         MOVFF   PREINC1, r0x04
+0208 CFE4 F000 02226         MOVFF   PREINC1, r0x03
+020C CFE4 F000 02227         MOVFF   PREINC1, r0x02
+0210 CFE4 F000 02228         MOVFF   PREINC1, r0x01
+0214 CFE4 F000 02229         MOVFF   PREINC1, r0x00
+0218 CFE4 FFD9 02230         MOVFF   PREINC1, FSR2L
+021C CFE4 FFDA 02231         MOVFF   PREINC1, FSR2H
+0220 0012      02232         RETURN  
+               02233 
+               02234 ; ; Starting pCode block
+               02235 S_queue__OSQueueCreate  code
+0000 02236 _OSQueueCreate:
+               02237 ;       .line   78; brtos/queue.c       INT8U OSQueueCreate(OS_QUEUE *cqueue, INT16U size, BRTOS_Queue **event)
+0000 CFDA FFE5 02238         MOVFF   FSR2H, POSTDEC1
+0004 CFD9 FFE5 02239         MOVFF   FSR2L, POSTDEC1
+0008 CFE2 FFDA 02240         MOVFF   FSR1H, FSR2H
+000C CFE1 FFD9 02241         MOVFF   FSR1L, FSR2L
+0010 C000 FFE5 02242         MOVFF   r0x00, POSTDEC1
+0014 C000 FFE5 02243         MOVFF   r0x01, POSTDEC1
+0018 C000 FFE5 02244         MOVFF   r0x02, POSTDEC1
+001C C000 FFE5 02245         MOVFF   r0x03, POSTDEC1
+0020 C000 FFE5 02246         MOVFF   r0x04, POSTDEC1
+0024 C000 FFE5 02247         MOVFF   r0x05, POSTDEC1
+0028 C000 FFE5 02248         MOVFF   r0x06, POSTDEC1
+002C C000 FFE5 02249         MOVFF   r0x07, POSTDEC1
+0030 C000 FFE5 02250         MOVFF   r0x08, POSTDEC1
+0034 C000 FFE5 02251         MOVFF   r0x09, POSTDEC1
+0038 C000 FFE5 02252         MOVFF   r0x0a, POSTDEC1
+003C C000 FFE5 02253         MOVFF   r0x0b, POSTDEC1
+0040 C000 FFE5 02254         MOVFF   r0x0c, POSTDEC1
+0044 C000 FFE5 02255         MOVFF   r0x0d, POSTDEC1
+0048 C000 FFE5 02256         MOVFF   r0x0e, POSTDEC1
+004C C000 FFE5 02257         MOVFF   r0x0f, POSTDEC1
+0050 C000 FFE5 02258         MOVFF   r0x10, POSTDEC1
+0054 C000 FFE5 02259         MOVFF   r0x11, POSTDEC1
+0058 0E03      02260         MOVLW   0x03
+005A CFDB F000 02261         MOVFF   PLUSW2, r0x00
+005E 0E04      02262         MOVLW   0x04
+0060 CFDB F000 02263         MOVFF   PLUSW2, r0x01
+0064 0E05      02264         MOVLW   0x05
+0066 CFDB F000 02265         MOVFF   PLUSW2, r0x02
+006A 0E06      02266         MOVLW   0x06
+006C CFDB F000 02267         MOVFF   PLUSW2, r0x03
+0070 0E07      02268         MOVLW   0x07
+gpasm-0.13.7 beta               build/default/production/brtos/queue.asm7-19-2011  15:07:14          PAGE 43
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+ 
+0072 CFDB F000 02269         MOVFF   PLUSW2, r0x04
+0076 0E08      02270         MOVLW   0x08
+0078 CFDB F000 02271         MOVFF   PLUSW2, r0x05
+007C 0E09      02272         MOVLW   0x09
+007E CFDB F000 02273         MOVFF   PLUSW2, r0x06
+0082 0E0A      02274         MOVLW   0x0a
+0084 CFDB F000 02275         MOVFF   PLUSW2, r0x07
+0088 0000      02276         BANKSEL _iNesting
+               02277 ;       .line   84; brtos/queue.c       if (iNesting > 0) {                                // See if caller is an interrupt
+008A 5100      02278         MOVF    _iNesting, W, B
+008C E000      02279         BZ      _00106_DS_
+               02280 ;       .line   85; brtos/queue.c       return(IRQ_PEND_ERR);                           // Can't be create by interrupt
+008E 0E02      02281         MOVLW   0x02
+0090 D000      02282         BRA     _00125_DS_
+0092 02283 _00106_DS_:
+0092 0000      02284         BANKSEL _currentTask
+               02285 ;       .line   89; brtos/queue.c       if (currentTask)
+0094 5100      02286         MOVF    _currentTask, W, B
+0096 E000      02287         BZ      _00108_DS_
+               02288 ;       .line   90; brtos/queue.c       OSEnterCritical();
+0098 9E00      02289         BCF     _INTCONbits, 7
+009A 02290 _00108_DS_:
+               02291 ;       .line   92; brtos/queue.c       if ((iQueueAddress + size) > QUEUE_HEAP_SIZE)
+009A 5000      02292         MOVF    r0x03, W
+009C 0000      02293         BANKSEL _iQueueAddress
+009E 2500      02294         ADDWF   _iQueueAddress, W, B
+00A0 6E00      02295         MOVWF   r0x08
+00A2 5000      02296         MOVF    r0x04, W
+00A4 0000      02297         BANKSEL (_iQueueAddress + 1)
+00A6 2100      02298         ADDWFC  (_iQueueAddress + 1), W, B
+00A8 6E00      02299         MOVWF   r0x09
+00AA 0E00      02300         MOVLW   0x00
+00AC 5C00      02301         SUBWF   r0x09, W
+00AE E100      02302         BNZ     _00137_DS_
+00B0 0E81      02303         MOVLW   0x81
+00B2 5C00      02304         SUBWF   r0x08, W
+00B4 02305 _00137_DS_:
+00B4 E300      02306         BNC     _00135_DS_
+00B6 0000      02307         BANKSEL _currentTask
+               02308 ;       .line   95; brtos/queue.c       if (currentTask)
+00B8 5100      02309         MOVF    _currentTask, W, B
+00BA E000      02310         BZ      _00110_DS_
+               02311 ;       .line   96; brtos/queue.c       OSExitCritical();
+00BC 8E00      02312         BSF     _INTCONbits, 7
+00BE 02313 _00110_DS_:
+               02314 ;       .line   98; brtos/queue.c       return NO_MEMORY;
+00BE 0E01      02315         MOVLW   0x01
+00C0 D000      02316         BRA     _00125_DS_
+00C2 02317 _00135_DS_:
+               02318 ;       .line   102; brtos/queue.c      for(i=0;i<=BRTOS_MAX_QUEUE;i++)
+00C2 6A00      02319         CLRF    r0x0a
+00C4 6A00      02320         CLRF    r0x0b
+00C6 6A00      02321         CLRF    r0x0c
+00C8 6A00      02322         CLRF    r0x0d
+gpasm-0.13.7 beta               build/default/production/brtos/queue.asm7-19-2011  15:07:14          PAGE 44
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+ 
+00CA 02323 _00119_DS_:
+00CA 5000      02324         MOVF    r0x0b, W
+00CC 0F80      02325         ADDLW   0x80
+00CE 0F80      02326         ADDLW   0x80
+00D0 E100      02327         BNZ     _00138_DS_
+00D2 0E04      02328         MOVLW   0x04
+00D4 5C00      02329         SUBWF   r0x0a, W
+00D6 02330 _00138_DS_:
+00D6 E200      02331         BC      _00122_DS_
+               02332 ;       .line   105; brtos/queue.c      if(i >= BRTOS_MAX_QUEUE)
+00D8 5000      02333         MOVF    r0x0b, W
+00DA 0F80      02334         ADDLW   0x80
+00DC 0F80      02335         ADDLW   0x80
+00DE E100      02336         BNZ     _00139_DS_
+00E0 0E03      02337         MOVLW   0x03
+00E2 5C00      02338         SUBWF   r0x0a, W
+00E4 02339 _00139_DS_:
+00E4 E300      02340         BNC     _00116_DS_
+00E6 0000      02341         BANKSEL _currentTask
+               02342 ;       .line   110; brtos/queue.c      if (currentTask)
+00E8 5100      02343         MOVF    _currentTask, W, B
+00EA E000      02344         BZ      _00114_DS_
+               02345 ;       .line   111; brtos/queue.c      OSExitCritical();
+00EC 8E00      02346         BSF     _INTCONbits, 7
+00EE 02347 _00114_DS_:
+               02348 ;       .line   113; brtos/queue.c      return(NO_AVAILABLE_EVENT);
+00EE 0E01      02349         MOVLW   0x01
+00F0 D000      02350         BRA     _00125_DS_
+00F2 02351 _00116_DS_:
+               02352 ;       .line   117; brtos/queue.c      if(BRTOS_Queue_Table[i].OSEventAllocated != TRUE)
+00F2 0E00      02353         MOVLW   LOW(_BRTOS_Queue_Table)
+00F4 2400      02354         ADDWF   r0x0c, W
+00F6 6E00      02355         MOVWF   r0x0e
+00F8 0E00      02356         MOVLW   HIGH(_BRTOS_Queue_Table)
+00FA 2000      02357         ADDWFC  r0x0d, W
+00FC 6E00      02358         MOVWF   r0x0f
+00FE C000 FFE9 02359         MOVFF   r0x0e, FSR0L
+0102 C000 FFEA 02360         MOVFF   r0x0f, FSR0H
+0106 CFEF F000 02361         MOVFF   INDF0, r0x10
+010A 5000      02362         MOVF    r0x10, W
+010C 0A01      02363         XORLW   0x01
+010E E000      02364         BZ      _00121_DS_
+               02365 ;       .line   119; brtos/queue.c      BRTOS_Queue_Table[i].OSEventAllocated = TRUE;
+0110 C000 FFE9 02366         MOVFF   r0x0e, FSR0L
+0114 C000 FFEA 02367         MOVFF   r0x0f, FSR0H
+0118 0E01      02368         MOVLW   0x01
+011A 6EEF      02369         MOVWF   INDF0
+               02370 ;       .line   120; brtos/queue.c      pont_event = &BRTOS_Queue_Table[i];
+011C 0E00      02371         MOVLW   LOW(_BRTOS_Queue_Table)
+011E 2400      02372         ADDWF   r0x0c, W
+0120 6E00      02373         MOVWF   r0x0e
+0122 0E00      02374         MOVLW   HIGH(_BRTOS_Queue_Table)
+0124 2000      02375         ADDWFC  r0x0d, W
+0126 6E00      02376         MOVWF   r0x0f
+gpasm-0.13.7 beta               build/default/production/brtos/queue.asm7-19-2011  15:07:14          PAGE 45
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+ 
+0128 5000      02377         MOVF    r0x0f, W
+012A 6E00      02378         MOVWF   r0x0f
+012C 5000      02379         MOVF    r0x0e, W
+012E 6E00      02380         MOVWF   r0x0e
+0130 0E80      02381         MOVLW   0x80
+0132 6E00      02382         MOVWF   r0x10
+               02383 ;       .line   121; brtos/queue.c      break;      
+0134 D000      02384         BRA     _00122_DS_
+0136 02385 _00121_DS_:
+               02386 ;       .line   102; brtos/queue.c      for(i=0;i<=BRTOS_MAX_QUEUE;i++)
+0136 0E08      02387         MOVLW   0x08
+0138 2600      02388         ADDWF   r0x0c, F
+013A B0D8      02389         BTFSC   STATUS, 0
+013C 2A00      02390         INCF    r0x0d, F
+013E 2A00      02391         INCF    r0x0a, F
+0140 B0D8      02392         BTFSC   STATUS, 0
+0142 2A00      02393         INCF    r0x0b, F
+0144 D000      02394         BRA     _00119_DS_
+0146 02395 _00122_DS_:
+               02396 ;       .line   126; brtos/queue.c      cqueue->OSQPtr = (INT8U *)&QUEUE_STACK[iQueueAddress];
+0146 0E00      02397         MOVLW   LOW(_QUEUE_STACK)
+0148 0000      02398         BANKSEL _iQueueAddress
+014A 2500      02399         ADDWF   _iQueueAddress, W, B
+014C 6E00      02400         MOVWF   r0x0a
+014E 0E00      02401         MOVLW   HIGH(_QUEUE_STACK)
+0150 0000      02402         BANKSEL (_iQueueAddress + 1)
+0152 2100      02403         ADDWFC  (_iQueueAddress + 1), W, B
+0154 6E00      02404         MOVWF   r0x0b
+0156 5000      02405         MOVF    r0x0b, W
+0158 6E00      02406         MOVWF   r0x0b
+015A 5000      02407         MOVF    r0x0a, W
+015C 6E00      02408         MOVWF   r0x0a
+015E 0E80      02409         MOVLW   0x80
+0160 6E00      02410         MOVWF   r0x0c
+0162 C000 FFE5 02411         MOVFF   r0x0a, POSTDEC1
+0166 C000 FFF4 02412         MOVFF   r0x0b, PRODH
+016A C000 FFF6 02413         MOVFF   r0x0c, TBLPTRL
+016E C000 FFE9 02414         MOVFF   r0x00, FSR0L
+0172 C000 FFF3 02415         MOVFF   r0x01, PRODL
+0176 5000      02416         MOVF    r0x02, W
+0178 EC00 F000 02417         CALL    __gptrput3
+               02418 ;       .line   127; brtos/queue.c      iQueueAddress  = iQueueAddress + size;
+017C C000 F000 02419         MOVFF   r0x08, _iQueueAddress
+0180 C000 F000 02420         MOVFF   r0x09, (_iQueueAddress + 1)
+               02421 ;       .line   128; brtos/queue.c      cqueue->OSQSize =  size;
+0184 5000      02422         MOVF    r0x00, W
+0186 0F0F      02423         ADDLW   0x0f
+0188 6E00      02424         MOVWF   r0x08
+018A 0E00      02425         MOVLW   0x00
+018C 2000      02426         ADDWFC  r0x01, W
+018E 6E00      02427         MOVWF   r0x09
+0190 0E00      02428         MOVLW   0x00
+0192 2000      02429         ADDWFC  r0x02, W
+0194 6E00      02430         MOVWF   r0x0d
+gpasm-0.13.7 beta               build/default/production/brtos/queue.asm7-19-2011  15:07:14          PAGE 46
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+ 
+0196 C000 FFE5 02431         MOVFF   r0x03, POSTDEC1
+019A C000 FFF4 02432         MOVFF   r0x04, PRODH
+019E C000 FFE9 02433         MOVFF   r0x08, FSR0L
+01A2 C000 FFF3 02434         MOVFF   r0x09, PRODL
+01A6 5000      02435         MOVF    r0x0d, W
+01A8 EC00 F000 02436         CALL    __gptrput2
+               02437 ;       .line   129; brtos/queue.c      cqueue->OSQEntries =  0;
+01AC 5000      02438         MOVF    r0x00, W
+01AE 0F11      02439         ADDLW   0x11
+01B0 6E00      02440         MOVWF   r0x08
+01B2 0E00      02441         MOVLW   0x00
+01B4 2000      02442         ADDWFC  r0x01, W
+01B6 6E00      02443         MOVWF   r0x09
+01B8 0E00      02444         MOVLW   0x00
+01BA 2000      02445         ADDWFC  r0x02, W
+01BC 6E00      02446         MOVWF   r0x0d
+01BE 0E00      02447         MOVLW   0x00
+01C0 6EE5      02448         MOVWF   POSTDEC1
+01C2 0E00      02449         MOVLW   0x00
+01C4 6EF4      02450         MOVWF   PRODH
+01C6 C000 FFE9 02451         MOVFF   r0x08, FSR0L
+01CA C000 FFF3 02452         MOVFF   r0x09, PRODL
+01CE 5000      02453         MOVF    r0x0d, W
+01D0 EC00 F000 02454         CALL    __gptrput2
+               02455 ;       .line   130; brtos/queue.c      cqueue->OSQStart = cqueue->OSQPtr;
+01D4 5000      02456         MOVF    r0x00, W
+01D6 0F03      02457         ADDLW   0x03
+01D8 6E00      02458         MOVWF   r0x08
+01DA 0E00      02459         MOVLW   0x00
+01DC 2000      02460         ADDWFC  r0x01, W
+01DE 6E00      02461         MOVWF   r0x09
+01E0 0E00      02462         MOVLW   0x00
+01E2 2000      02463         ADDWFC  r0x02, W
+01E4 6E00      02464         MOVWF   r0x0d
+01E6 C000 FFE5 02465         MOVFF   r0x0a, POSTDEC1
+01EA C000 FFF4 02466         MOVFF   r0x0b, PRODH
+01EE C000 FFF6 02467         MOVFF   r0x0c, TBLPTRL
+01F2 C000 FFE9 02468         MOVFF   r0x08, FSR0L
+01F6 C000 FFF3 02469         MOVFF   r0x09, PRODL
+01FA 5000      02470         MOVF    r0x0d, W
+01FC EC00 F000 02471         CALL    __gptrput3
+               02472 ;       .line   131; brtos/queue.c      cqueue->OSQEnd =   cqueue->OSQPtr + cqueue->OSQSize;
+0200 5000      02473         MOVF    r0x00, W
+0202 0F06      02474         ADDLW   0x06
+0204 6E00      02475         MOVWF   r0x08
+0206 0E00      02476         MOVLW   0x00
+0208 2000      02477         ADDWFC  r0x01, W
+020A 6E00      02478         MOVWF   r0x09
+020C 0E00      02479         MOVLW   0x00
+020E 2000      02480         ADDWFC  r0x02, W
+0210 6E00      02481         MOVWF   r0x0d
+0212 6A00      02482         CLRF    r0x11
+0214 5000      02483         MOVF    r0x0a, W
+0216 2600      02484         ADDWF   r0x03, F
+gpasm-0.13.7 beta               build/default/production/brtos/queue.asm7-19-2011  15:07:14          PAGE 47
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+ 
+0218 5000      02485         MOVF    r0x0b, W
+021A 2200      02486         ADDWFC  r0x04, F
+021C 5000      02487         MOVF    r0x0c, W
+021E 2200      02488         ADDWFC  r0x11, F
+0220 C000 FFE5 02489         MOVFF   r0x03, POSTDEC1
+0224 C000 FFF4 02490         MOVFF   r0x04, PRODH
+0228 C000 FFF6 02491         MOVFF   r0x11, TBLPTRL
+022C C000 FFE9 02492         MOVFF   r0x08, FSR0L
+0230 C000 FFF3 02493         MOVFF   r0x09, PRODL
+0234 5000      02494         MOVF    r0x0d, W
+0236 EC00 F000 02495         CALL    __gptrput3
+               02496 ;       .line   132; brtos/queue.c      cqueue->OSQIn =    cqueue->OSQPtr;
+023A 5000      02497         MOVF    r0x00, W
+023C 0F09      02498         ADDLW   0x09
+023E 6E00      02499         MOVWF   r0x03
+0240 0E00      02500         MOVLW   0x00
+0242 2000      02501         ADDWFC  r0x01, W
+0244 6E00      02502         MOVWF   r0x04
+0246 0E00      02503         MOVLW   0x00
+0248 2000      02504         ADDWFC  r0x02, W
+024A 6E00      02505         MOVWF   r0x08
+024C C000 FFE5 02506         MOVFF   r0x0a, POSTDEC1
+0250 C000 FFF4 02507         MOVFF   r0x0b, PRODH
+0254 C000 FFF6 02508         MOVFF   r0x0c, TBLPTRL
+0258 C000 FFE9 02509         MOVFF   r0x03, FSR0L
+025C C000 FFF3 02510         MOVFF   r0x04, PRODL
+0260 5000      02511         MOVF    r0x08, W
+0262 EC00 F000 02512         CALL    __gptrput3
+               02513 ;       .line   133; brtos/queue.c      cqueue->OSQOut =   cqueue->OSQPtr;
+0266 5000      02514         MOVF    r0x00, W
+0268 0F0C      02515         ADDLW   0x0c
+026A 6E00      02516         MOVWF   r0x03
+026C 0E00      02517         MOVLW   0x00
+026E 2000      02518         ADDWFC  r0x01, W
+0270 6E00      02519         MOVWF   r0x04
+0272 0E00      02520         MOVLW   0x00
+0274 2000      02521         ADDWFC  r0x02, W
+0276 6E00      02522         MOVWF   r0x08
+0278 C000 FFE5 02523         MOVFF   r0x0a, POSTDEC1
+027C C000 FFF4 02524         MOVFF   r0x0b, PRODH
+0280 C000 FFF6 02525         MOVFF   r0x0c, TBLPTRL
+0284 C000 FFE9 02526         MOVFF   r0x03, FSR0L
+0288 C000 FFF3 02527         MOVFF   r0x04, PRODL
+028C 5000      02528         MOVF    r0x08, W
+028E EC00 F000 02529         CALL    __gptrput3
+               02530 ;       .line   136; brtos/queue.c      pont_event->OSEventPointer = cqueue;
+0292 5000      02531         MOVF    r0x0e, W
+0294 0F03      02532         ADDLW   0x03
+0296 6E00      02533         MOVWF   r0x03
+0298 0E00      02534         MOVLW   0x00
+029A 2000      02535         ADDWFC  r0x0f, W
+029C 6E00      02536         MOVWF   r0x04
+029E 0E00      02537         MOVLW   0x00
+02A0 2000      02538         ADDWFC  r0x10, W
+gpasm-0.13.7 beta               build/default/production/brtos/queue.asm7-19-2011  15:07:14          PAGE 48
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+ 
+02A2 6E00      02539         MOVWF   r0x08
+02A4 C000 FFE5 02540         MOVFF   r0x00, POSTDEC1
+02A8 C000 FFF4 02541         MOVFF   r0x01, PRODH
+02AC C000 FFF6 02542         MOVFF   r0x02, TBLPTRL
+02B0 C000 FFE9 02543         MOVFF   r0x03, FSR0L
+02B4 C000 FFF3 02544         MOVFF   r0x04, PRODL
+02B8 5000      02545         MOVF    r0x08, W
+02BA EC00 F000 02546         CALL    __gptrput3
+               02547 ;       .line   137; brtos/queue.c      pont_event->OSEventWait = 0;
+02BE 5000      02548         MOVF    r0x0e, W
+02C0 0F02      02549         ADDLW   0x02
+02C2 6E00      02550         MOVWF   r0x00
+02C4 0E00      02551         MOVLW   0x00
+02C6 2000      02552         ADDWFC  r0x0f, W
+02C8 6E00      02553         MOVWF   r0x01
+02CA 0E00      02554         MOVLW   0x00
+02CC 2000      02555         ADDWFC  r0x10, W
+02CE 6E00      02556         MOVWF   r0x02
+02D0 0E00      02557         MOVLW   0x00
+02D2 6EE5      02558         MOVWF   POSTDEC1
+02D4 C000 FFE9 02559         MOVFF   r0x00, FSR0L
+02D8 C000 FFF3 02560         MOVFF   r0x01, PRODL
+02DC 5000      02561         MOVF    r0x02, W
+02DE EC00 F000 02562         CALL    __gptrput1
+               02563 ;       .line   140; brtos/queue.c      pont_event->OSEventWaitList=0;
+02E2 5000      02564         MOVF    r0x0e, W
+02E4 0F06      02565         ADDLW   0x06
+02E6 6E00      02566         MOVWF   r0x00
+02E8 0E00      02567         MOVLW   0x00
+02EA 2000      02568         ADDWFC  r0x0f, W
+02EC 6E00      02569         MOVWF   r0x01
+02EE 0E00      02570         MOVLW   0x00
+02F0 2000      02571         ADDWFC  r0x10, W
+02F2 6E00      02572         MOVWF   r0x02
+02F4 0E00      02573         MOVLW   0x00
+02F6 6EE5      02574         MOVWF   POSTDEC1
+02F8 0E00      02575         MOVLW   0x00
+02FA 6EF4      02576         MOVWF   PRODH
+02FC C000 FFE9 02577         MOVFF   r0x00, FSR0L
+0300 C000 FFF3 02578         MOVFF   r0x01, PRODL
+0304 5000      02579         MOVF    r0x02, W
+0306 EC00 F000 02580         CALL    __gptrput2
+               02581 ;       .line   142; brtos/queue.c      *event = pont_event;
+030A C000 FFE5 02582         MOVFF   r0x0e, POSTDEC1
+030E C000 FFF4 02583         MOVFF   r0x0f, PRODH
+0312 C000 FFF6 02584         MOVFF   r0x10, TBLPTRL
+0316 C000 FFE9 02585         MOVFF   r0x05, FSR0L
+031A C000 FFF3 02586         MOVFF   r0x06, PRODL
+031E 5000      02587         MOVF    r0x07, W
+0320 EC00 F000 02588         CALL    __gptrput3
+0324 0000      02589         BANKSEL _currentTask
+               02590 ;       .line   145; brtos/queue.c      if (currentTask)
+0326 5100      02591         MOVF    _currentTask, W, B
+0328 E000      02592         BZ      _00124_DS_
+gpasm-0.13.7 beta               build/default/production/brtos/queue.asm7-19-2011  15:07:14          PAGE 49
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+ 
+               02593 ;       .line   146; brtos/queue.c      OSExitCritical();  
+032A 8E00      02594         BSF     _INTCONbits, 7
+032C 02595 _00124_DS_:
+               02596 ;       .line   148; brtos/queue.c      return(ALLOC_EVENT_OK);
+032C 6AE8      02597         CLRF    WREG
+032E 02598 _00125_DS_:
+032E CFE4 F000 02599         MOVFF   PREINC1, r0x11
+0332 CFE4 F000 02600         MOVFF   PREINC1, r0x10
+0336 CFE4 F000 02601         MOVFF   PREINC1, r0x0f
+033A CFE4 F000 02602         MOVFF   PREINC1, r0x0e
+033E CFE4 F000 02603         MOVFF   PREINC1, r0x0d
+0342 CFE4 F000 02604         MOVFF   PREINC1, r0x0c
+0346 CFE4 F000 02605         MOVFF   PREINC1, r0x0b
+034A CFE4 F000 02606         MOVFF   PREINC1, r0x0a
+034E CFE4 F000 02607         MOVFF   PREINC1, r0x09
+0352 CFE4 F000 02608         MOVFF   PREINC1, r0x08
+0356 CFE4 F000 02609         MOVFF   PREINC1, r0x07
+035A CFE4 F000 02610         MOVFF   PREINC1, r0x06
+035E CFE4 F000 02611         MOVFF   PREINC1, r0x05
+0362 CFE4 F000 02612         MOVFF   PREINC1, r0x04
+0366 CFE4 F000 02613         MOVFF   PREINC1, r0x03
+036A CFE4 F000 02614         MOVFF   PREINC1, r0x02
+036E CFE4 F000 02615         MOVFF   PREINC1, r0x01
+0372 CFE4 F000 02616         MOVFF   PREINC1, r0x00
+0376 CFE4 FFD9 02617         MOVFF   PREINC1, FSR2L
+037A CFE4 FFDA 02618         MOVFF   PREINC1, FSR2H
+037E 0012      02619         RETURN  
+               02620 
+               02621 
+               02622 
+               02623 ; Statistics:
+               02624 ; code size:     5750 (0x1676) bytes ( 4.39%)
+               02625 ;                2875 (0x0b3b) words
+               02626 ; udata size:       0 (0x0000) bytes ( 0.00%)
+               02627 ; access size:     32 (0x0020) bytes
+               02628 
+               02629 
+gpasm-0.13.7 beta               build/default/production/brtos/queue.asm7-19-2011  15:07:14          PAGE 50
+
+
+SYMBOL TABLE
+  LABEL                             VALUE 
+
+FSR0H                             00000FEA
+FSR0L                             00000FE9
+FSR1H                             00000FE2
+FSR1L                             00000FE1
+FSR2H                             00000FDA
+FSR2L                             00000FD9
+INDF0                             00000FEF
+PLUSW2                            00000FDB
+POSTDEC1                          00000FE5
+PREINC1                           00000FE4
+PRODH                             00000FF4
+PRODL                             00000FF3
+STATUS                            00000FD8
+TABLAT                            00000FF5
+TBLPTRH                           00000FF7
+TBLPTRL                           00000FF6
+TBLPTRU                           00000FF8
+WREG                              00000FE8
+_00106_DS_                        00000092
+_00108_DS_                        0000009A
+_00110_DS_                        000000BE
+_00114_DS_                        000000EE
+_00116_DS_                        000000F2
+_00119_DS_                        000000CA
+_00121_DS_                        00000136
+_00122_DS_                        00000146
+_00124_DS_                        0000032C
+_00125_DS_                        0000032E
+_00135_DS_                        000000C2
+_00137_DS_                        000000B4
+_00138_DS_                        000000D6
+_00139_DS_                        000000E4
+_00147_DS_                        00000064
+_00149_DS_                        000000E2
+_00151_DS_                        000000DA
+_00152_DS_                        000000E6
+_00154_DS_                        0000018C
+_00156_DS_                        000001E2
+_00157_DS_                        000001E4
+_00164_DS_                        000000BA
+_00165_DS_                        0000014C
+_00166_DS_                        0000014E
+_00172_DS_                        0000008C
+_00174_DS_                        00000160
+_00176_DS_                        000001E4
+_00178_DS_                        000001F0
+_00180_DS_                        000001E8
+_00182_DS_                        000001F2
+_00189_DS_                        00000120
+_00190_DS_                        00000122
+_00196_DS_                        00000072
+_00198_DS_                        0000011E
+_00205_DS_                        000001C6
+gpasm-0.13.7 beta               build/default/production/brtos/queue.asm7-19-2011  15:07:14          PAGE 51
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+ 
+_00207_DS_                        000003C6
+_00208_DS_                        000003EE
+_00210_DS_                        0000049C
+_00213_DS_                        0000050E
+_00214_DS_                        00000536
+_00218_DS_                        0000068E
+_00221_DS_                        00000768
+_00224_DS_                        000006EE
+_00227_DS_                        0000062A
+_00230_DS_                        00000808
+_00232_DS_                        000008AE
+_00234_DS_                        0000024A
+_00236_DS_                        00000942
+_00250_DS_                        00000180
+_00251_DS_                        00000182
+_00254_DS_                        00000384
+_00255_DS_                        00000578
+_00256_DS_                        0000057A
+_00258_DS_                        00000658
+_00259_DS_                        0000065A
+_00260_DS_                        00000672
+_00261_DS_                        00000674
+_00262_DS_                        00000706
+_00263_DS_                        00000708
+_00264_DS_                        0000086E
+_00265_DS_                        00000870
+_00271_DS_                        0000009A
+_00273_DS_                        00000118
+_00275_DS_                        00000110
+_00276_DS_                        0000011C
+_00278_DS_                        000001C2
+_00280_DS_                        0000030E
+_00282_DS_                        00000316
+_00284_DS_                        00000322
+_00286_DS_                        0000031A
+_00288_DS_                        00000324
+_00298_DS_                        000000F0
+_00299_DS_                        00000182
+_00300_DS_                        00000184
+_ADCON0                           00000000
+_ADCON0bits                       00000000
+_ADCON1                           00000000
+_ADCON1bits                       00000000
+_ADCON2                           00000000
+_ADCON2bits                       00000000
+_ADRES                            00000000
+_ADRESH                           00000000
+_ADRESL                           00000000
+_BAUDCON                          00000000
+_BAUDCONbits                      00000000
+_BAUDCTL                          00000000
+_BAUDCTLbits                      00000000
+_BRTOS_Mutex_Table                00000000
+_BRTOS_Queue_Table                00000000
+gpasm-0.13.7 beta               build/default/production/brtos/queue.asm7-19-2011  15:07:14          PAGE 52
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+ 
+_BRTOS_Sem_Table                  00000000
+_BSR                              00000000
+_BufferText                       00000000
+_CCP1CON                          00000000
+_CCP1CONbits                      00000000
+_CCP2CON                          00000000
+_CCP2CONbits                      00000000
+_CCPR1                            00000000
+_CCPR1H                           00000000
+_CCPR1L                           00000000
+_CCPR2                            00000000
+_CCPR2H                           00000000
+_CCPR2L                           00000000
+_CMCON                            00000000
+_CMCONbits                        00000000
+_CVRCON                           00000000
+_CVRCONbits                       00000000
+_ContextTask                      00000000
+_DDRA                             00000000
+_DDRAbits                         00000000
+_DDRB                             00000000
+_DDRBbits                         00000000
+_DDRC                             00000000
+_DDRCbits                         00000000
+_DDRD                             00000000
+_DDRDbits                         00000000
+_DDRE                             00000000
+_DDREbits                         00000000
+_Data                             00000000
+_ECCP1AS                          00000000
+_ECCP1ASbits                      00000000
+_EEADR                            00000000
+_EECON1                           00000000
+_EECON1bits                       00000000
+_EECON2                           00000000
+_EEDATA                           00000000
+_FSR0H                            00000000
+_FSR0L                            00000000
+_FSR1H                            00000000
+_FSR1L                            00000000
+_FSR2H                            00000000
+_FSR2L                            00000000
+_HLVDCON                          00000000
+_HLVDCONbits                      00000000
+_Head                             00000000
+_Hora                             00000000
+_INDF0                            00000000
+_INDF1                            00000000
+_INDF2                            00000000
+_INTCON                           00000000
+_INTCON2                          00000000
+_INTCON2bits                      00000000
+_INTCON3                          00000000
+_INTCON3bits                      00000000
+gpasm-0.13.7 beta               build/default/production/brtos/queue.asm7-19-2011  15:07:14          PAGE 53
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+ 
+_INTCONbits                       00000000
+_IPR1                             00000000
+_IPR1bits                         00000000
+_IPR2                             00000000
+_IPR2bits                         00000000
+_LATA                             00000000
+_LATAbits                         00000000
+_LATB                             00000000
+_LATBbits                         00000000
+_LATC                             00000000
+_LATCbits                         00000000
+_LATD                             00000000
+_LATDbits                         00000000
+_LATE                             00000000
+_LATEbits                         00000000
+_LVDCON                           00000000
+_LVDCONbits                       00000000
+_LastOSDuty                       00000000
+_NumberOfInstalledTasks           00000000
+_OSBlockedList                    00000000
+_OSCCON                           00000000
+_OSCCONbits                       00000000
+_OSCTUNE                          00000000
+_OSCTUNEbits                      00000000
+_OSCleanQueue                     00000000
+_OSDuty                           00000000
+_OSDutyTmp                        00000000
+_OSQueueCreate                    00000000
+_OSQueuePend                      00000000
+_OSQueuePost                      00000000
+_OSRQueue                         00000000
+_OSReadyList                      00000000
+_OSWQueue                         00000000
+_PC                               00000000
+_PCL                              00000000
+_PCLATH                           00000000
+_PCLATU                           00000000
+_PIE1                             00000000
+_PIE1bits                         00000000
+_PIE2                             00000000
+_PIE2bits                         00000000
+_PIR1                             00000000
+_PIR1bits                         00000000
+_PIR2                             00000000
+_PIR2bits                         00000000
+_PLUSW0                           00000000
+_PLUSW1                           00000000
+_PLUSW2                           00000000
+_PORTA                            00000000
+_PORTAbits                        00000000
+_PORTB                            00000000
+_PORTBbits                        00000000
+_PORTC                            00000000
+_PORTCbits                        00000000
+gpasm-0.13.7 beta               build/default/production/brtos/queue.asm7-19-2011  15:07:14          PAGE 54
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+ 
+_PORTD                            00000000
+_PORTDbits                        00000000
+_PORTE                            00000000
+_PORTEbits                        00000000
+_POSTDEC0                         00000000
+_POSTDEC1                         00000000
+_POSTDEC2                         00000000
+_POSTINC0                         00000000
+_POSTINC1                         00000000
+_POSTINC2                         00000000
+_PR2                              00000000
+_PREINC0                          00000000
+_PREINC1                          00000000
+_PREINC2                          00000000
+_PROD                             00000000
+_PRODH                            00000000
+_PRODL                            00000000
+_PWM1CON                          00000000
+_PWM1CONbits                      00000000
+_PriorityMask                     00000000
+_PriorityVector                   00000000
+_QUEUE_STACK                      00000000
+_RCON                             00000000
+_RCONbits                         00000000
+_RCREG                            00000000
+_RCSTA                            00000000
+_RCSTAbits                        00000000
+_SAScheduler                      00000000
+_SPBRG                            00000000
+_SPBRGH                           00000000
+_SPvalue                          00000000
+_SSPADD                           00000000
+_SSPBUF                           00000000
+_SSPCON1                          00000000
+_SSPCON1bits                      00000000
+_SSPCON2                          00000000
+_SSPCON2bits                      00000000
+_SSPSTAT                          00000000
+_SSPSTATbits                      00000000
+_STACK                            00000000
+_STATUS                           00000000
+_STATUSbits                       00000000
+_STKPTR                           00000000
+_STKPTRbits                       00000000
+_SelectedTask                     00000000
+_StackAddress                     00000000
+_SwitchContext                    00000000
+_T0CON                            00000000
+_T0CONbits                        00000000
+_T1CON                            00000000
+_T1CONbits                        00000000
+_T2CON                            00000000
+_T2CONbits                        00000000
+_T3CON                            00000000
+gpasm-0.13.7 beta               build/default/production/brtos/queue.asm7-19-2011  15:07:14          PAGE 55
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+ 
+_T3CONbits                        00000000
+_TABLAT                           00000000
+_TBLPTR                           00000000
+_TBLPTRH                          00000000
+_TBLPTRL                          00000000
+_TBLPTRU                          00000000
+_TMR0H                            00000000
+_TMR0L                            00000000
+_TMR1H                            00000000
+_TMR1L                            00000000
+_TMR2                             00000000
+_TMR3H                            00000000
+_TMR3L                            00000000
+_TOS                              00000000
+_TOSH                             00000000
+_TOSL                             00000000
+_TOSU                             00000000
+_TRISA                            00000000
+_TRISAbits                        00000000
+_TRISB                            00000000
+_TRISBbits                        00000000
+_TRISC                            00000000
+_TRISCbits                        00000000
+_TRISD                            00000000
+_TRISDbits                        00000000
+_TRISE                            00000000
+_TRISEbits                        00000000
+_TXREG                            00000000
+_TXSTA                            00000000
+_TXSTAbits                        00000000
+_Tail                             00000000
+_TaskAlloc                        00000000
+_WDTCON                           00000000
+_WDTCONbits                       00000000
+_WREG                             00000000
+__18F4520                         00000001
+__gptrget1                        00000000
+__gptrget2                        00000000
+__gptrget3                        00000000
+__gptrput1                        00000000
+__gptrput2                        00000000
+__gptrput3                        00000000
+_counter                          00000000
+_currentTask                      00000000
+_iNesting                         00000000
+_iQueueAddress                    00000000
+_iStackAddress                    00000000
+_version                          00000000
+r0x00                             00000000
+r0x01                             00000001
+r0x02                             00000002
+r0x03                             00000003
+r0x04                             00000004
+r0x05                             00000005
+gpasm-0.13.7 beta               build/default/production/brtos/queue.asm7-19-2011  15:07:14          PAGE 56
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+ 
+r0x06                             00000006
+r0x07                             00000007
+r0x08                             00000008
+r0x09                             00000009
+r0x0a                             0000000A
+r0x0b                             0000000B
+r0x0c                             0000000C
+r0x0d                             0000000D
+r0x0e                             0000000E
+r0x0f                             0000000F
+r0x10                             00000010
+r0x11                             00000011
+r0x12                             00000012
+r0x13                             00000013
+r0x14                             00000014
+r0x15                             00000015
+r0x16                             00000016
+r0x17                             00000017
+r0x18                             00000018
+r0x19                             00000019
+r0x1a                             0000001A
+r0x1b                             0000001B
+r0x1c                             0000001C
+r0x1d                             0000001D
+r0x1e                             0000001E
+r0x1f                             0000001F
+
+
+Errors   :       0
+Warnings :       0 reported,       0 suppressed
+Messages :       0 reported,       0 suppressed
+
